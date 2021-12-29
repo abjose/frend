@@ -12,14 +12,14 @@ class ObjectBox {
   late final Box<Note> noteBox;
 
   /// A stream of all notes ordered by date.
-  late final Stream<Query<Note>> queryStream;
+  // late final Stream<Query<Note>> queryStream;
 
   ObjectBox._create(this.store) {
     noteBox = Box<Note>(store);
 
-    final qBuilder = noteBox.query()
-      ..order(Note_.date, flags: Order.descending);
-    queryStream = qBuilder.watch(triggerImmediately: true);
+    // final qBuilder = noteBox.query()
+    //   ..order(Note_.date, flags: Order.descending);
+    // queryStream = qBuilder.watch(triggerImmediately: true);
 
     // Add some demo data if the box is empty.
     if (noteBox.isEmpty()) {
@@ -32,6 +32,16 @@ class ObjectBox {
     // Future<Store> openStore() {...} is defined in the generated objectbox.g.dart
     final store = await openStore();
     return ObjectBox._create(store);
+  }
+
+  Stream<Query<Note>> getNoteQueryStream() {
+    // This doesn't seem right - previously was passing queryStream as init'd
+    // in _create, but was getting: Bad State: Stream has already been listened to.
+    // But is returning a new stream every time OK?
+    // TODO: maybe ask on IRC if this seems right.
+    final qBuilder = noteBox.query()
+      ..order(Note_.date, flags: Order.descending);
+    return qBuilder.watch(triggerImmediately: true);
   }
 
   void _putDemoData() {

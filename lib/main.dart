@@ -95,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
 
     // _listController.addStream(objectbox.queryStream.map((q) => q.find()));
-    _listController.addStream(objectbox.queryStream.asBroadcastStream().map((q) => q.find()));
+    _listController.addStream(objectbox.getNoteQueryStream().map((q) => q.find()));
   }
 
   @override
