@@ -1,10 +1,25 @@
-import 'dart:math';
-
-import 'package:english_words/english_words.dart';
 import 'package:flutter/material.dart';
+import 'package:frend/random_words.dart';
 
-void main() {
+import 'dart:async';
+
+import 'model.dart';
+import 'db.dart';
+
+// ignore_for_file: public_member_api_docs
+
+/// Provides access to the ObjectBox Store throughout the app.
+late ObjectBox objectbox;
+
+Future<void> main() async {
+  // This is required so ObjectBox can get the application directory
+  // to store the database in.
+  WidgetsFlutterBinding.ensureInitialized();
+
+  objectbox = await ObjectBox.create();
+
   runApp(const TabBarDemo());
+  // runApp(MyApp());
 }
 
 class TabBarDemo extends StatelessWidget {
@@ -14,14 +29,16 @@ class TabBarDemo extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       home: DefaultTabController(
-        length: 3,
+        length: 2,
         child: Scaffold(
           appBar: AppBar(
             bottom: const TabBar(
               tabs: [
-                Tab(icon: Icon(Icons.directions_car)),
-                Tab(icon: Icon(Icons.directions_transit)),
-                Tab(icon: Icon(Icons.directions_bike)),
+                Tab(text: "Events"),
+                Tab(text: "Friends"),
+                // Tab(icon: Icon(Icons.directions_car)),
+                // Tab(icon: Icon(Icons.directions_transit)),
+                // Tab(icon: Icon(Icons.directions_bike)),
               ],
             ),
             title: const Text('Tabs Demo'),
@@ -29,8 +46,8 @@ class TabBarDemo extends StatelessWidget {
           body: const TabBarView(
             children: [
               RandomWords(),
-              Icon(Icons.directions_transit),
-              Icon(Icons.directions_bike),
+              MyApp(), // Icon(Icons.directions_transit),
+              // Icon(Icons.directions_bike),
             ],
           ),
         ),
@@ -39,121 +56,156 @@ class TabBarDemo extends StatelessWidget {
   }
 }
 
-
-// void main() => runApp(MyApp());
-//
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'frend',
-//       theme: ThemeData(
-//         appBarTheme: const AppBarTheme(
-//           backgroundColor: Colors.orange,
-//           foregroundColor: Colors.pink,
-//         ),
-//       ),
-//       home: RandomWords(),
-//     );
-//   }
-// }
-
-class RandomWords extends StatefulWidget {
-  const RandomWords({Key? key}) : super(key: key);
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
-  _RandomWordsState createState() => _RandomWordsState();
+  Widget build(BuildContext context) => MaterialApp(
+    title: 'OB Example',
+    theme: ThemeData(primarySwatch: Colors.blue),
+    home: const MyHomePage(title: 'OB Example'),
+  );
 }
 
-class _RandomWordsState extends State<RandomWords> {
-  final _suggestions = <WordPair>[];
-  final _saved = <WordPair>{};
-  final _biggerFont = const TextStyle(fontSize: 18.0);
+class MyHomePage extends StatefulWidget {
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
-  Widget _buildSuggestions() {
-    return ListView.builder(
-        padding: const EdgeInsets.all(16.0),
-        itemBuilder: /*1*/ (context, i) {
-          if (i.isOdd) return const Divider(); /*2*/
+  final String title;
 
-          final index = i ~/ 2; /*3*/
-          if (index >= _suggestions.length) {
-            _suggestions.addAll(generateWordPairs().take(10)); /*4*/
-          }
-          return _buildRow(_suggestions[index]);
-        });
-  }
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
 
-  Widget _buildRow(WordPair pair) {
-    final alreadySaved = _saved.contains(pair);
-    return ListTile(
-      title: Text(
-        pair.asPascalCase,
-        style: _biggerFont,
-      ),
-      trailing: Icon(
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.red : null,
-        semanticLabel: alreadySaved ? 'Remove from saved' : 'Save',
-      ),
-      onTap: () {
-        setState(() {
-          if (alreadySaved) {
-            _saved.remove(pair);
-          } else {
-            _saved.add(pair);
-          }
-        });
-      },
-    );
-  }
+class _MyHomePageState extends State<MyHomePage> {
+  final _noteInputController = TextEditingController();
+  final _listController = StreamController<List<Note>>(sync: true);
+  // final _listController = StreamController<List<Note>>();
+  // final _listController = StreamController<List<Note>>.broadcast();
 
-  void _pushSaved() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) {
-          final tiles = _saved.map(
-            (pair) {
-              return ListTile(
-                title: Text(
-                  pair.asPascalCase,
-                  style: _biggerFont,
-                ),
-              );
-            },
-          );
-          final divided = tiles.isNotEmpty
-              ? ListTile.divideTiles(
-                  context: context,
-                  tiles: tiles,
-                ).toList()
-              : <Widget>[];
-
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Saved Suggestions'),
-            ),
-            body: ListView(children: divided),
-          );
-        },
-      ),
-    );
+  void _addNote() {
+    if (_noteInputController.text.isEmpty) return;
+    objectbox.noteBox.put(Note(_noteInputController.text));
+    _noteInputController.text = '';
   }
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Startup Name Generator'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.list),
-            onPressed: _pushSaved,
-            tooltip: 'Saved Suggestions',
-          ),
-        ],
-      ),
-      body: _buildSuggestions(),
-    );
+  void initState() {
+    super.initState();
+
+    setState(() {});
+
+    // _listController.addStream(objectbox.queryStream.map((q) => q.find()));
+    _listController.addStream(objectbox.queryStream.asBroadcastStream().map((q) => q.find()));
   }
+
+  @override
+  void dispose() {
+    _noteInputController.dispose();
+    _listController.close();
+    super.dispose();
+  }
+
+  GestureDetector Function(BuildContext, int) _itemBuilder(List<Note> notes) =>
+          (BuildContext context, int index) => GestureDetector(
+        onTap: () => objectbox.noteBox.remove(notes[index].id),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                decoration: const BoxDecoration(
+                    border:
+                    Border(bottom: BorderSide(color: Colors.black12))),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 18.0, horizontal: 10.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        notes[index].text,
+                        style: const TextStyle(
+                          fontSize: 15.0,
+                        ),
+                        // Provide a Key for the integration test
+                        key: Key('list_item_$index'),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 5.0),
+                        child: Text(
+                          'Added on ${notes[index].dateFormat}',
+                          style: const TextStyle(
+                            fontSize: 12.0,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
+
+  @override
+  Widget build(BuildContext context) => Scaffold(
+    appBar: AppBar(
+      title: Text(widget.title),
+    ),
+    body: Column(children: <Widget>[
+      Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Column(
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                    child: TextField(
+                      decoration:
+                      const InputDecoration(hintText: 'Enter a new note'),
+                      controller: _noteInputController,
+                      onSubmitted: (value) => _addNote(),
+                      // Provide a Key for the integration test
+                      key: const Key('input'),
+                    ),
+                  ),
+                  const Padding(
+                    padding: EdgeInsets.only(top: 10.0, right: 10.0),
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Tap a note to remove it',
+                        style: TextStyle(
+                          fontSize: 11.0,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
+      ),
+      Expanded(
+          child: StreamBuilder<List<Note>>(
+              stream: _listController.stream,
+              builder: (context, snapshot) => ListView.builder(
+                  shrinkWrap: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  itemCount: snapshot.hasData ? snapshot.data!.length : 0,
+                  itemBuilder: _itemBuilder(snapshot.data ?? []))))
+    ]),
+    // We need a separate submit button because flutter_driver integration
+    // test doesn't support submitting a TextField using "enter" key.
+    // See https://github.com/flutter/flutter/issues/9383
+    floatingActionButton: FloatingActionButton(
+      key: const Key('submit'),
+      onPressed: _addNote,
+      child: const Icon(Icons.add),
+    ),
+  );
 }

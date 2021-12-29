@@ -1,0 +1,141 @@
+{
+  "_note1": "KEEP THIS FILE! Check it into a version control system (VCS) like git.",
+  "_note2": "ObjectBox manages crucial IDs for your object model. See docs for details.",
+  "_note3": "If you have VCS merge conflicts, you must resolve them according to ObjectBox docs.",
+  "entities": [
+    {
+      "id": "1:559684451497561990",
+      "lastPropertyId": "5:6962145885195010067",
+      "name": "Event",
+      "properties": [
+        {
+          "id": "1:3137689427735270376",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:2304874319326615290",
+          "name": "title",
+          "type": 9
+        },
+        {
+          "id": "3:2699429801705989787",
+          "name": "description",
+          "type": 9
+        },
+        {
+          "id": "4:8227775615844723122",
+          "name": "date",
+          "type": 10
+        },
+        {
+          "id": "5:6962145885195010067",
+          "name": "repeatDays",
+          "type": 6
+        }
+      ],
+      "relations": [
+        {
+          "id": "1:4969967616772700824",
+          "name": "tags",
+          "targetId": "3:3150184331559021246"
+        }
+      ]
+    },
+    {
+      "id": "2:212201850084784958",
+      "lastPropertyId": "4:2482921714770127383",
+      "name": "Friend",
+      "properties": [
+        {
+          "id": "1:3372665905508064115",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:879339131006138547",
+          "name": "name",
+          "type": 9
+        },
+        {
+          "id": "3:7582756072335075275",
+          "name": "birthday",
+          "type": 10
+        },
+        {
+          "id": "4:2482921714770127383",
+          "name": "notes",
+          "type": 9
+        }
+      ],
+      "relations": [
+        {
+          "id": "2:4163727383049888934",
+          "name": "interests",
+          "targetId": "3:3150184331559021246"
+        }
+      ]
+    },
+    {
+      "id": "3:3150184331559021246",
+      "lastPropertyId": "2:3058735327320341030",
+      "name": "Tag",
+      "properties": [
+        {
+          "id": "1:2052986721998282273",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:3058735327320341030",
+          "name": "title",
+          "type": 9
+        }
+      ],
+      "relations": []
+    },
+    {
+      "id": "4:7665321041017520773",
+      "lastPropertyId": "4:4530883630420436753",
+      "name": "Note",
+      "properties": [
+        {
+          "id": "1:2486886209238397411",
+          "name": "id",
+          "type": 6,
+          "flags": 1
+        },
+        {
+          "id": "2:3546151692293052111",
+          "name": "text",
+          "type": 9
+        },
+        {
+          "id": "3:1003805384776306023",
+          "name": "comment",
+          "type": 9
+        },
+        {
+          "id": "4:4530883630420436753",
+          "name": "date",
+          "type": 10
+        }
+      ],
+      "relations": []
+    }
+  ],
+  "lastEntityId": "4:7665321041017520773",
+  "lastIndexId": "0:0",
+  "lastRelationId": "2:4163727383049888934",
+  "lastSequenceId": "0:0",
+  "modelVersion": 5,
+  "modelVersionParserMinimum": 5,
+  "retiredEntityUids": [],
+  "retiredIndexUids": [],
+  "retiredPropertyUids": [],
+  "retiredRelationUids": [],
+  "version": 1
+}
