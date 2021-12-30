@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frend/random_words.dart';
+import 'package:frend/friend_detail.dart';
 
 import 'dart:async';
 
@@ -107,7 +108,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   GestureDetector Function(BuildContext, int) _itemBuilder(List<Note> notes) =>
           (BuildContext context, int index) => GestureDetector(
-        onTap: () => objectbox.noteBox.remove(notes[index].id),
+        // onTap: () => objectbox.noteBox.remove(notes[index].id),
+        onTap: () => _goToFriendDetail(notes[index].id),
         child: Row(
           children: <Widget>[
             Expanded(
@@ -147,6 +149,24 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       );
 
+  void _goToFriendDetail(int? id) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Saved Suggestions'),
+            ),
+            body: FriendDetail(
+              friendId: id,
+              db: objectbox,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
@@ -163,8 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 10.0),
                     child: TextField(
-                      decoration:
-                      const InputDecoration(hintText: 'Enter a new note'),
+                      decoration: const InputDecoration(hintText: 'Enter a new note'),
                       controller: _noteInputController,
                       onSubmitted: (value) => _addNote(),
                       // Provide a Key for the integration test
@@ -204,7 +223,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // See https://github.com/flutter/flutter/issues/9383
     floatingActionButton: FloatingActionButton(
       key: const Key('submit'),
-      onPressed: _addNote,
+      // onPressed: _addNote,
+      onPressed: () => _goToFriendDetail(null),
       child: const Icon(Icons.add),
     ),
   );
