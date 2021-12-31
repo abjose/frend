@@ -24,9 +24,33 @@ class _FriendDetailState extends State<FriendDetail> {
   final _formKey = GlobalKey<FormState>();
 
   int? _friendId;
+  DateTime birthdate = DateTime.now();
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+
+    setState(() {});  // need this?
+
+    _friendId = widget.friendId;
+
+    Friend? friend;
+    // birthdate = DateTime.now();
+    if (_friendId != null) {
+      friend = objectbox.friendBox.get(_friendId!);
+      if (friend != null) {
+        _nameController.text = friend.name!;
+        _dateController.text = friend.dateFormat;
+        birthdate = friend.birthdate!;
+      } else {
+        _nameController.text = "Name";
+        _dateController.text = "Choose a date";
+      }
+    }
+  }
 
   save() {
     // Should already be validated...
@@ -42,27 +66,12 @@ class _FriendDetailState extends State<FriendDetail> {
   _deleteFriend() {
     if (_friendId != null) {
       objectbox.friendBox.remove(_friendId!);
+      Navigator.pop(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    _friendId = widget.friendId;
-
-    Friend? friend;
-    DateTime birthdate = DateTime.now();
-    if (_friendId != null) {
-      friend = objectbox.friendBox.get(_friendId!);
-      if (friend != null) {
-        _nameController.text = friend.name!;
-        _dateController.text = friend.dateFormat;
-        birthdate = friend.birthdate!;
-      } else {
-        _nameController.text = "Name";
-        _dateController.text = "Choose a date";
-      }
-    }
-
     // Build a Form widget using the _formKey created above.
     return Form(
       key: _formKey,
