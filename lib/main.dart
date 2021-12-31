@@ -78,15 +78,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final _noteInputController = TextEditingController();
-  final _listController = StreamController<List<Note>>(sync: true);
+  final _friendInputController = TextEditingController();
+  final _listController = StreamController<List<Friend>>(sync: true);
   // final _listController = StreamController<List<Note>>();
   // final _listController = StreamController<List<Note>>.broadcast();
 
-  void _addNote() {
-    if (_noteInputController.text.isEmpty) return;
-    objectbox.noteBox.put(Note(_noteInputController.text));
-    _noteInputController.text = '';
+  void _addFriend() {
+    if (_friendInputController.text.isEmpty) return;
+    objectbox.friendBox.put(Friend(_friendInputController.text));
+    _friendInputController.text = '';
   }
 
   @override
@@ -96,20 +96,20 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
 
     // _listController.addStream(objectbox.queryStream.map((q) => q.find()));
-    _listController.addStream(objectbox.getNoteQueryStream().map((q) => q.find()));
+    // _listController.addStream(objectbox.getNoteQueryStream().map((q) => q.find()));
+    _listController.addStream(objectbox.getFriendQueryStream().map((q) => q.find()));
   }
 
   @override
   void dispose() {
-    _noteInputController.dispose();
+    _friendInputController.dispose();
     _listController.close();
     super.dispose();
   }
 
-  GestureDetector Function(BuildContext, int) _itemBuilder(List<Note> notes) =>
+  GestureDetector Function(BuildContext, int) _itemBuilder(List<Friend> friends) =>
           (BuildContext context, int index) => GestureDetector(
-        // onTap: () => objectbox.noteBox.remove(notes[index].id),
-        onTap: () => _goToFriendDetail(notes[index].id),
+        onTap: () => _goToFriendDetail(friends[index].id),
         child: Row(
           children: <Widget>[
             Expanded(
@@ -124,7 +124,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        notes[index].text,
+                        friends[index].name!,
                         style: const TextStyle(
                           fontSize: 15.0,
                         ),
@@ -134,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       Padding(
                         padding: const EdgeInsets.only(top: 5.0),
                         child: Text(
-                          'Added on ${notes[index].dateFormat}',
+                          'Added on ${friends[index].dateFormat}',
                           style: const TextStyle(
                             fontSize: 12.0,
                           ),
@@ -173,44 +173,44 @@ class _MyHomePageState extends State<MyHomePage> {
       title: Text(widget.title),
     ),
     body: Column(children: <Widget>[
-      Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Column(
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-                    child: TextField(
-                      decoration: const InputDecoration(hintText: 'Enter a new note'),
-                      controller: _noteInputController,
-                      onSubmitted: (value) => _addNote(),
-                      // Provide a Key for the integration test
-                      key: const Key('input'),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 10.0, right: 10.0),
-                    child: Align(
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        'Tap a note to remove it',
-                        style: TextStyle(
-                          fontSize: 11.0,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          ],
-        ),
-      ),
+      // Padding(
+      //   padding: const EdgeInsets.all(20.0),
+      //   child: Row(
+      //     children: <Widget>[
+      //       // Expanded(
+      //       //   child: Column(
+      //       //     children: <Widget>[
+      //       //       Padding(
+      //       //         padding: const EdgeInsets.symmetric(horizontal: 10.0),
+      //       //         child: TextField(
+      //       //           decoration: const InputDecoration(hintText: 'Enter a new friend'),
+      //       //           controller: _friendInputController,
+      //       //           onSubmitted: (value) => _addFriend(),
+      //       //           // Provide a Key for the integration test
+      //       //           key: const Key('input'),
+      //       //         ),
+      //       //       ),
+      //             // const Padding(
+      //             //   padding: EdgeInsets.only(top: 10.0, right: 10.0),
+      //             //   child: Align(
+      //             //     alignment: Alignment.centerRight,
+      //             //     child: Text(
+      //             //       'Tap a note to remove it',
+      //             //       style: TextStyle(
+      //             //         fontSize: 11.0,
+      //             //         color: Colors.grey,
+      //             //       ),
+      //             //     ),
+      //             //   ),
+      //             // ),
+      //           ],
+      //         ),
+      //       )
+      //     ],
+      //   ),
+      // ),
       Expanded(
-          child: StreamBuilder<List<Note>>(
+          child: StreamBuilder<List<Friend>>(
               stream: _listController.stream,
               builder: (context, snapshot) => ListView.builder(
                   shrinkWrap: true,
@@ -223,7 +223,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // See https://github.com/flutter/flutter/issues/9383
     floatingActionButton: FloatingActionButton(
       key: const Key('submit'),
-      // onPressed: _addNote,
       onPressed: () => _goToFriendDetail(null),
       child: const Icon(Icons.add),
     ),

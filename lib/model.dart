@@ -11,10 +11,17 @@ class Friend {
   int id = 0;
   String? name;
 
-  DateTime? birthday;
+  @Property(type: PropertyType.date)
+  DateTime? birthdate;
 
-  String? notes;
   final interests = ToMany<Tag>();
+  List<String> notes = [];
+
+  // TODO
+  Friend(this.name, {this.id = 0, DateTime? date})
+      : birthdate = date ?? DateTime.now();
+
+  String get dateFormat => DateFormat('dd.MM.yyyy hh:mm:ss').format(birthdate!);
 }
 
 @Entity()
@@ -23,10 +30,11 @@ class Event {
   String? title;
   String? description;
 
+  @Property(type: PropertyType.date)
   DateTime? date;
   // If set, event repeats after this many days. TODO: this probably needs to be fancier
   int? repeatDays;
-  
+
   final tags = ToMany<Tag>();
 }
 
@@ -36,6 +44,7 @@ class Tag {
   String? title;
 }
 
+// probably don't need this, could just have a list of notes on Friend
 @Entity()
 class Note {
   int id;
@@ -44,6 +53,7 @@ class Note {
   String? comment;
 
   /// Note: Stored in milliseconds without time zone info.
+  @Property(type: PropertyType.date)
   DateTime date;
 
   Note(this.text, {this.id = 0, this.comment, DateTime? date})

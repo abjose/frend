@@ -26,36 +26,43 @@ class _FriendDetailState extends State<FriendDetail> {
   int? _friendId;
   final ObjectBox _db;
 
-  final TextEditingController _controller = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
 
   _FriendDetailState(this._friendId, this._db);
 
-  _submit() {
-    // print(_controller.text);
+  save() {
+    // Should already be validated...
+    // if (_nameController.text.isEmpty) return;
 
-    if (_controller.text.isEmpty) return;
-
-    var note = Note(_controller.text);
+    var friend = Friend(_nameController.text, date: DateTime.tryParse(_dateController.text));
     if (_friendId != null) {
-      note.id = _friendId!;
+      friend.id = _friendId!;
     }
-    _friendId = _db.noteBox.put(note);
-    // _controller.text = '';
+    _friendId = _db.friendBox.put(friend);
+  }
 
-    // print(_friendId);
+  _deleteFriend() {
+    if (_friendId != null) {
+      _db.friendBox.remove(_friendId!);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    Note? note;
+    Friend? friend;
+    DateTime birthdate = DateTime.now();
     if (_friendId != null) {
-      note = _db.noteBox.get(_friendId!);
-      if (note != null) {
-        _controller.text = note.text;
+      friend = _db.friendBox.get(_friendId!);
+      if (friend != null) {
+        _nameController.text = friend.name!;
+        _dateController.text = friend.dateFormat;
+        birthdate = friend.birthdate!;
+      } else {
+        _nameController.text = "Name";
+        _dateController.text = "Choose a date";
       }
     }
-    // print(note?.text);
-
 
     // Build a Form widget using the _formKey created above.
     return Form(
@@ -64,12 +71,32 @@ class _FriendDetailState extends State<FriendDetail> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           TextFormField(
-            controller: _controller,
-            // decoration: const InputDecoration(hintText: "", text),
+            controller: _nameController,
+            decoration: const InputDecoration(hintText: "Input Name"),
             // The validator receives the text that the user has entered.
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter some text';
+              }
+              return null;
+            },
+          ),
+          TextFormField(
+            readOnly: true,
+            controller: _dateController,
+            decoration: InputDecoration(hintText: 'Pick Birthdate'),
+            onTap: () async {
+              var date = await showDatePicker(
+                  context: context,
+                  // maybe get most recent birthdate? if click away then lose date
+                  initialDate: birthdate, // DateTime.now(),
+                  firstDate: DateTime(1900),
+                  lastDate: DateTime(2100));
+              _dateController.text = date.toString().substring(0, 10);
+            },
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                return 'Please enter a birthdate';
               }
               return null;
             },
@@ -85,10 +112,17 @@ class _FriendDetailState extends State<FriendDetail> {
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Processing Data')),
                   );
-                  _submit();
+                  save();
                 }
               },
-              child: const Text('Submit'),
+              child: const Text('Save'),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16.0),
+            child: ElevatedButton(
+              onPressed: _deleteFriend,
+              child: const Text('Delete'),
             ),
           ),
         ],
@@ -98,7 +132,8 @@ class _FriendDetailState extends State<FriendDetail> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _nameController.dispose();
+    _dateController.dispose();
     super.dispose();
   }
 }

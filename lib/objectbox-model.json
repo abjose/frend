@@ -45,7 +45,7 @@
     },
     {
       "id": "2:212201850084784958",
-      "lastPropertyId": "4:2482921714770127383",
+      "lastPropertyId": "6:7928298988763933231",
       "name": "Friend",
       "properties": [
         {
@@ -60,14 +60,14 @@
           "type": 9
         },
         {
-          "id": "3:7582756072335075275",
-          "name": "birthday",
+          "id": "5:7477575618749677045",
+          "name": "birthdate",
           "type": 10
         },
         {
-          "id": "4:2482921714770127383",
+          "id": "6:7928298988763933231",
           "name": "notes",
-          "type": 9
+          "type": 30
         }
       ],
       "relations": [
@@ -135,7 +135,10 @@
   "modelVersionParserMinimum": 5,
   "retiredEntityUids": [],
   "retiredIndexUids": [],
-  "retiredPropertyUids": [],
+  "retiredPropertyUids": [
+    7582756072335075275,
+    2482921714770127383
+  ],
   "retiredRelationUids": [],
   "version": 1
 }

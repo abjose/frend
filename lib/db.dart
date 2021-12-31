@@ -8,14 +8,15 @@ class ObjectBox {
   /// The Store of this app.
   late final Store store;
 
-  /// A Box of notes.
   late final Box<Note> noteBox;
+  late final Box<Friend> friendBox;
 
   /// A stream of all notes ordered by date.
   // late final Stream<Query<Note>> queryStream;
 
   ObjectBox._create(this.store) {
     noteBox = Box<Note>(store);
+    friendBox = Box<Friend>(store);
 
     // final qBuilder = noteBox.query()
     //   ..order(Note_.date, flags: Order.descending);
@@ -41,6 +42,16 @@ class ObjectBox {
     // TODO: maybe ask on IRC if this seems right.
     final qBuilder = noteBox.query()
       ..order(Note_.date, flags: Order.descending);
+    return qBuilder.watch(triggerImmediately: true);
+  }
+
+  Stream<Query<Friend>> getFriendQueryStream() {
+    // This doesn't seem right - previously was passing queryStream as init'd
+    // in _create, but was getting: Bad State: Stream has already been listened to.
+    // But is returning a new stream every time OK?
+    // TODO: maybe ask on IRC if this seems right.
+    final qBuilder = friendBox.query()
+      ..order(Friend_.name);
     return qBuilder.watch(triggerImmediately: true);
   }
 
