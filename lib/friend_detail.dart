@@ -10,7 +10,7 @@ class FriendDetail extends StatefulWidget {
   const FriendDetail({Key? key, required this.friendId}): super(key: key);
 
   @override
-  _FriendDetailState createState() => _FriendDetailState(friendId);
+  _FriendDetailState createState() => _FriendDetailState();
 }
 
 // Create a corresponding State class.
@@ -27,8 +27,6 @@ class _FriendDetailState extends State<FriendDetail> {
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-
-  _FriendDetailState(this._friendId);
 
   save() {
     // Should already be validated...
@@ -49,6 +47,8 @@ class _FriendDetailState extends State<FriendDetail> {
 
   @override
   Widget build(BuildContext context) {
+    _friendId = widget.friendId;
+
     Friend? friend;
     DateTime birthdate = DateTime.now();
     if (_friendId != null) {
