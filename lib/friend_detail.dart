@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
-import 'model.dart';
 import 'db.dart';
+import 'model.dart';
+
 
 class FriendDetail extends StatefulWidget {
   final int? friendId;
-  final ObjectBox db;
 
-  const FriendDetail({required this.friendId, required this.db});
+  const FriendDetail({Key? key, required this.friendId}): super(key: key);
 
   @override
-  _FriendDetailState createState() => _FriendDetailState(friendId, db);
+  _FriendDetailState createState() => _FriendDetailState(friendId);
 }
 
 // Create a corresponding State class.
@@ -24,12 +24,11 @@ class _FriendDetailState extends State<FriendDetail> {
   final _formKey = GlobalKey<FormState>();
 
   int? _friendId;
-  final ObjectBox _db;
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
 
-  _FriendDetailState(this._friendId, this._db);
+  _FriendDetailState(this._friendId);
 
   save() {
     // Should already be validated...
@@ -39,12 +38,12 @@ class _FriendDetailState extends State<FriendDetail> {
     if (_friendId != null) {
       friend.id = _friendId!;
     }
-    _friendId = _db.friendBox.put(friend);
+    _friendId = objectbox.friendBox.put(friend);
   }
 
   _deleteFriend() {
     if (_friendId != null) {
-      _db.friendBox.remove(_friendId!);
+      objectbox.friendBox.remove(_friendId!);
     }
   }
 
@@ -53,7 +52,7 @@ class _FriendDetailState extends State<FriendDetail> {
     Friend? friend;
     DateTime birthdate = DateTime.now();
     if (_friendId != null) {
-      friend = _db.friendBox.get(_friendId!);
+      friend = objectbox.friendBox.get(_friendId!);
       if (friend != null) {
         _nameController.text = friend.name!;
         _dateController.text = friend.dateFormat;

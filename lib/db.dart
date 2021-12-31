@@ -1,6 +1,11 @@
 import 'model.dart';
 import 'objectbox.g.dart'; // created by `flutter pub run build_runner build`
 
+
+/// Provides access to the ObjectBox Store throughout the app. GLOBAL!
+// TODO: Is this the best place for this?
+late ObjectBox objectbox;
+
 /// Provides access to the ObjectBox Store throughout the app.
 ///
 /// Create this in the apps main function.
