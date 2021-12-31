@@ -47,8 +47,7 @@ class TabBarDemo extends StatelessWidget {
           body: const TabBarView(
             children: [
               RandomWords(),
-              MyApp(), // Icon(Icons.directions_transit),
-              // Icon(Icons.directions_bike),
+              MyApp(),
             ],
           ),
         ),
@@ -173,42 +172,6 @@ class _MyHomePageState extends State<MyHomePage> {
       title: Text(widget.title),
     ),
     body: Column(children: <Widget>[
-      // Padding(
-      //   padding: const EdgeInsets.all(20.0),
-      //   child: Row(
-      //     children: <Widget>[
-      //       // Expanded(
-      //       //   child: Column(
-      //       //     children: <Widget>[
-      //       //       Padding(
-      //       //         padding: const EdgeInsets.symmetric(horizontal: 10.0),
-      //       //         child: TextField(
-      //       //           decoration: const InputDecoration(hintText: 'Enter a new friend'),
-      //       //           controller: _friendInputController,
-      //       //           onSubmitted: (value) => _addFriend(),
-      //       //           // Provide a Key for the integration test
-      //       //           key: const Key('input'),
-      //       //         ),
-      //       //       ),
-      //             // const Padding(
-      //             //   padding: EdgeInsets.only(top: 10.0, right: 10.0),
-      //             //   child: Align(
-      //             //     alignment: Alignment.centerRight,
-      //             //     child: Text(
-      //             //       'Tap a note to remove it',
-      //             //       style: TextStyle(
-      //             //         fontSize: 11.0,
-      //             //         color: Colors.grey,
-      //             //       ),
-      //             //     ),
-      //             //   ),
-      //             // ),
-      //           ],
-      //         ),
-      //       )
-      //     ],
-      //   ),
-      // ),
       Expanded(
           child: StreamBuilder<List<Friend>>(
               stream: _listController.stream,
@@ -218,9 +181,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   itemCount: snapshot.hasData ? snapshot.data!.length : 0,
                   itemBuilder: _itemBuilder(snapshot.data ?? []))))
     ]),
-    // We need a separate submit button because flutter_driver integration
-    // test doesn't support submitting a TextField using "enter" key.
-    // See https://github.com/flutter/flutter/issues/9383
     floatingActionButton: FloatingActionButton(
       key: const Key('submit'),
       onPressed: () => _goToFriendDetail(null),
