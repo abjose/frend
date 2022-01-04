@@ -36,6 +36,12 @@ class Event {
   int? repeatDays;
 
   final tags = ToMany<Tag>();
+
+  // TODO
+  Event(this.title, {this.id = 0, DateTime? date})
+      : date = date ?? DateTime.now();
+
+  String get dateFormat => DateFormat('dd.MM.yyyy hh:mm:ss').format(date!);
 }
 
 @Entity()

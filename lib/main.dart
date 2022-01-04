@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:frend/random_words.dart';
+import 'package:frend/event_list.dart';
+// import 'package:frend/random_words.dart';
 import 'package:frend/friend_list.dart';
 import 'dart:async';
 import 'db.dart';
@@ -40,7 +41,7 @@ class FrendApp extends StatelessWidget {
           ),
           body: const TabBarView(
             children: [
-              RandomWords(),
+              EventList(),
               FriendList(),
             ],
           ),

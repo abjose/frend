@@ -13,8 +13,9 @@ class ObjectBox {
   /// The Store of this app.
   late final Store store;
 
-  late final Box<Note> noteBox;
+  late final Box<Note> noteBox;  // remove
   late final Box<Friend> friendBox;
+  late final Box<Event> eventBox;
 
   /// A stream of all notes ordered by date.
   // late final Stream<Query<Note>> queryStream;
@@ -22,6 +23,7 @@ class ObjectBox {
   ObjectBox._create(this.store) {
     noteBox = Box<Note>(store);
     friendBox = Box<Friend>(store);
+    eventBox = Box<Event>(store);
 
     // final qBuilder = noteBox.query()
     //   ..order(Note_.date, flags: Order.descending);
@@ -57,6 +59,12 @@ class ObjectBox {
     // TODO: maybe ask on IRC if this seems right.
     final qBuilder = friendBox.query()
       ..order(Friend_.name);
+    return qBuilder.watch(triggerImmediately: true);
+  }
+
+  Stream<Query<Event>> getEventQueryStream() {
+    final qBuilder = eventBox.query()
+      ..order(Event_.date);
     return qBuilder.watch(triggerImmediately: true);
   }
 
