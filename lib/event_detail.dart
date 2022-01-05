@@ -24,7 +24,7 @@ class _EventDetailState extends State<EventDetail> {
   final _formKey = GlobalKey<FormState>();
 
   int? _eventId;
-  DateTime birthdate = DateTime.now();
+  DateTime _date = DateTime.now();
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -38,13 +38,12 @@ class _EventDetailState extends State<EventDetail> {
     _eventId = widget.eventId;
 
     Event? event;
-    // birthdate = DateTime.now();
     if (_eventId != null) {
       event = objectbox.eventBox.get(_eventId!);
       if (event != null) {
         _titleController.text = event.title!;
         _dateController.text = event.dateFormat;
-        birthdate = event.date!;
+        _date = event.date!;
       } else {
         _titleController.text = "Title";
         _dateController.text = "Choose a date";
@@ -97,7 +96,7 @@ class _EventDetailState extends State<EventDetail> {
               var date = await showDatePicker(
                   context: context,
                   // maybe get most recent birthdate? if click away then lose date
-                  initialDate: birthdate, // DateTime.now(),
+                  initialDate: _date, // DateTime.now(),
                   firstDate: DateTime(1900),
                   lastDate: DateTime(2100));
               _dateController.text = date.toString().substring(0, 10);
