@@ -83,7 +83,7 @@ class _EventListState extends State<EventList> {
         builder: (context) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Saved Suggestions'),
+              title: const Text('Edit Event'),
             ),
             body: EventDetail(
               eventId: id,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:expandable/expandable.dart';
+import 'package:frend/objectbox.g.dart';
 
 import 'db.dart';
+import 'event_detail.dart';
 import 'model.dart';
 
 class FriendDetail extends StatefulWidget {
@@ -25,6 +27,7 @@ class _FriendDetailState extends State<FriendDetail> {
 
   int? _friendId;
   DateTime birthdate = DateTime.now();
+  List<Event> _events = [];
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -46,6 +49,10 @@ class _FriendDetailState extends State<FriendDetail> {
         _nameController.text = friend.name;
         _dateController.text = friend.dateFormat;
         birthdate = friend.birthdate;
+
+        QueryBuilder<Event> builder = objectbox.eventBox.query();
+        builder.linkMany(Event_.friends, Friend_.id.equals(_friendId!));
+        _events = builder.build().find();
         for (var note in friend.notes) {
           _noteControllers.add(TextEditingController(text: note));
         }
@@ -86,6 +93,23 @@ class _FriendDetailState extends State<FriendDetail> {
     }
   }
 
+  void _goToEventDetail(int? id) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Edit Event'),
+            ),
+            body: EventDetail(
+              eventId: id,
+            ),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     List<ExpandablePanel> noteWidgets = [];
@@ -102,6 +126,26 @@ class _FriendDetailState extends State<FriendDetail> {
               keyboardType: TextInputType.multiline,
             ),
         ),
+      );
+    }
+
+    List<Card> eventList = [];
+    for (var event in _events) {
+      eventList.add(
+          Card(
+            color: Colors.amberAccent,
+            // elevation: 4,
+            // margin: const EdgeInsets.symmetric(vertical: 10),
+            child: ListTile(
+              // leading: Text(
+              //   _foundUsers[index]["id"].toString(),
+              //   style: const TextStyle(fontSize: 24),
+              // ),
+              title: Text(event.title!),
+              // trailing:
+              onTap: () => _goToEventDetail(event.id),
+            ),
+          )
       );
     }
 
@@ -141,6 +185,15 @@ class _FriendDetailState extends State<FriendDetail> {
               }
               return null;
             },
+          ),
+          Flexible(
+            // fit: FlexFit.tight,
+            // can get rid of space if shrinkwrap
+            // but should probably tell how many elements or something
+            child: ListView(
+              padding: const EdgeInsets.all(8),
+              children: eventList,
+            )
           ),
           Flexible(child: ListView(
             // shrinkWrap: true,  // apparently this is expensive
