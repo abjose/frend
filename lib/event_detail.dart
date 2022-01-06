@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frend/objectbox.g.dart';
 import 'package:frend/searchable_selection_list.dart';
 
 import 'db.dart';
@@ -61,7 +62,8 @@ class _EventDetailState extends State<EventDetail> {
   save() {
     var event = Event(_titleController.text, date: DateTime.tryParse(_dateController.text));
     if (_eventId != null) {
-      event.id = _eventId!;
+      event = objectbox.eventBox.get(_eventId!)!;
+      event.friends.clear();
     }
 
     // TODO: Better way to save friends?
