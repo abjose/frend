@@ -77,6 +77,7 @@ class _EventDetailState extends State<EventDetail> {
     event.friends.addAll(dbFriends);
 
     _eventId = objectbox.eventBox.put(event);
+    Navigator.pop(context);
   }
 
   _deleteEvent() {
@@ -118,7 +119,7 @@ class _EventDetailState extends State<EventDetail> {
 
   @override
   Widget build(BuildContext context) {
-    List<Card> friendList = [];
+    List<Widget> friendList = [];
     for (var friendName in _selectedFriends.values) {
       friendList.add(
           Card(
@@ -137,6 +138,12 @@ class _EventDetailState extends State<EventDetail> {
           )
       );
     }
+    friendList.add(
+      ElevatedButton(
+        onPressed: _editFriends,
+        child: const Text('Add Friends'),
+      ),
+    );
 
     // Build a Form widget using the _formKey created above.
     return Form(
