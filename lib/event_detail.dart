@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frend/searchable_selection_list.dart';
 
 import 'db.dart';
 import 'model.dart';
@@ -26,6 +27,9 @@ class _EventDetailState extends State<EventDetail> {
   int? _eventId;
   DateTime _date = DateTime.now();
 
+  // Maybe an awkward way to do this.
+  Map<int, String> _selectedFriends = {};
+
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
 
@@ -37,13 +41,16 @@ class _EventDetailState extends State<EventDetail> {
 
     _eventId = widget.eventId;
 
-    Event? event;
     if (_eventId != null) {
-      event = objectbox.eventBox.get(_eventId!);
+      Event? event = objectbox.eventBox.get(_eventId!);
       if (event != null) {
         _titleController.text = event.title!;
         _dateController.text = event.dateFormat;
         _date = event.date!;
+
+        for (var friend in event.friends) {
+          _selectedFriends[friend.id] = friend.name;
+        }
       } else {
         _titleController.text = "Title";
         _dateController.text = "Choose a date";
@@ -52,13 +59,21 @@ class _EventDetailState extends State<EventDetail> {
   }
 
   save() {
-    // Should already be validated...
-    // if (_titleController.text.isEmpty) return;
-
     var event = Event(_titleController.text, date: DateTime.tryParse(_dateController.text));
     if (_eventId != null) {
       event.id = _eventId!;
     }
+
+    // TODO: Better way to save friends?
+    List<Friend> dbFriends = [];
+    for (var friend in _selectedFriends.entries) {
+      Friend? maybeFriend = objectbox.friendBox.get(friend.key);
+      if (maybeFriend != null) {
+        dbFriends.add(maybeFriend);
+      }
+    }
+    event.friends.addAll(dbFriends);
+
     _eventId = objectbox.eventBox.put(event);
   }
 
@@ -69,8 +84,58 @@ class _EventDetailState extends State<EventDetail> {
     }
   }
 
+  _editFriends() {
+    Map<int, String> allFriends = {};
+    for (var friend in objectbox.friendBox.getAll()) {
+      allFriends[friend.id] = friend.name;
+    }
+
+    // wait want to be able to edit friends list even if not saved yet
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return SearchableSelectionList(
+              elements: allFriends,
+              selected: _selectedFriends.keys.toSet(),
+              onDone: (newSelected) {
+
+                // ehhh
+                WidgetsBinding.instance
+                    ?.addPostFrameCallback((_) => setState(() {
+                  _selectedFriends.clear();
+                  for (var id in newSelected) {
+                    _selectedFriends[id] = allFriends[id]!;
+                  }
+                }));
+              },
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<Card> friendList = [];
+    for (var friendName in _selectedFriends.values) {
+      friendList.add(
+          Card(
+            color: Colors.amberAccent,
+            elevation: 4,
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            child: ListTile(
+              // leading: Text(
+              //   _foundUsers[index]["id"].toString(),
+              //   style: const TextStyle(fontSize: 24),
+              // ),
+              title: Text(friendName),
+              // trailing:
+              onTap: _editFriends,
+            ),
+          )
+      );
+    }
+
     // Build a Form widget using the _formKey created above.
     return Form(
       key: _formKey,
@@ -108,6 +173,10 @@ class _EventDetailState extends State<EventDetail> {
               return null;
             },
           ),
+          Flexible(child: ListView(
+            padding: const EdgeInsets.all(8),
+            children: friendList,
+          )),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
             child: ElevatedButton(

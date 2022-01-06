@@ -52,7 +52,7 @@ class _FriendListState extends State<FriendList> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(
-                        friends[index].name!,
+                        friends[index].name,
                         style: const TextStyle(
                           fontSize: 15.0,
                         ),

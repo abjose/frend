@@ -40,6 +40,11 @@
           "id": "1:4969967616772700824",
           "name": "tags",
           "targetId": "3:3150184331559021246"
+        },
+        {
+          "id": "3:1045259295846403585",
+          "name": "friends",
+          "targetId": "2:212201850084784958"
         }
       ]
     },
@@ -129,7 +134,7 @@
   ],
   "lastEntityId": "4:7665321041017520773",
   "lastIndexId": "0:0",
-  "lastRelationId": "2:4163727383049888934",
+  "lastRelationId": "3:1045259295846403585",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,

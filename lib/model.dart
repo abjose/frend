@@ -9,10 +9,10 @@ import 'objectbox.g.dart';
 @Entity()
 class Friend {
   int id = 0;
-  String? name;
+  String name;
 
   @Property(type: PropertyType.date)
-  DateTime? birthdate;
+  DateTime birthdate;
 
   final interests = ToMany<Tag>();
   List<String> notes = [];
@@ -21,7 +21,7 @@ class Friend {
   Friend(this.name, {this.id = 0, DateTime? date})
       : birthdate = date ?? DateTime.now();
 
-  String get dateFormat => DateFormat('dd.MM.yyyy hh:mm:ss').format(birthdate!);
+  String get dateFormat => DateFormat('dd.MM.yyyy hh:mm:ss').format(birthdate);
 }
 
 @Entity()
@@ -35,6 +35,7 @@ class Event {
   // If set, event repeats after this many days. TODO: this probably needs to be fancier
   int? repeatDays;
 
+  final friends = ToMany<Friend>();
   final tags = ToMany<Tag>();
 
   // TODO

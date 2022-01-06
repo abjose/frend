@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frend/event_list.dart';
 // import 'package:frend/random_words.dart';
 import 'package:frend/friend_list.dart';
+import 'package:frend/searchable_selection_list.dart';
 import 'dart:async';
 import 'db.dart';
 
@@ -42,6 +43,7 @@ class FrendApp extends StatelessWidget {
           body: const TabBarView(
             children: [
               EventList(),
+              // SearchableSelectionList(elements: {13: "Andy", 15: "Aragon", 2: "Bob", 6: "Franco", 98: "Scally"}), // onSelectionChange: testfn),
               FriendList(),
             ],
           ),

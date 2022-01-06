@@ -43,9 +43,9 @@ class _FriendDetailState extends State<FriendDetail> {
     if (_friendId != null) {
       friend = objectbox.friendBox.get(_friendId!);
       if (friend != null) {
-        _nameController.text = friend.name!;
+        _nameController.text = friend.name;
         _dateController.text = friend.dateFormat;
-        birthdate = friend.birthdate!;
+        birthdate = friend.birthdate;
         for (var note in friend.notes) {
           _noteControllers.add(TextEditingController(text: note));
         }
