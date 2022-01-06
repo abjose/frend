@@ -76,6 +76,9 @@ class _SearchableSelectionListState extends State<SearchableSelectionList> {
   Widget build(BuildContext context) {
     final mapValues = _foundElements.entries.toList();  // ehhhh
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Edit Selection'),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(10),
         child: Column(
