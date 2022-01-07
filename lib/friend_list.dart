@@ -83,7 +83,7 @@ class _FriendListState extends State<FriendList> {
         builder: (context) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Saved Suggestions'),
+              title: const Text('Edit Friend'),
             ),
             body: FriendDetail(
               friendId: id,

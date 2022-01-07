@@ -29,6 +29,7 @@ class FrendApp extends StatelessWidget {
         length: 2,
         child: Scaffold(
           appBar: AppBar(
+            title: const Text('Frend'),
             bottom: const TabBar(
               tabs: [
                 Tab(text: "Events"),
@@ -38,7 +39,32 @@ class FrendApp extends StatelessWidget {
                 // Tab(icon: Icon(Icons.directions_bike)),
               ],
             ),
-            title: const Text('Tabs Demo'),
+            actions: [
+              DropdownButton<String>(
+                icon: const Icon(Icons.settings, color: Colors.white),
+                // elevation: 16,
+                style: const TextStyle(color: Colors.black),
+                underline: Container(height: 0),
+                onChanged: (String? newValue) {},// onChanged: null,
+                items: [
+                  DropdownMenuItem<String>(
+                    value: "Tags",
+                    child: Text("Tags"),
+                    onTap: () => print("tags!"),
+                  ),
+                  DropdownMenuItem<String>(
+                    value: "Drafts",
+                    child: Text("Drafts"),
+                    onTap: () => print("drafts!"),
+                  ),
+                  DropdownMenuItem<String>(
+                    value: "Settings",
+                    child: Text("Settings"),
+                    onTap: () => print("settings!"),
+                  ),
+                ],
+              ),
+            ],
           ),
           body: const TabBarView(
             children: [

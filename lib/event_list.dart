@@ -62,7 +62,7 @@ class _EventListState extends State<EventList> {
                       Padding(
                         padding: const EdgeInsets.only(top: 5.0),
                         child: Text(
-                          'Added on ${events[index].dateFormat}',
+                          'On ${events[index].dateFormat}',
                           style: const TextStyle(
                             fontSize: 12.0,
                           ),
