@@ -68,6 +68,7 @@ class _EventDetailState extends State<EventDetail> {
     if (_eventId != null) {
       event = objectbox.eventBox.get(_eventId!)!;
       event.friends.clear();
+      event.tags.clear();
     }
 
     // TODO: Better way to save friends?
@@ -259,7 +260,7 @@ class _EventDetailState extends State<EventDetail> {
                   // If the form is valid, display a snackbar. In the real world,
                   // you'd often call a server or save the information in a database.
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Processing Data')),
+                    const SnackBar(content: Text('Saving')),
                   );
                   save();
                 }

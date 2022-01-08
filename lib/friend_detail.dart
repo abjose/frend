@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:expandable/expandable.dart';
 import 'package:frend/objectbox.g.dart';
+import 'package:frend/searchable_selection_list.dart';
 
 import 'db.dart';
 import 'event_detail.dart';
@@ -29,6 +30,8 @@ class _FriendDetailState extends State<FriendDetail> {
   DateTime birthdate = DateTime.now();
   List<Event> _events = [];
 
+  Map<int, String> _selectedTags = {};
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final List<TextEditingController> _noteControllers = [];
@@ -53,6 +56,9 @@ class _FriendDetailState extends State<FriendDetail> {
         QueryBuilder<Event> builder = objectbox.eventBox.query();
         builder.linkMany(Event_.friends, Friend_.id.equals(_friendId!));
         _events = builder.build().find();
+        for (var tag in friend.interests) {
+          _selectedTags[tag.id] = tag.title;
+        }
         for (var note in friend.notes) {
           _noteControllers.add(TextEditingController(text: note));
         }
@@ -68,14 +74,21 @@ class _FriendDetailState extends State<FriendDetail> {
   }
 
   save() {
-    // Should already be validated...
-    // if (_nameController.text.isEmpty) return;
-
-    var friend = Friend(_nameController.text,
-        date: DateTime.tryParse(_dateController.text));
+    var friend = Friend(_nameController.text, date: DateTime.tryParse(_dateController.text));
     if (_friendId != null) {
+      friend = objectbox.friendBox.get(_friendId!)!;
       friend.id = _friendId!;
+      friend.interests.clear();
     }
+
+    List<Tag> dbTags = [];
+    for (var tag in _selectedTags.entries) {
+      Tag? maybeTag = objectbox.tagBox.get(tag.key);
+      if (maybeTag != null) {
+        dbTags.add(maybeTag);
+      }
+    }
+    friend.interests.addAll(dbTags);
 
     List<String> newNotes = [];
     for (var controller in _noteControllers) {
@@ -84,6 +97,7 @@ class _FriendDetailState extends State<FriendDetail> {
     friend.notes = newNotes;
 
     _friendId = objectbox.friendBox.put(friend);
+    Navigator.pop(context);
   }
 
   _deleteFriend() {
@@ -110,8 +124,54 @@ class _FriendDetailState extends State<FriendDetail> {
     );
   }
 
+  _editTags() {
+    Map<int, String> allTags = {};
+    for (var tag in objectbox.tagBox.getAll()) {
+      allTags[tag.id] = tag.title;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return SearchableSelectionList(
+            elements: allTags,
+            selected: _selectedTags.keys.toSet(),
+            onDone: (newSelected) {
+              WidgetsBinding.instance?.addPostFrameCallback((_) => setState(() {
+                _selectedTags.clear();
+                for (var id in newSelected) {
+                  _selectedTags[id] = allTags[id]!;
+                }
+              }));
+            },
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    List<Widget> tagList = [];
+    for (var tagTitle in _selectedTags.values) {
+      tagList.add(
+          Card(
+            color: Colors.amberAccent,
+            elevation: 4,
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            child: ListTile(
+              title: Text(tagTitle),
+            ),
+          )
+      );
+    }
+    tagList.add(
+      ElevatedButton(
+        onPressed: _editTags,
+        child: const Text('Edit Interests'),
+      ),
+    );
+
     List<ExpandablePanel> noteWidgets = [];
     for (var controller in _noteControllers) {
       noteWidgets.add(
@@ -186,15 +246,18 @@ class _FriendDetailState extends State<FriendDetail> {
               return null;
             },
           ),
-          Flexible(
-            // fit: FlexFit.tight,
-            // can get rid of space if shrinkwrap
-            // but should probably tell how many elements or something
-            child: ListView(
-              padding: const EdgeInsets.all(8),
-              children: eventList,
+          Flexible(child: ListView(
+            padding: const EdgeInsets.all(8),
+            children: tagList,
+          )),
+          eventList.isNotEmpty ?
+            Flexible(
+              child: ListView(
+                padding: const EdgeInsets.all(8),
+                children: eventList,
+              )
             )
-          ),
+          : const SizedBox.shrink(),
           Flexible(child: ListView(
             // shrinkWrap: true,  // apparently this is expensive
             padding: const EdgeInsets.all(8),
@@ -220,7 +283,7 @@ class _FriendDetailState extends State<FriendDetail> {
                   // If the form is valid, display a snackbar. In the real world,
                   // you'd often call a server or save the information in a database.
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Processing Data')),
+                    const SnackBar(content: Text('Saving')),
                   );
                   save();
 
