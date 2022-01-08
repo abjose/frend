@@ -3,6 +3,7 @@ import 'package:frend/event_list.dart';
 // import 'package:frend/random_words.dart';
 import 'package:frend/friend_list.dart';
 import 'package:frend/searchable_selection_list.dart';
+import 'package:frend/tag_list.dart';
 import 'dart:async';
 import 'db.dart';
 
@@ -16,11 +17,36 @@ Future<void> main() async {
 
   objectbox = await ObjectBox.create();
 
-  runApp(const FrendApp());
+  // runApp(const FrendApp());
+  runApp(FrendApp());
 }
 
 class FrendApp extends StatelessWidget {
-  const FrendApp({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+        home: FrendHome()
+    );
+  }
+}
+
+class FrendHome extends StatelessWidget {
+  // const FrendHome({Key? key}) : super(key: key);
+
+  void _goToTagList(context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Tags'),
+            ),
+            body: TagList(),
+          );
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +76,7 @@ class FrendApp extends StatelessWidget {
                   DropdownMenuItem<String>(
                     value: "Tags",
                     child: Text("Tags"),
-                    onTap: () => print("tags!"),
+                    onTap: () => _goToTagList(context),
                   ),
                   DropdownMenuItem<String>(
                     value: "Drafts",

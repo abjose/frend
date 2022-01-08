@@ -16,6 +16,7 @@ class ObjectBox {
   late final Box<Note> noteBox;  // remove
   late final Box<Friend> friendBox;
   late final Box<Event> eventBox;
+  late final Box<Tag> tagBox;
 
   /// A stream of all notes ordered by date.
   // late final Stream<Query<Note>> queryStream;
@@ -24,6 +25,7 @@ class ObjectBox {
     noteBox = Box<Note>(store);
     friendBox = Box<Friend>(store);
     eventBox = Box<Event>(store);
+    tagBox = Box<Tag>(store);
 
     // final qBuilder = noteBox.query()
     //   ..order(Note_.date, flags: Order.descending);
@@ -65,6 +67,11 @@ class ObjectBox {
   Stream<Query<Event>> getEventQueryStream() {
     final qBuilder = eventBox.query()
       ..order(Event_.date);
+    return qBuilder.watch(triggerImmediately: true);
+  }
+  Stream<Query<Tag>> getTagQueryStream() {
+    final qBuilder = tagBox.query()
+      ..order(Tag_.title);
     return qBuilder.watch(triggerImmediately: true);
   }
 

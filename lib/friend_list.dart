@@ -14,7 +14,6 @@ class FriendList extends StatefulWidget {
 }
 
 class _FriendListState extends State<FriendList> {
-  final _friendInputController = TextEditingController();
   final _listController = StreamController<List<Friend>>(sync: true);
 
   @override
@@ -30,7 +29,6 @@ class _FriendListState extends State<FriendList> {
 
   @override
   void dispose() {
-    _friendInputController.dispose();
     _listController.close();
     super.dispose();
   }

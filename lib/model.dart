@@ -48,7 +48,11 @@ class Event {
 @Entity()
 class Tag {
   int id = 0;
-  String? title;
+
+  @Unique(onConflict: ConflictStrategy.replace)
+  String title;
+
+  Tag(this.title);
 }
 
 // probably don't need this, could just have a list of notes on Friend

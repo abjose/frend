@@ -97,7 +97,9 @@
         {
           "id": "2:3058735327320341030",
           "name": "title",
-          "type": 9
+          "type": 9,
+          "flags": 34848,
+          "indexId": "1:1173764655809519308"
         }
       ],
       "relations": []
@@ -133,7 +135,7 @@
     }
   ],
   "lastEntityId": "4:7665321041017520773",
-  "lastIndexId": "0:0",
+  "lastIndexId": "1:1173764655809519308",
   "lastRelationId": "3:1045259295846403585",
   "lastSequenceId": "0:0",
   "modelVersion": 5,
