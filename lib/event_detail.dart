@@ -30,6 +30,7 @@ class _EventDetailState extends State<EventDetail> {
 
   // Maybe an awkward way to do this.
   Map<int, String> _selectedFriends = {};
+  Map<int, String> _selectedTags = {};
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -51,6 +52,9 @@ class _EventDetailState extends State<EventDetail> {
 
         for (var friend in event.friends) {
           _selectedFriends[friend.id] = friend.name;
+        }
+        for (var tag in event.tags) {
+          _selectedTags[tag.id] = tag.title;
         }
       } else {
         _titleController.text = "Title";
@@ -75,6 +79,15 @@ class _EventDetailState extends State<EventDetail> {
       }
     }
     event.friends.addAll(dbFriends);
+
+    List<Tag> dbTags = [];
+    for (var tag in _selectedTags.entries) {
+      Tag? maybeTag = objectbox.tagBox.get(tag.key);
+      if (maybeTag != null) {
+        dbTags.add(maybeTag);
+      }
+    }
+    event.tags.addAll(dbTags);
 
     _eventId = objectbox.eventBox.put(event);
     Navigator.pop(context);
@@ -103,14 +116,39 @@ class _EventDetailState extends State<EventDetail> {
               onDone: (newSelected) {
 
                 // ehhh
-                WidgetsBinding.instance
-                    ?.addPostFrameCallback((_) => setState(() {
+                WidgetsBinding.instance?.addPostFrameCallback((_) => setState(() {
                   _selectedFriends.clear();
                   for (var id in newSelected) {
                     _selectedFriends[id] = allFriends[id]!;
                   }
                 }));
               },
+          );
+        },
+      ),
+    );
+  }
+
+  _editTags() {
+    Map<int, String> allTags = {};
+    for (var tag in objectbox.tagBox.getAll()) {
+      allTags[tag.id] = tag.title;
+    }
+
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return SearchableSelectionList(
+            elements: allTags,
+            selected: _selectedTags.keys.toSet(),
+            onDone: (newSelected) {
+              WidgetsBinding.instance?.addPostFrameCallback((_) => setState(() {
+                _selectedTags.clear();
+                for (var id in newSelected) {
+                  _selectedTags[id] = allTags[id]!;
+                }
+              }));
+            },
           );
         },
       ),
@@ -133,7 +171,7 @@ class _EventDetailState extends State<EventDetail> {
               // ),
               title: Text(friendName),
               // trailing:
-              onTap: _editFriends,
+              // onTap: _editFriends,
             ),
           )
       );
@@ -141,7 +179,29 @@ class _EventDetailState extends State<EventDetail> {
     friendList.add(
       ElevatedButton(
         onPressed: _editFriends,
-        child: const Text('Add Friends'),
+        child: const Text('Edit Friends'),
+      ),
+    );
+
+    // Maybe should abstract this...
+    List<Widget> tagList = [];
+    for (var tagTitle in _selectedTags.values) {
+      tagList.add(
+          Card(
+            color: Colors.amberAccent,
+            elevation: 4,
+            margin: const EdgeInsets.symmetric(vertical: 10),
+            child: ListTile(
+              title: Text(tagTitle),
+              // onTap: _editTags,
+            ),
+          )
+      );
+    }
+    tagList.add(
+      ElevatedButton(
+        onPressed: _editTags,
+        child: const Text('Edit Tags'),
       ),
     );
 
@@ -185,6 +245,10 @@ class _EventDetailState extends State<EventDetail> {
           Flexible(child: ListView(
             padding: const EdgeInsets.all(8),
             children: friendList,
+          )),
+          Flexible(child: ListView(
+            padding: const EdgeInsets.all(8),
+            children: tagList,
           )),
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 16.0),
