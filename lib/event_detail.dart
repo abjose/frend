@@ -80,17 +80,23 @@ class _EventDetailState extends State<EventDetail> {
 
     objectbox.eventBox.put(_event);
 
-    // TODO: Better way than double-popping? could use popUntil
-    Navigator.pop(context);
-    if (!_event.isIdea) Navigator.pop(context);
+    if (_event.isIdea) {
+      Navigator.pop(context);
+    } else {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
   }
 
   _deleteEvent() {
     if (_event.id != 0) {
       objectbox.eventBox.remove(_event.id);
     }
-    Navigator.pop(context);
-    if (!_event.isIdea) Navigator.pop(context);
+
+    if (_event.isIdea) {
+      Navigator.pop(context);
+    } else {
+      Navigator.of(context).popUntil((route) => route.isFirst);
+    }
   }
 
   _editFriends() {
