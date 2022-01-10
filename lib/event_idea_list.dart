@@ -36,13 +36,8 @@ class _EventIdeaListState extends State<EventIdeaList> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text('Edit Event${ copy ? "" : " Idea"}'),
-            ),
-            body: EventDetail(
-              event: copy ? event.getConcreteEvent() : event,
-            ),
+          return EventDetail(
+            event: copy ? event.getConcreteEvent() : event,
           );
         },
       ),

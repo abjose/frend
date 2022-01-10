@@ -79,14 +79,7 @@ class _FriendListState extends State<FriendList> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Edit Friend'),
-            ),
-            body: FriendDetail(
-              friendId: id,
-            ),
-          );
+          return FriendDetail(friendId: id);
         },
       ),
     );

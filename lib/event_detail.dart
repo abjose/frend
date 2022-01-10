@@ -154,8 +154,7 @@ class _EventDetailState extends State<EventDetail> {
     );
   }
 
-  @override
-  Widget build(BuildContext context) {
+  Widget _buildForm(BuildContext context) {
     List<Widget> friendList = [];
     for (var friendName in _selectedFriends.values) {
       friendList.add(
@@ -253,32 +252,32 @@ class _EventDetailState extends State<EventDetail> {
             padding: const EdgeInsets.all(8),
             children: tagList,
           )),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                // Validate returns true if the form is valid, or false otherwise.
-                if (_formKey.currentState!.validate()) {
-                  // If the form is valid, display a snackbar. In the real world,
-                  // you'd often call a server or save the information in a database.
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Saving')),
-                  );
-                  save();
-                }
-              },
-              child: const Text('Save'),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16.0),
-            child: ElevatedButton(
-              onPressed: _deleteEvent,
-              child: const Text('Delete'),
-            ),
-          ),
         ],
       ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Edit Event${_event.isIdea ? " Idea" : ""}'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.save, color: Colors.white),
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                save();
+              }
+            },
+          ),
+          IconButton(
+            icon: Icon(Icons.delete, color: Colors.white),
+            onPressed: _deleteEvent,
+          )
+        ],
+      ),
+      body: _buildForm(context),
     );
   }
 

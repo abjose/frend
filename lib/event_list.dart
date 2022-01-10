@@ -38,12 +38,7 @@ class _EventListState extends State<EventList> {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Edit Event'),
-            ),
-            body: EventDetail(event: event),
-          );
+          return EventDetail(event: event);
         },
       ),
     );
