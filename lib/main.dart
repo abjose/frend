@@ -60,9 +60,6 @@ class FrendHome extends StatelessWidget {
               tabs: [
                 Tab(text: "Events"),
                 Tab(text: "Friends"),
-                // Tab(icon: Icon(Icons.directions_car)),
-                // Tab(icon: Icon(Icons.directions_transit)),
-                // Tab(icon: Icon(Icons.directions_bike)),
               ],
             ),
             actions: [
@@ -78,11 +75,11 @@ class FrendHome extends StatelessWidget {
                     child: Text("Tags"),
                     onTap: () => _goToTagList(context),
                   ),
-                  DropdownMenuItem<String>(
-                    value: "Drafts",
-                    child: Text("Drafts"),
-                    onTap: () => print("drafts!"),
-                  ),
+                  // DropdownMenuItem<String>(
+                  //   value: "Drafts",
+                  //   child: Text("Drafts"),
+                  //   onTap: () => print("drafts!"),
+                  // ),
                   DropdownMenuItem<String>(
                     value: "Settings",
                     child: Text("Settings"),
