@@ -67,7 +67,7 @@ class _TagListState extends State<TagList> {
               ),
             ),
             IconButton(
-              icon: const Icon(Icons.close, color: Colors.red),
+              icon: const Icon(Icons.delete, color: Colors.red),
               onPressed: () => objectbox.tagBox.remove(tags[index].id),
             ),
           ],
