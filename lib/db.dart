@@ -65,8 +65,13 @@ class ObjectBox {
   }
 
   Stream<Query<Event>> getEventQueryStream() {
-    final qBuilder = eventBox.query()
+    final qBuilder = eventBox.query(Event_.isIdea.equals(false))
       ..order(Event_.date);
+    return qBuilder.watch(triggerImmediately: true);
+  }
+  Stream<Query<Event>> getEventIdeaQueryStream() {
+    final qBuilder = eventBox.query(Event_.isIdea.equals(true))
+      ..order(Event_.title);
     return qBuilder.watch(triggerImmediately: true);
   }
   Stream<Query<Tag>> getTagQueryStream() {

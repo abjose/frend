@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frend/objectbox.g.dart';
 import 'package:frend/searchable_selection_list.dart';
 
 import 'db.dart';
@@ -7,9 +6,9 @@ import 'model.dart';
 
 
 class EventDetail extends StatefulWidget {
-  final int? eventId;
+  final Event event;
 
-  const EventDetail({Key? key, required this.eventId}): super(key: key);
+  const EventDetail({Key? key, required this.event}): super(key: key);
 
   @override
   _EventDetailState createState() => _EventDetailState();
@@ -25,8 +24,8 @@ class _EventDetailState extends State<EventDetail> {
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
 
-  int? _eventId;
-  DateTime _date = DateTime.now();
+  // DateTime _date = DateTime.now();
+  late Event _event;
 
   // Maybe an awkward way to do this.
   Map<int, String> _selectedFriends = {};
@@ -39,37 +38,24 @@ class _EventDetailState extends State<EventDetail> {
   void initState() {
     super.initState();
 
-    setState(() {});  // need this?
+    _event = widget.event;
+    // _titleController.text = _event.title ?? "Event Title";
+    _titleController.text = _event.title;
+    _dateController.text = _event.id != 0 ? _event.dateFormat : "Pick a date";
 
-    _eventId = widget.eventId;
-
-    if (_eventId != null) {
-      Event? event = objectbox.eventBox.get(_eventId!);
-      if (event != null) {
-        _titleController.text = event.title!;
-        _dateController.text = event.dateFormat;
-        _date = event.date!;
-
-        for (var friend in event.friends) {
-          _selectedFriends[friend.id] = friend.name;
-        }
-        for (var tag in event.tags) {
-          _selectedTags[tag.id] = tag.title;
-        }
-      } else {
-        _titleController.text = "Title";
-        _dateController.text = "Choose a date";
-      }
+    for (var friend in _event.friends) {
+      _selectedFriends[friend.id] = friend.name;
     }
+    for (var tag in _event.tags) {
+      _selectedTags[tag.id] = tag.title;
+    }
+
+    setState(() {});  // need this?
   }
 
   save() {
-    var event = Event(_titleController.text, date: DateTime.tryParse(_dateController.text));
-    if (_eventId != null) {
-      event = objectbox.eventBox.get(_eventId!)!;
-      event.friends.clear();
-      event.tags.clear();
-    }
+    _event.title = _titleController.text;
+    // date saved by DatePicker
 
     // TODO: Better way to save friends?
     List<Friend> dbFriends = [];
@@ -79,7 +65,8 @@ class _EventDetailState extends State<EventDetail> {
         dbFriends.add(maybeFriend);
       }
     }
-    event.friends.addAll(dbFriends);
+    _event.friends.clear();
+    _event.friends.addAll(dbFriends);
 
     List<Tag> dbTags = [];
     for (var tag in _selectedTags.entries) {
@@ -88,17 +75,22 @@ class _EventDetailState extends State<EventDetail> {
         dbTags.add(maybeTag);
       }
     }
-    event.tags.addAll(dbTags);
+    _event.tags.clear();
+    _event.tags.addAll(dbTags);
 
-    _eventId = objectbox.eventBox.put(event);
+    objectbox.eventBox.put(_event);
+
+    // TODO: Better way than double-popping? could use popUntil
     Navigator.pop(context);
+    if (!_event.isIdea) Navigator.pop(context);
   }
 
   _deleteEvent() {
-    if (_eventId != null) {
-      objectbox.eventBox.remove(_eventId!);
-      Navigator.pop(context);
+    if (_event.id != 0) {
+      objectbox.eventBox.remove(_event.id);
     }
+    Navigator.pop(context);
+    if (!_event.isIdea) Navigator.pop(context);
   }
 
   _editFriends() {
@@ -223,30 +215,34 @@ class _EventDetailState extends State<EventDetail> {
               return null;
             },
           ),
-          TextFormField(
-            readOnly: true,
-            controller: _dateController,
-            decoration: InputDecoration(hintText: 'Pick Date'),
-            onTap: () async {
-              var date = await showDatePicker(
-                  context: context,
-                  // maybe get most recent birthdate? if click away then lose date
-                  initialDate: _date, // DateTime.now(),
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime(2100));
-              _dateController.text = date.toString().substring(0, 10);
-            },
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a birthdate';
-              }
-              return null;
-            },
-          ),
-          Flexible(child: ListView(
-            padding: const EdgeInsets.all(8),
-            children: friendList,
-          )),
+          if (!_event.isIdea)
+            TextFormField(
+              readOnly: true,
+              controller: _dateController,
+              decoration: InputDecoration(hintText: 'Pick Date'),
+              onTap: () async {
+                var date = await showDatePicker(
+                    context: context,
+                    // maybe get most recent birthdate? if click away then lose date
+                    initialDate: _event.date, // DateTime.now(),
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime(2100));
+                // _dateController.text = date.toString().substring(0, 10);
+                _dateController.text = date.toString();
+                _event.date = date!;
+              },
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter a birthdate';
+                }
+                return null;
+              },
+            ),
+          if (!_event.isIdea)
+            Flexible(child: ListView(
+              padding: const EdgeInsets.all(8),
+              children: friendList,
+            )),
           Flexible(child: ListView(
             padding: const EdgeInsets.all(8),
             children: tagList,

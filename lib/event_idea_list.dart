@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:frend/event_idea_list.dart';
 import 'dart:async';
 
 import 'model.dart';
@@ -7,14 +6,15 @@ import 'db.dart';
 import 'event_detail.dart';
 
 
-class EventList extends StatefulWidget {
-  const EventList({Key? key}) : super(key: key);
+// TODO: Merge this with EventList?
+class EventIdeaList extends StatefulWidget {
+  const EventIdeaList({Key? key}) : super(key: key);
 
   @override
-  _EventListState createState() => _EventListState();
+  _EventIdeaListState createState() => _EventIdeaListState();
 }
 
-class _EventListState extends State<EventList> {
+class _EventIdeaListState extends State<EventIdeaList> {
   final _listController = StreamController<List<Event>>(sync: true);
 
   @override
@@ -23,9 +23,7 @@ class _EventListState extends State<EventList> {
 
     setState(() {});
 
-    // _listController.addStream(objectbox.queryStream.map((q) => q.find()));
-    // _listController.addStream(objectbox.getNoteQueryStream().map((q) => q.find()));
-    _listController.addStream(objectbox.getEventQueryStream().map((q) => q.find()));
+    _listController.addStream(objectbox.getEventIdeaQueryStream().map((q) => q.find()));
   }
 
   @override
@@ -34,15 +32,17 @@ class _EventListState extends State<EventList> {
     super.dispose();
   }
 
-  void _goToEventDetail(Event event) {
+  void _goToEventDetail(Event event, bool copy) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) {
           return Scaffold(
             appBar: AppBar(
-              title: const Text('Edit Event'),
+              title: Text('Edit Event${ copy ? "" : " Idea"}'),
             ),
-            body: EventDetail(event: event),
+            body: EventDetail(
+              event: copy ? event.getConcreteEvent() : event,
+            ),
           );
         },
       ),
@@ -51,7 +51,7 @@ class _EventListState extends State<EventList> {
 
   GestureDetector Function(BuildContext, int) _itemBuilder(List<Event> events) =>
           (BuildContext context, int index) => GestureDetector(
-        onTap: () => _goToEventDetail(events[index]),
+        onTap: () => _goToEventDetail(events[index], true),
         child: Row(
           children: <Widget>[
             Expanded(
@@ -73,42 +73,26 @@ class _EventListState extends State<EventList> {
                         // Provide a Key for the integration test
                         key: Key('list_item_$index'),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5.0),
-                        child: Text(
-                          'On ${events[index].dateFormat}',
-                          style: const TextStyle(
-                            fontSize: 12.0,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ),
               ),
             ),
+            IconButton(
+              icon: const Icon(Icons.edit, color: Colors.black),
+              onPressed: () => _goToEventDetail(events[index], false),
+            ),
           ],
         ),
       );
 
-  void _goToEventIdeaList() {
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (context) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Event Ideas'),
-            ),
-            body: EventIdeaList(),
-          );
-        },
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) => Scaffold(
     body: Column(children: <Widget>[
+      ElevatedButton(
+        child: const Text('Custom Event'),
+        onPressed: () => _goToEventDetail(Event(""), false),
+      ),
       Expanded(
           child: StreamBuilder<List<Event>>(
               stream: _listController.stream,
@@ -120,7 +104,7 @@ class _EventListState extends State<EventList> {
     ]),
     floatingActionButton: FloatingActionButton(
       key: const Key('submit'),
-      onPressed: _goToEventIdeaList,
+      onPressed: () => _goToEventDetail(Event("", isIdea: true), false),
       child: const Icon(Icons.add),
     ),
   );

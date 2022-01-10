@@ -21,28 +21,43 @@ class Friend {
   Friend(this.name, {this.id = 0, DateTime? date})
       : birthdate = date ?? DateTime.now();
 
-  String get dateFormat => DateFormat('dd.MM.yyyy hh:mm:ss').format(birthdate);
+  // String get dateFormat => DateFormat('dd.MM.yyyy hh:mm:ss').format(birthdate);
+  String get dateFormat => birthdate.toIso8601String();
 }
 
 @Entity()
 class Event {
   int id = 0;
-  String? title;
+  String title;
   String? description;
 
+  // If true, will only be shown in Event Ideas list.
+  bool isIdea = false;
+
   @Property(type: PropertyType.date)
-  DateTime? date;
+  DateTime date;
   // If set, event repeats after this many days. TODO: this probably needs to be fancier
   int? repeatDays;
 
   final friends = ToMany<Friend>();
-  final tags = ToMany<Tag>();
+  // final tags = ToMany<Tag>();
+  var tags = ToMany<Tag>();
 
   // TODO
-  Event(this.title, {this.id = 0, DateTime? date})
-      : date = date ?? DateTime.now();
+  Event(this.title, {this.id = 0, DateTime? date, bool? isIdea})
+      : date = date ?? DateTime.now(), isIdea = isIdea ?? false;
 
-  String get dateFormat => DateFormat('dd.MM.yyyy hh:mm:ss').format(date!);
+  String get dateFormat => date.toIso8601String();
+
+  // Get non-idea version of this event.
+  Event getConcreteEvent() {
+    assert(isIdea);
+    var event = Event(title);
+    for (var tag in tags) {
+      event.tags.add(tag);
+    }
+    return event;
+  }
 }
 
 @Entity()

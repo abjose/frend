@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:559684451497561990",
-      "lastPropertyId": "5:6962145885195010067",
+      "lastPropertyId": "6:6030963276189978777",
       "name": "Event",
       "properties": [
         {
@@ -33,6 +33,11 @@
           "id": "5:6962145885195010067",
           "name": "repeatDays",
           "type": 6
+        },
+        {
+          "id": "6:6030963276189978777",
+          "name": "isIdea",
+          "type": 1
         }
       ],
       "relations": [

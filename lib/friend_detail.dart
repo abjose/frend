@@ -74,12 +74,15 @@ class _FriendDetailState extends State<FriendDetail> {
   }
 
   save() {
-    var friend = Friend(_nameController.text, date: DateTime.tryParse(_dateController.text));
+    var friend = Friend("");
     if (_friendId != null) {
       friend = objectbox.friendBox.get(_friendId!)!;
       friend.id = _friendId!;
       friend.interests.clear();
     }
+
+    friend.name = _nameController.text;
+    friend.birthdate = DateTime.tryParse(_dateController.text)!;
 
     List<Tag> dbTags = [];
     for (var tag in _selectedTags.entries) {
@@ -107,7 +110,7 @@ class _FriendDetailState extends State<FriendDetail> {
     }
   }
 
-  void _goToEventDetail(int? id) {
+  void _goToEventDetail(Event event) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) {
@@ -115,9 +118,7 @@ class _FriendDetailState extends State<FriendDetail> {
             appBar: AppBar(
               title: const Text('Edit Event'),
             ),
-            body: EventDetail(
-              eventId: id,
-            ),
+            body: EventDetail(event: event),
           );
         },
       ),
@@ -201,9 +202,9 @@ class _FriendDetailState extends State<FriendDetail> {
               //   _foundUsers[index]["id"].toString(),
               //   style: const TextStyle(fontSize: 24),
               // ),
-              title: Text(event.title!),
+              title: Text(event.title),
               // trailing:
-              onTap: () => _goToEventDetail(event.id),
+              onTap: () => _goToEventDetail(event),
             ),
           )
       );
@@ -237,7 +238,8 @@ class _FriendDetailState extends State<FriendDetail> {
                   initialDate: birthdate, // DateTime.now(),
                   firstDate: DateTime(1900),
                   lastDate: DateTime(2100));
-              _dateController.text = date.toString().substring(0, 10);
+              // _dateController.text = date.toString().substring(0, 10);
+              _dateController.text = date.toString();
             },
             validator: (value) {
               if (value == null || value.isEmpty) {
@@ -250,14 +252,13 @@ class _FriendDetailState extends State<FriendDetail> {
             padding: const EdgeInsets.all(8),
             children: tagList,
           )),
-          eventList.isNotEmpty ?
+          if (eventList.isNotEmpty)
             Flexible(
               child: ListView(
                 padding: const EdgeInsets.all(8),
                 children: eventList,
               )
-            )
-          : const SizedBox.shrink(),
+            ),
           Flexible(child: ListView(
             // shrinkWrap: true,  // apparently this is expensive
             padding: const EdgeInsets.all(8),
