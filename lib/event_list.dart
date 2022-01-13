@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:frend/event_idea_list.dart';
 import 'dart:async';
 
 import 'model.dart';
 import 'db.dart';
 import 'event_detail.dart';
+import 'event_idea_list.dart';
 
 
 class EventList extends StatefulWidget {

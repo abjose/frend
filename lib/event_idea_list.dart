@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
+import 'package:frend/filters.dart';
+import 'package:frend/objectbox.g.dart';
 
 import 'model.dart';
 import 'db.dart';
@@ -15,21 +16,70 @@ class EventIdeaList extends StatefulWidget {
 }
 
 class _EventIdeaListState extends State<EventIdeaList> {
-  final _listController = StreamController<List<Event>>(sync: true);
+  late List<Tag> _allTags;
+  final Set<String> _selectedTags = {};
+  final List<Event> _events = [];
 
   @override
   void initState() {
     super.initState();
 
-    setState(() {});
+    _allTags = objectbox.tagBox.getAll();
 
-    _listController.addStream(objectbox.getEventIdeaQueryStream().map((q) => q.find()));
+    objectbox.getEventIdeaQueryStream().map((q) {
+      _dataUpdated(q.find());
+    });
+
+    _dataUpdated(objectbox.eventBox.query(Event_.isIdea.equals(true)).build().find());
   }
 
   @override
   void dispose() {
-    _listController.close();
     super.dispose();
+  }
+
+  void _dataUpdated(List<Event> events) {
+    _events.clear();
+
+    if (_selectedTags.isEmpty) {
+      _events.addAll(events);
+      setState(() {});
+      return;
+    }
+
+    // TODO: try out using ToMany query with Ors - apparently don't work well right now.
+    for (var event in events) {
+      for (var tag in event.tags) {
+        if (_selectedTags.contains(tag.title)) {
+          _events.add(event);
+          break;
+        }
+      }
+    }
+
+    setState(() {});
+  }
+
+  void _tagSelectionCallback(String tag) {
+    _selectedTags.add(tag);
+    _dataUpdated(objectbox.eventBox.query(Event_.isIdea.equals(true)).build().find());
+  }
+  void _tagDeselectionCallback(String tag) {
+    _selectedTags.remove(tag);
+    _dataUpdated(objectbox.eventBox.query(Event_.isIdea.equals(true)).build().find());
+  }
+
+  Widget _filterChips() {
+    List<String> tagNames = [];
+    for (var tag in _allTags) {
+      tagNames.add(tag.title);
+    }
+
+    return FilterList(
+      tags: tagNames,
+      selectionCallback: _tagSelectionCallback,
+      deselectionCallback: _tagDeselectionCallback,
+    );
   }
 
   void _goToEventDetail(Event event, bool copy) {
@@ -88,14 +138,14 @@ class _EventIdeaListState extends State<EventIdeaList> {
         child: const Text('Custom Event'),
         onPressed: () => _goToEventDetail(Event(""), false),
       ),
+      _filterChips(),
       Expanded(
           child: StreamBuilder<List<Event>>(
-              stream: _listController.stream,
               builder: (context, snapshot) => ListView.builder(
                   shrinkWrap: true,
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                  itemCount: snapshot.hasData ? snapshot.data!.length : 0,
-                  itemBuilder: _itemBuilder(snapshot.data ?? []))))
+                  itemCount: _events.length,
+                  itemBuilder: _itemBuilder(_events)))),
     ]),
     floatingActionButton: FloatingActionButton(
       key: const Key('submit'),

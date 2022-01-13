@@ -75,11 +75,6 @@ class FrendHome extends StatelessWidget {
                     child: Text("Tags"),
                     onTap: () => _goToTagList(context),
                   ),
-                  // DropdownMenuItem<String>(
-                  //   value: "Drafts",
-                  //   child: Text("Drafts"),
-                  //   onTap: () => print("drafts!"),
-                  // ),
                   DropdownMenuItem<String>(
                     value: "Settings",
                     child: Text("Settings"),
