@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
+import 'filters.dart';
 import 'model.dart';
 import 'db.dart';
 
@@ -10,13 +11,15 @@ class SearchableSelectionList extends StatefulWidget {
   final Map<int, String> elements;  // {id: value}
   final Set<int>? selected; // Ids of already selected rows, if any.
   final bool showX; // Will show red X if true; otherwise green checkmark.
+  final Map<int, Set<String>>? tags;  // If present, will show a list of tags to filter by.
 
   // Called when widget is disposed of with Set of selected element ids.
   final ValueSetter<Set<int>> onDone;
 
   const SearchableSelectionList(
       {Key? key, required this.elements,
-        this.selected, this.showX = false, required this.onDone})
+        this.selected, this.showX = false, this.tags,
+        required this.onDone})
       : super(key: key);
 
   @override
@@ -26,7 +29,13 @@ class SearchableSelectionList extends StatefulWidget {
 class _SearchableSelectionListState extends State<SearchableSelectionList> {
   Map<int, String> _allElements = {};
   Map<int, String> _foundElements = {};
-  Set<int> _selected = {};
+  Set<int> _selectedElements = {};
+
+  String _enteredKeyword = "";
+
+  Set<String> _allTags = {};
+  Set<String> _selectedTags = {};
+  Map<String, Set<int>> _tagToId = {};
 
   @override
   initState() {
@@ -34,20 +43,41 @@ class _SearchableSelectionListState extends State<SearchableSelectionList> {
     _foundElements = _allElements;
 
     if (widget.selected != null) {
-      _selected = widget.selected!;
+      _selectedElements = widget.selected!;
+    }
+
+    if (widget.tags != null) {
+      widget.tags!.forEach((id, tagSet) {
+        _allTags.addAll(tagSet);
+
+        for (var tag in tagSet) {
+          if (!_tagToId.containsKey(tag)) _tagToId[tag] = {};
+          _tagToId[tag]!.add(id);
+        }
+      });
     }
 
     super.initState();
   }
 
   // This function is called whenever the text field changes
-  void _runFilter(String enteredKeyword) {
+  void _runFilter() {
     Map<int, String> results = {};
-    if (enteredKeyword.isEmpty) {
+    if (_enteredKeyword.isEmpty) {
       results = _allElements;
     } else {
       results = Map.from(_allElements)
-        ..removeWhere((k, v) => !v.toLowerCase().contains(enteredKeyword.toLowerCase()));
+        ..removeWhere((k, v) => !v.toLowerCase().contains(_enteredKeyword.toLowerCase()));
+    }
+
+    // Apply tag filters.
+    if (_selectedTags.isNotEmpty) {
+      Set<int> allowableIds = {};
+      for (var e in _selectedTags) {
+        allowableIds.addAll(_tagToId[e]!);
+      }
+      results = Map.from(results)
+        ..removeWhere((k, v) => !allowableIds.contains(k));
     }
 
     // Refresh the UI
@@ -58,17 +88,39 @@ class _SearchableSelectionListState extends State<SearchableSelectionList> {
 
   void _onTap(int id) {
     setState(() {
-      if (_selected.contains(id)) {
-        _selected.remove(id);
+      if (_selectedElements.contains(id)) {
+        _selectedElements.remove(id);
       } else {
-        _selected.add(id);
+        _selectedElements.add(id);
       }
     });
   }
 
+  void _tagSelectionCallback(String tag) {
+    _selectedTags.add(tag);
+    _runFilter();
+  }
+  void _tagDeselectionCallback(String tag) {
+    _selectedTags.remove(tag);
+    _runFilter();
+  }
+
+  Widget _filterChips() {
+    List<String> tagNames = [];
+    for (var tag in _allTags) {
+      tagNames.add(tag);
+    }
+
+    return FilterList(
+      tags: tagNames,
+      selectionCallback: _tagSelectionCallback,
+      deselectionCallback: _tagDeselectionCallback,
+    );
+  }
+
   @override
   void dispose() {
-    widget.onDone(_selected);
+    widget.onDone(_selectedElements);
     super.dispose();
   }
 
@@ -87,13 +139,17 @@ class _SearchableSelectionListState extends State<SearchableSelectionList> {
               height: 20,
             ),
             TextField(
-              onChanged: (value) => _runFilter(value),
+              onChanged: (value) {
+                _enteredKeyword = value;
+                _runFilter();
+              },
               decoration: const InputDecoration(
                   labelText: 'Search', suffixIcon: Icon(Icons.search)),
             ),
             const SizedBox(
               height: 20,
             ),
+            if (_allTags.isNotEmpty) _filterChips(),
             Expanded(
               child: _foundElements.isNotEmpty
                   ? ListView.builder(
@@ -109,7 +165,7 @@ class _SearchableSelectionListState extends State<SearchableSelectionList> {
                     //   style: const TextStyle(fontSize: 24),
                     // ),
                     title: Text(mapValues[index].value),
-                    trailing: _selected.contains(mapValues[index].key) ?
+                    trailing: _selectedElements.contains(mapValues[index].key) ?
                       (widget.showX ? Icon(Icons.close, color: Colors.red) : Icon(Icons.check, color: Colors.green)) :
                       null,
                     // trailing:

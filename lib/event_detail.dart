@@ -30,6 +30,7 @@ class _EventDetailState extends State<EventDetail> {
   // Maybe an awkward way to do this.
   Map<int, String> _selectedFriends = {};
   Map<int, String> _selectedTags = {};
+  Map<int, Set<String>> _interestMap = {};
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
@@ -48,6 +49,12 @@ class _EventDetailState extends State<EventDetail> {
     }
     for (var tag in _event.tags) {
       _selectedTags[tag.id] = tag.title;
+    }
+    for (var friend in objectbox.friendBox.getAll()) {
+      _interestMap[friend.id] = {};
+      for (var interest in friend.interests) {
+        _interestMap[friend.id]!.add(interest.title);
+      }
     }
 
     setState(() {});  // need this?
@@ -112,6 +119,7 @@ class _EventDetailState extends State<EventDetail> {
           return SearchableSelectionList(
               elements: allFriends,
               selected: _selectedFriends.keys.toSet(),
+              tags: _interestMap,
               onDone: (newSelected) {
 
                 // ehhh
