@@ -7,6 +7,17 @@ import 'db.dart';
 import 'event_detail.dart';
 import 'model.dart';
 
+
+class NoteItem {
+  NoteItem({
+    required this.controller,
+    this.isExpanded = false,
+  });
+
+  TextEditingController controller;
+  bool isExpanded;
+}
+
 class FriendDetail extends StatefulWidget {
   final int? friendId;
 
@@ -34,13 +45,11 @@ class _FriendDetailState extends State<FriendDetail> {
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  final List<TextEditingController> _noteControllers = [];
+  final List<NoteItem> _notes = [];
 
   @override
   void initState() {
     super.initState();
-
-    setState(() {}); // need this?
 
     _friendId = widget.friendId;
 
@@ -60,7 +69,7 @@ class _FriendDetailState extends State<FriendDetail> {
           _selectedTags[tag.id] = tag.title;
         }
         for (var note in friend.notes) {
-          _noteControllers.add(TextEditingController(text: note));
+          _notes.add(NoteItem(controller: TextEditingController(text: note)));
         }
       } else {
         _nameController.text = "Name";
@@ -68,9 +77,11 @@ class _FriendDetailState extends State<FriendDetail> {
       }
     }
 
-    if (_noteControllers.isEmpty) {
-      _noteControllers.add(TextEditingController());
+    if (_notes.isEmpty) {
+      _notes.add(NoteItem(controller: TextEditingController(text: "")));
     }
+
+    setState(() {}); // need this?
   }
 
   save() {
@@ -94,8 +105,8 @@ class _FriendDetailState extends State<FriendDetail> {
     friend.interests.addAll(dbTags);
 
     List<String> newNotes = [];
-    for (var controller in _noteControllers) {
-      newNotes.add(controller.text);
+    for (var note in _notes) {
+      newNotes.add(note.controller.text);
     }
     friend.notes = newNotes;
 
@@ -146,14 +157,27 @@ class _FriendDetailState extends State<FriendDetail> {
     );
   }
 
-  Widget _buildForm(BuildContext context) {
+  List<Widget> _buildTagList() {
     List<Widget> tagList = [];
+    tagList.add(
+      Container(
+        padding: const EdgeInsets.only(top: 15),
+        child: Align(
+          alignment: AlignmentDirectional.center,
+          child: Text(
+            'Interests',
+            style: Theme.of(context).textTheme.caption,
+            textScaleFactor: 1.5,
+          ),
+        ),
+      )
+    );
     for (var tagTitle in _selectedTags.values) {
       tagList.add(
           Card(
             color: Colors.amberAccent,
             elevation: 4,
-            margin: const EdgeInsets.symmetric(vertical: 10),
+            // margin: const EdgeInsets.symmetric(vertical: 10),
             child: ListTile(
               title: Text(tagTitle),
             ),
@@ -167,53 +191,102 @@ class _FriendDetailState extends State<FriendDetail> {
       ),
     );
 
-    List<Widget> noteWidgets = [];
-    for (var controller in _noteControllers) {
-      noteWidgets.add(
-        ExpandablePanel(
-            header: Text(controller.text, softWrap: true, maxLines: 1, overflow: TextOverflow.ellipsis,),
-            // collapsed: Text(controller.text, softWrap: true, maxLines: 1, overflow: TextOverflow.ellipsis,),
-            collapsed: SizedBox.shrink(),
-            expanded: TextFormField(
-              controller: controller,
-              decoration: InputDecoration(hintText: 'Edit Note'),
-              maxLines: null,
-              keyboardType: TextInputType.multiline,
+    return tagList;
+  }
+
+  List<Widget> _buildEventList() {
+    List<Widget> eventList = [];
+    eventList.add(
+        Container(
+          padding: const EdgeInsets.only(top: 15),
+          child: Align(
+            alignment: AlignmentDirectional.center,
+            child: Text(
+              'Events',
+              style: Theme.of(context).textTheme.caption,
+              textScaleFactor: 1.5,
             ),
-        ),
-      );
-    }
-    noteWidgets.add(
-      ElevatedButton(
-        child: const Text('Add New Note'),
-        onPressed: () {
-          setState(() {
-            _noteControllers.add(TextEditingController(text: "New Note"));
-          });
-        },
-      ),
+          ),
+        )
     );
 
-    List<Card> eventList = [];
     for (var event in _events) {
       eventList.add(
           Card(
             color: Colors.amberAccent,
-            // elevation: 4,
-            // margin: const EdgeInsets.symmetric(vertical: 10),
             child: ListTile(
-              // leading: Text(
-              //   _foundUsers[index]["id"].toString(),
-              //   style: const TextStyle(fontSize: 24),
-              // ),
               title: Text(event.title),
-              // trailing:
               onTap: () => _goToEventDetail(event),
             ),
           )
       );
     }
 
+    return eventList;
+  }
+
+  List<Widget> _buildNotesPanel() {
+    List<Widget> noteList = [];
+
+    noteList.add(
+        Container(
+          padding: const EdgeInsets.only(top: 15),
+          child: Align(
+            alignment: AlignmentDirectional.center,
+            child: Text(
+              'Notes',
+              style: Theme.of(context).textTheme.caption,
+              textScaleFactor: 1.5,
+            ),
+          ),
+        )
+    );
+
+    noteList.add(ExpansionPanelList(
+      expansionCallback: (int index, bool isExpanded) {
+        setState(() {
+          _notes[index].isExpanded = !isExpanded;
+        });
+      },
+      children: _notes.map<ExpansionPanel>((NoteItem item) {
+        return ExpansionPanel(
+          headerBuilder: (BuildContext context, bool isExpanded) {
+            return ListTile(
+              title: isExpanded
+                  ? TextFormField(
+                    controller: item.controller,
+                    decoration: const InputDecoration(hintText: 'Edit Note'),
+                    maxLines: null,
+                    keyboardType: TextInputType.multiline)
+                  : Text(item.controller.text, softWrap: true, maxLines: 1, overflow: TextOverflow.ellipsis,),
+            );
+          },
+          body: ListTile(
+              title: ElevatedButton(
+                  child: const Text("Delete"),
+                  onPressed: () {
+                    setState(() {
+                      _notes.removeWhere((NoteItem currentItem) => item == currentItem);
+                    });
+                  })),
+          isExpanded: item.isExpanded,
+        );
+      }).toList(),
+    ));
+
+    noteList.add(ElevatedButton(
+      child: const Text('Add New Note'),
+      onPressed: () {
+        setState(() {
+          _notes.add(NoteItem(controller: TextEditingController(text: "New Note")));
+        });
+      },
+    ));
+
+    return noteList;
+  }
+
+  Widget _buildForm(BuildContext context) {
     // Build a Form widget using the _formKey created above.
     return Form(
       key: _formKey,
@@ -252,22 +325,6 @@ class _FriendDetailState extends State<FriendDetail> {
               return null;
             },
           ),
-          Flexible(child: ListView(
-            padding: const EdgeInsets.all(8),
-            children: tagList,
-          )),
-          if (eventList.isNotEmpty)
-            Flexible(
-              child: ListView(
-                padding: const EdgeInsets.all(8),
-                children: eventList,
-              )
-            ),
-          Flexible(child: ListView(
-            // shrinkWrap: true,  // apparently this is expensive
-            padding: const EdgeInsets.all(8),
-            children: noteWidgets,
-          )),
         ],
       ),
     );
@@ -293,7 +350,15 @@ class _FriendDetailState extends State<FriendDetail> {
           )
         ],
       ),
-      body: _buildForm(context),
+      // body: _buildForm(context),
+      body: ListView(
+        children: [
+          _buildForm(context),
+          if (_selectedTags.isNotEmpty) ..._buildTagList(),
+          if (_events.isNotEmpty) ..._buildEventList(),
+          if (_notes.isNotEmpty) ..._buildNotesPanel(),
+        ],
+      )
     );
   }
 
@@ -301,8 +366,8 @@ class _FriendDetailState extends State<FriendDetail> {
   void dispose() {
     _nameController.dispose();
     _dateController.dispose();
-    _noteControllers.forEach((element) {
-      element.dispose();
+    _notes.forEach((element) {
+      element.controller.dispose();
     });
     super.dispose();
   }
