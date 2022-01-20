@@ -9,7 +9,9 @@ import 'event_detail.dart';
 
 // TODO: Merge this with EventList?
 class EventIdeaList extends StatefulWidget {
-  const EventIdeaList({Key? key}) : super(key: key);
+  final DateTime? date;
+
+  const EventIdeaList({Key? key, this.date}) : super(key: key);
 
   @override
   _EventIdeaListState createState() => _EventIdeaListState();
@@ -88,6 +90,7 @@ class _EventIdeaListState extends State<EventIdeaList> {
         builder: (context) {
           return EventDetail(
             event: copy ? event.getConcreteEvent() : event,
+            date: copy ? widget.date : null,
           );
         },
       ),

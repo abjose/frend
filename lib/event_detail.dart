@@ -7,8 +7,9 @@ import 'model.dart';
 
 class EventDetail extends StatefulWidget {
   final Event event;
+  final DateTime? date;
 
-  const EventDetail({Key? key, required this.event}): super(key: key);
+  const EventDetail({Key? key, required this.event, this.date}): super(key: key);
 
   @override
   _EventDetailState createState() => _EventDetailState();
@@ -43,6 +44,9 @@ class _EventDetailState extends State<EventDetail> {
     // _titleController.text = _event.title ?? "Event Title";
     _titleController.text = _event.title;
     _dateController.text = _event.id != 0 ? _event.dateFormat : "Pick a date";
+    if (widget.date != null) {
+      _dateController.text = widget.date.toString();
+    }
 
     for (var friend in _event.friends) {
       _selectedFriends[friend.id] = friend.name;
@@ -236,8 +240,8 @@ class _EventDetailState extends State<EventDetail> {
               onTap: () async {
                 var date = await showDatePicker(
                     context: context,
-                    // maybe get most recent birthdate? if click away then lose date
-                    initialDate: _event.date, // DateTime.now(),
+                    // initialDate: _event.date, // DateTime.now(),
+                    initialDate: DateTime.parse(_dateController.text),
                     firstDate: DateTime(1900),
                     lastDate: DateTime(2100));
                 // _dateController.text = date.toString().substring(0, 10);

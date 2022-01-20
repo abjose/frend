@@ -94,7 +94,7 @@ class _TableCalendarExampleState extends State<TableCalendarExample> {
             appBar: AppBar(
               title: const Text('Event Ideas'),
             ),
-            body: EventIdeaList(),
+            body: EventIdeaList(date: _selectedDay),
           );
         },
       ),
