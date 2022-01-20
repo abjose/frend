@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:frend/event_list.dart';
-// import 'package:frend/random_words.dart';
 import 'package:frend/friend_list.dart';
-import 'package:frend/searchable_selection_list.dart';
+import 'package:frend/calendar.dart';
 import 'package:frend/tag_list.dart';
 import 'dart:async';
 import 'db.dart';
-
-// ignore_for_file: public_member_api_docs
 
 
 Future<void> main() async {
@@ -48,6 +45,16 @@ class FrendHome extends StatelessWidget {
     );
   }
 
+  void _goToTableCalendar(context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return TableCalendarExample();
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -79,6 +86,11 @@ class FrendHome extends StatelessWidget {
                     value: "Settings",
                     child: Text("Settings"),
                     onTap: () => print("settings!"),
+                  ),
+                  DropdownMenuItem<String>(
+                    value: "TableCalendar",
+                    child: Text("TableCalendar"),
+                    onTap: () => _goToTableCalendar(context),
                   ),
                 ],
               ),
