@@ -39,6 +39,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   expandable: ^5.0.1
   table_calendar: ^3.0.3
+  date_time_picker: ^2.1.0
 
 dev_dependencies:
   flutter_test:

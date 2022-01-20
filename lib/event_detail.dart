@@ -1,3 +1,4 @@
+import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:frend/searchable_selection_list.dart';
 
@@ -233,27 +234,31 @@ class _EventDetailState extends State<EventDetail> {
             },
           ),
           if (!_event.isIdea)
-            TextFormField(
-              readOnly: true,
-              controller: _dateController,
-              decoration: InputDecoration(hintText: 'Pick Date'),
-              onTap: () async {
-                var date = await showDatePicker(
-                    context: context,
-                    // initialDate: _event.date, // DateTime.now(),
-                    initialDate: DateTime.parse(_dateController.text),
-                    firstDate: DateTime(1900),
-                    lastDate: DateTime(2100));
-                // _dateController.text = date.toString().substring(0, 10);
-                _dateController.text = date.toString();
-                _event.date = date!;
-              },
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  return 'Please enter a birthdate';
-                }
-                return null;
-              },
+            Container(
+              padding: EdgeInsets.only(left: 20, right: 20, top: 10),
+              child: DateTimePicker(
+                controller: _dateController,
+                type: DateTimePickerType.dateTimeSeparate,
+                dateMask: 'd MMM, yyyy',
+                initialDate: DateTime.tryParse(_dateController.text),
+                firstDate: DateTime(2000),
+                lastDate: DateTime(2100),
+                icon: const Icon(Icons.event),
+                dateLabelText: 'Date',
+                timeLabelText: "Time",
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter a date/time';
+                  }
+                  return null;
+                },
+                onChanged: (dateString) {
+                  var maybeDate = DateTime.tryParse(dateString);
+                  if (maybeDate != null) {
+                    _event.date = maybeDate;
+                  }
+                },
+              )
             ),
           if (!_event.isIdea)
             Flexible(child: ListView(
