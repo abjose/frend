@@ -49,6 +49,8 @@ class Event {
 
   String get dateFormat => date.toIso8601String();
 
+  String get timeFormat => DateFormat.Hm().format(date);
+
   // Get non-idea version of this event.
   Event getConcreteEvent() {
     assert(isIdea);

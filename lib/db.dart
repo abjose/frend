@@ -80,6 +80,17 @@ class ObjectBox {
     return qBuilder.watch(triggerImmediately: true);
   }
 
+  List<Event> getNonRepeatingEvents() {
+    final qBuilder = eventBox.query(Event_.repeatDays.isNull() & Event_.isIdea.equals(false))
+      ..order(Event_.date);
+    return qBuilder.build().find();
+  }
+  List<Event> getRepeatingEvents() {
+    final qBuilder = eventBox.query(Event_.repeatDays.notNull() & Event_.isIdea.equals(false))
+      ..order(Event_.date);
+    return qBuilder.build().find();
+  }
+
   void _putDemoData() {
     final demoNotes = [
       Note('Quickly add a note by writing text and pressing Enter'),
