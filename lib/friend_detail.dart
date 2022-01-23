@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:expandable/expandable.dart';
 import 'package:frend/objectbox.g.dart';
 import 'package:frend/searchable_selection_list.dart';
+import 'package:intl/intl.dart';
 
 import 'db.dart';
 import 'event_detail.dart';
@@ -93,7 +94,7 @@ class _FriendDetailState extends State<FriendDetail> {
     }
 
     friend.name = _nameController.text;
-    friend.birthdate = DateTime.tryParse(_dateController.text)!;
+    friend.birthdate = DateFormat.yMMMMd('en_US').parse(_dateController.text);
 
     List<Tag> dbTags = [];
     for (var tag in _selectedTags.entries) {
@@ -315,8 +316,11 @@ class _FriendDetailState extends State<FriendDetail> {
                   initialDate: birthdate, // DateTime.now(),
                   firstDate: DateTime(1900),
                   lastDate: DateTime(2100));
-              // _dateController.text = date.toString().substring(0, 10);
-              _dateController.text = date.toString();
+              // TODO: use dateFormat from Friend instead.
+              if (date != null) {
+                _dateController.text = DateFormat.yMMMMd('en_US').format(date);
+              }
+
             },
             validator: (value) {
               if (value == null || value.isEmpty) {

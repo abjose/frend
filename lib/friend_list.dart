@@ -20,11 +20,9 @@ class _FriendListState extends State<FriendList> {
   void initState() {
     super.initState();
 
-    setState(() {});
-
-    // _listController.addStream(objectbox.queryStream.map((q) => q.find()));
-    // _listController.addStream(objectbox.getNoteQueryStream().map((q) => q.find()));
     _listController.addStream(objectbox.getFriendQueryStream().map((q) => q.find()));
+
+    setState(() {});
   }
 
   @override
@@ -56,15 +54,6 @@ class _FriendListState extends State<FriendList> {
                         ),
                         // Provide a Key for the integration test
                         key: Key('list_item_$index'),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 5.0),
-                        child: Text(
-                          'Added on ${friends[index].dateFormat}',
-                          style: const TextStyle(
-                            fontSize: 12.0,
-                          ),
-                        ),
                       ),
                     ],
                   ),

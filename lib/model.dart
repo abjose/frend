@@ -21,8 +21,7 @@ class Friend {
   Friend(this.name, {this.id = 0, DateTime? date})
       : birthdate = date ?? DateTime.now();
 
-  // String get dateFormat => DateFormat('dd.MM.yyyy hh:mm:ss').format(birthdate);
-  String get dateFormat => birthdate.toIso8601String();
+  String get dateFormat => DateFormat.yMMMMd('en_US').format(birthdate);
 }
 
 @Entity()
@@ -47,8 +46,7 @@ class Event {
   Event(this.title, {this.id = 0, DateTime? date, bool? isIdea})
       : date = date ?? DateTime.now(), isIdea = isIdea ?? false;
 
-  String get dateFormat => date.toIso8601String();
-
+  String get dateFormat => DateFormat.yMd().format(date);
   String get timeFormat => DateFormat.Hm().format(date);
 
   // Get non-idea version of this event.
