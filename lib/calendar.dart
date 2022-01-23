@@ -69,6 +69,12 @@ class _EventCalendarState extends State<EventCalendar> {
       }
       _repeatingEvents[event.date]?.add(event);
     }
+
+    objectbox.getEventQueryStream().listen((event) {
+      // Listen for even changes and setState so will properly display changes to even times.
+      // TODO: better way to do this?
+      setState(() {});
+    });
   }
 
   @override
