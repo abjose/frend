@@ -99,38 +99,22 @@ class _EventIdeaListState extends State<EventIdeaList> {
 
   GestureDetector Function(BuildContext, int) _itemBuilder(List<Event> events) =>
           (BuildContext context, int index) => GestureDetector(
-        onTap: () => _goToEventDetail(events[index], true),
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: Container(
-                decoration: const BoxDecoration(
-                    border:
-                    Border(bottom: BorderSide(color: Colors.black12))),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 18.0, horizontal: 10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        events[index].title,
-                        style: const TextStyle(
-                          fontSize: 15.0,
-                        ),
-                        // Provide a Key for the integration test
-                        key: Key('list_item_$index'),
-                      ),
-                    ],
-                  ),
+        child: Card(
+          child: ListTile(
+            title: Text(events[index].title),
+            trailing: Wrap(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.copy, color: Colors.black),
+                  onPressed: () => _goToEventDetail(events[index], true),
                 ),
-              ),
+                IconButton(
+                  icon: const Icon(Icons.edit, color: Colors.black),
+                  onPressed: () => _goToEventDetail(events[index], false),
+                ),
+              ],
             ),
-            IconButton(
-              icon: const Icon(Icons.edit, color: Colors.black),
-              onPressed: () => _goToEventDetail(events[index], false),
-            ),
-          ],
+          ),
         ),
       );
 
