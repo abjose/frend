@@ -33,14 +33,11 @@ class EventCalendar extends StatefulWidget {
 }
 
 class _EventCalendarState extends State<EventCalendar> {
-  final _nonRepeatingEvents = LinkedHashMap<DateTime, List<Event>>(
+  final _allEvents = LinkedHashMap<DateTime, List<Event>>(
     equals: isSameDay,
     hashCode: getHashCode,
   );
-  final _repeatingEvents = LinkedHashMap<DateTime, List<Event>>(
-    equals: isSameDay,
-    hashCode: getHashCode,
-  );
+  final List<Event> _repeatingEvents = [];
   late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
@@ -51,30 +48,34 @@ class _EventCalendarState extends State<EventCalendar> {
     super.initState();
 
     _selectedDay = _focusedDay;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
 
-    _nonRepeatingEvents.clear();
-    _repeatingEvents.clear();
-
-    for (var event in objectbox.getNonRepeatingEvents()) {
-      if (!_nonRepeatingEvents.containsKey(event.date)) {
-        _nonRepeatingEvents[event.date] = [];
-      }
-      _nonRepeatingEvents[event.date]?.add(event);
-    }
-
-    for (var event in objectbox.getRepeatingEvents()) {
-      if (!_repeatingEvents.containsKey(event.date)) {
-        _repeatingEvents[event.date] = [];
-      }
-      _repeatingEvents[event.date]?.add(event);
-    }
-
+    // Listen for even changes and setState so will properly display changes to even times.
     objectbox.getEventQueryStream().listen((event) {
-      // Listen for even changes and setState so will properly display changes to even times.
       // TODO: better way to do this?
-      setState(() {});
+      setState(() {
+        if (mounted) {
+          _refreshEventCache();
+        }
+      });
     });
+
+    _selectedEvents = ValueNotifier([]);
+    _refreshEventCache();
+  }
+
+  void _refreshEventCache() {
+    _repeatingEvents.clear();
+    _repeatingEvents.addAll(objectbox.getRepeatingEvents());
+
+    _allEvents.clear();
+    for (var event in objectbox.getRealEvents()) {
+      if (!_allEvents.containsKey(event.date)) {
+        _allEvents[event.date] = [];
+      }
+      _allEvents[event.date]?.add(event);
+    }
+
+    _selectedEvents.value = _getEventsForDay(_selectedDay!);
   }
 
   @override
@@ -84,14 +85,22 @@ class _EventCalendarState extends State<EventCalendar> {
   }
 
   List<Event> _getEventsForDay(DateTime day) {
-    List<Event> events = _nonRepeatingEvents[day] ?? [];
+    List<Event> events = _allEvents[day] ?? [];
 
-    // TODO: handle repeating events
-    // also be careful about times being out of order...
-    // maybe instead should have all events in one thing, then another with just repeating
-    // and for all the repeating ones, only add the repeats.
-    if (_repeatingEvents.containsKey(day)) {
-      events.addAll(_repeatingEvents[day]!);
+    bool addedRepeatingEvent = false;
+    if (_repeatingEvents.isNotEmpty) {;
+      for (var repeatingEvent in _repeatingEvents) {
+        DateTime dateOnly = DateUtils.dateOnly(repeatingEvent.date);
+        int dayDiff = (day.difference(dateOnly).inHours / 24).round();
+        if (dayDiff > 0 && dayDiff % repeatingEvent.repeatDays! == 0) {
+          events.add(repeatingEvent);
+          addedRepeatingEvent = true;
+        }
+      }
+    }
+
+    if (addedRepeatingEvent) {
+      events.sort((a, b) => a.date.compareTo(b.date));
     }
 
     return events;

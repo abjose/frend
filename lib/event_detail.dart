@@ -36,6 +36,7 @@ class _EventDetailState extends State<EventDetail> {
 
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _repeatController = TextEditingController();
 
   @override
   void initState() {
@@ -45,6 +46,7 @@ class _EventDetailState extends State<EventDetail> {
     // _titleController.text = _event.title ?? "Event Title";
     _titleController.text = _event.title;
     _dateController.text = _event.id != 0 ? _event.dateFormat : "Pick a date";
+    _repeatController.text = (_event.repeatDays != null) ? _event.repeatDays.toString() : "0";
     if (widget.date != null) {
       _dateController.text = widget.date.toString();
     }
@@ -67,6 +69,7 @@ class _EventDetailState extends State<EventDetail> {
 
   save() {
     _event.title = _titleController.text;
+    _event.repeatDays = int.parse(_repeatController.text);
     // date saved by DatePicker
 
     // TODO: Better way to save friends?
@@ -261,6 +264,18 @@ class _EventDetailState extends State<EventDetail> {
               )
             ),
           if (!_event.isIdea)
+            TextFormField(
+              controller: _repeatController,
+              decoration: const InputDecoration(hintText: "Input Repeat Frequency"),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  // also make sure it's a number? and positive or 0 - maybe have a checkbox?
+                  return 'Please enter a repeat value';
+                }
+                return null;
+              },
+            ),
+          if (!_event.isIdea)
             Flexible(child: ListView(
               padding: const EdgeInsets.all(8),
               children: friendList,
@@ -302,6 +317,7 @@ class _EventDetailState extends State<EventDetail> {
   void dispose() {
     _titleController.dispose();
     _dateController.dispose();
+    _repeatController.dispose();
     super.dispose();
   }
 }

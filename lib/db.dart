@@ -80,13 +80,13 @@ class ObjectBox {
     return qBuilder.watch(triggerImmediately: true);
   }
 
-  List<Event> getNonRepeatingEvents() {
-    final qBuilder = eventBox.query(Event_.repeatDays.isNull() & Event_.isIdea.equals(false))
+  List<Event> getRealEvents() {
+    final qBuilder = eventBox.query(Event_.isIdea.equals(false))
       ..order(Event_.date);
     return qBuilder.build().find();
   }
   List<Event> getRepeatingEvents() {
-    final qBuilder = eventBox.query(Event_.repeatDays.notNull() & Event_.isIdea.equals(false))
+    final qBuilder = eventBox.query(Event_.repeatDays.greaterThan(0) & Event_.isIdea.equals(false))
       ..order(Event_.date);
     return qBuilder.build().find();
   }
