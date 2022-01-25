@@ -26,7 +26,6 @@ class _EventDetailState extends State<EventDetail> {
   // not a GlobalKey<MyCustomFormState>.
   final _formKey = GlobalKey<FormState>();
 
-  // DateTime _date = DateTime.now();
   late Event _event;
 
   // Maybe an awkward way to do this.
@@ -35,7 +34,6 @@ class _EventDetailState extends State<EventDetail> {
   Map<int, Set<String>> _interestMap = {};
 
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _dateController = TextEditingController();
   final TextEditingController _repeatController = TextEditingController();
 
   @override
@@ -43,13 +41,12 @@ class _EventDetailState extends State<EventDetail> {
     super.initState();
 
     _event = widget.event;
-    // _titleController.text = _event.title ?? "Event Title";
-    _titleController.text = _event.title;
-    _dateController.text = _event.id != 0 ? _event.dateFormat : "Pick a date";
-    _repeatController.text = (_event.repeatDays != null) ? _event.repeatDays.toString() : "0";
     if (widget.date != null) {
-      _dateController.text = widget.date.toString();
+      _event.date = widget.date!;
     }
+
+    _titleController.text = _event.title;
+    _repeatController.text = (_event.repeatDays != null) ? _event.repeatDays.toString() : "0";
 
     for (var friend in _event.friends) {
       _selectedFriends[friend.id] = friend.name;
@@ -240,10 +237,9 @@ class _EventDetailState extends State<EventDetail> {
             Container(
               padding: EdgeInsets.only(left: 20, right: 20, top: 10),
               child: DateTimePicker(
-                controller: _dateController,
                 type: DateTimePickerType.dateTimeSeparate,
                 dateMask: 'd MMM, yyyy',
-                initialDate: DateTime.tryParse(_dateController.text),
+                initialValue: _event.date.toString(),
                 firstDate: DateTime(2000),
                 lastDate: DateTime(2100),
                 icon: const Icon(Icons.event),
@@ -316,7 +312,6 @@ class _EventDetailState extends State<EventDetail> {
   @override
   void dispose() {
     _titleController.dispose();
-    _dateController.dispose();
     _repeatController.dispose();
     super.dispose();
   }
