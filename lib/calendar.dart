@@ -84,11 +84,13 @@ class _EventCalendarState extends State<EventCalendar> {
     super.dispose();
   }
 
-  List<Event> _getEventsForDay(DateTime day) {
+  List<Event> _getEventsForDay(DateTime date) {
+    DateTime day = DateUtils.dateOnly(date);
     List<Event> events = _allEvents[day] ?? [];
 
+
     bool addedRepeatingEvent = false;
-    if (_repeatingEvents.isNotEmpty) {;
+    if (_repeatingEvents.isNotEmpty) {
       for (var repeatingEvent in _repeatingEvents) {
         DateTime dateOnly = DateUtils.dateOnly(repeatingEvent.date);
         int dayDiff = (day.difference(dateOnly).inHours / 24).round();
