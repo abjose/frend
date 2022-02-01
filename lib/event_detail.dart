@@ -90,6 +90,10 @@ class _EventDetailState extends State<EventDetail> {
     _event.tags.clear();
     _event.tags.addAll(dbTags);
 
+    if (!_event.isIdea) {
+      _event.updateNotification();
+    }
+
     objectbox.eventBox.put(_event);
 
     if (_event.isIdea) {
@@ -107,6 +111,7 @@ class _EventDetailState extends State<EventDetail> {
     if (_event.isIdea) {
       Navigator.pop(context);
     } else {
+      _event.deleteNotification();
       Navigator.of(context).popUntil((route) => route.isFirst);
     }
   }

@@ -4,6 +4,7 @@ import 'package:frend/calendar.dart';
 import 'package:frend/tag_list.dart';
 import 'dart:async';
 import 'db.dart';
+import 'notification_service.dart';
 
 
 Future<void> main() async {
@@ -12,6 +13,8 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   objectbox = await ObjectBox.create();
+
+  await NotificationService().init();
 
   // runApp(const FrendApp());
   runApp(FrendApp());

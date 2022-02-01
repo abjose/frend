@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import 'package:objectbox/objectbox.dart';
 
+import 'notification_service.dart';
 import 'objectbox.g.dart';
 
 // run:
@@ -57,6 +58,26 @@ class Event {
       event.tags.add(tag);
     }
     return event;
+  }
+
+  void updateNotification() {
+    assert(!isIdea);
+
+    // Cancel existing notification just in case.
+    deleteNotification().then((value) {
+      // Then re-schedule.
+      String friendString = "With ";
+      for (var friend in friends) {
+        friendString += "${friend.name}, ";
+      }
+
+      NotificationService().scheduleNotification(
+          id, title, friends.isEmpty ? null : friendString, id.toString(), date);
+    });
+  }
+
+  Future<void> deleteNotification() async {
+    await flutterLocalNotificationsPlugin.cancel(id);
   }
 }
 
