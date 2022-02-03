@@ -40,6 +40,8 @@ class _EventCalendarState extends State<EventCalendar> {
   final List<Event> _repeatingEvents = [];
   late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
+
+  // Why have both of these?
   DateTime _focusedDay = DateTime.now();
   DateTime? _selectedDay;
 
@@ -86,8 +88,7 @@ class _EventCalendarState extends State<EventCalendar> {
 
   List<Event> _getEventsForDay(DateTime date) {
     DateTime day = DateUtils.dateOnly(date);
-    List<Event> events = _allEvents[day] ?? [];
-
+    List<Event> events = List.from(_allEvents[day] ?? []);
 
     bool addedRepeatingEvent = false;
     if (_repeatingEvents.isNotEmpty) {

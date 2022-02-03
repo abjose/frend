@@ -32,9 +32,9 @@ class ObjectBox {
     // queryStream = qBuilder.watch(triggerImmediately: true);
 
     // Add some demo data if the box is empty.
-    if (noteBox.isEmpty()) {
-      _putDemoData();
-    }
+    // if (noteBox.isEmpty()) {
+    //   _putDemoData();
+    // }
   }
 
   /// Create an instance of ObjectBox to use throughout the app.
@@ -74,12 +74,6 @@ class ObjectBox {
       ..order(Event_.title);
     return qBuilder.watch(triggerImmediately: true);
   }
-  Stream<Query<Tag>> getTagQueryStream() {
-    final qBuilder = tagBox.query()
-      ..order(Tag_.title);
-    return qBuilder.watch(triggerImmediately: true);
-  }
-
   List<Event> getRealEvents() {
     final qBuilder = eventBox.query(Event_.isIdea.equals(false))
       ..order(Event_.date);
@@ -91,12 +85,9 @@ class ObjectBox {
     return qBuilder.build().find();
   }
 
-  void _putDemoData() {
-    final demoNotes = [
-      Note('Quickly add a note by writing text and pressing Enter'),
-      Note('Delete notes by tapping on one'),
-      Note('Write a demo app for ObjectBox')
-    ];
-    noteBox.putMany(demoNotes);
+  Stream<Query<Tag>> getTagQueryStream() {
+    final qBuilder = tagBox.query()
+      ..order(Tag_.title);
+    return qBuilder.watch(triggerImmediately: true);
   }
 }
