@@ -9,7 +9,7 @@ import 'db.dart';
 // https://www.kindacode.com/article/how-to-create-a-filter-search-listview-in-flutter/
 class SearchableSelectionList extends StatefulWidget {
   final Map<int, String> elements;  // {id: value}
-  final Set<int>? selected; // Ids of already selected rows, if any.
+  final Set<int>? selectedItems; // Ids of already selected rows, if any.
   final bool showX; // Will show red X if true; otherwise green checkmark.
   final Map<int, Set<String>>? tags;  // If present, will show a list of tags to filter by.
 
@@ -18,7 +18,7 @@ class SearchableSelectionList extends StatefulWidget {
 
   const SearchableSelectionList(
       {Key? key, required this.elements,
-        this.selected, this.showX = false, this.tags,
+        this.selectedItems, this.showX = false, this.tags,
         required this.onDone})
       : super(key: key);
 
@@ -42,8 +42,8 @@ class _SearchableSelectionListState extends State<SearchableSelectionList> {
     _allElements = widget.elements;
     _foundElements = _allElements;
 
-    if (widget.selected != null) {
-      _selectedElements = widget.selected!;
+    if (widget.selectedItems != null) {
+      _selectedElements = widget.selectedItems!;
     }
 
     if (widget.tags != null) {

@@ -128,7 +128,7 @@ class _EventDetailState extends State<EventDetail> {
         builder: (context) {
           return SearchableSelectionList(
               elements: allFriends,
-              selected: _selectedFriends.keys.toSet(),
+              selectedItems: _selectedFriends.keys.toSet(),
               tags: _interestMap,
               onDone: (newSelected) {
 
@@ -157,7 +157,7 @@ class _EventDetailState extends State<EventDetail> {
         builder: (context) {
           return SearchableSelectionList(
             elements: allTags,
-            selected: _selectedTags.keys.toSet(),
+            selectedItems: _selectedTags.keys.toSet(),
             onDone: (newSelected) {
               WidgetsBinding.instance?.addPostFrameCallback((_) => setState(() {
                 _selectedTags.clear();

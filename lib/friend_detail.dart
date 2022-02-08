@@ -143,7 +143,7 @@ class _FriendDetailState extends State<FriendDetail> {
         builder: (context) {
           return SearchableSelectionList(
             elements: allTags,
-            selected: _selectedTags.keys.toSet(),
+            selectedItems: _selectedTags.keys.toSet(),
             onDone: (newSelected) {
               WidgetsBinding.instance?.addPostFrameCallback((_) => setState(() {
                 _selectedTags.clear();
