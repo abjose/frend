@@ -40,18 +40,13 @@ class _EventCalendarState extends State<EventCalendar> {
   final List<Event> _repeatingEvents = [];
   late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
-
-  // Why have both of these?
-  DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
+  DateTime _selectedDay = DateTime.now();
 
   @override
   void initState() {
     super.initState();
 
-    _selectedDay = _focusedDay;
-
-    // Listen for even changes and setState so will properly display changes to even times.
+    // Listen for event changes and setState so will properly display changes to even times.
     objectbox.getEventQueryStream().listen((event) {
       // TODO: better way to do this?
       setState(() {
@@ -77,7 +72,7 @@ class _EventCalendarState extends State<EventCalendar> {
       _allEvents[event.date]?.add(event);
     }
 
-    _selectedEvents.value = _getEventsForDay(_selectedDay!);
+    _selectedEvents.value = _getEventsForDay(_selectedDay);
   }
 
   @override
@@ -113,7 +108,6 @@ class _EventCalendarState extends State<EventCalendar> {
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
-        _focusedDay = focusedDay;
       });
 
       _selectedEvents.value = _getEventsForDay(selectedDay);
@@ -153,7 +147,7 @@ class _EventCalendarState extends State<EventCalendar> {
           TableCalendar<Event>(
             firstDay: kFirstDay,
             lastDay: kLastDay,
-            focusedDay: _focusedDay,
+            focusedDay: _selectedDay,
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
             rangeSelectionMode: RangeSelectionMode.toggledOff,
             eventLoader: _getEventsForDay,
@@ -171,9 +165,6 @@ class _EventCalendarState extends State<EventCalendar> {
                   _calendarFormat = format;
                 });
               }
-            },
-            onPageChanged: (focusedDay) {
-              _focusedDay = focusedDay;
             },
           ),
           const SizedBox(height: 8.0),
