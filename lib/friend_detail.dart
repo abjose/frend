@@ -203,7 +203,7 @@ class _FriendDetailState extends State<FriendDetail> {
           child: Align(
             alignment: AlignmentDirectional.center,
             child: Text(
-              'Events',
+              'Upcoming Events',
               style: Theme.of(context).textTheme.caption,
               textScaleFactor: 1.5,
             ),
@@ -338,7 +338,7 @@ class _FriendDetailState extends State<FriendDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Edit Friend"),
+        title: Text('${_friendId == null ? "Add" : "Edit"} Friend'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.save, color: Colors.white),

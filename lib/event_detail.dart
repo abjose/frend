@@ -294,7 +294,7 @@ class _EventDetailState extends State<EventDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Event${_event.isIdea ? " Idea" : ""}'),
+        title: Text('${_event.id == 0 ? "Add" : "Edit"} Event${_event.isIdea ? " Idea" : ""}'),
         actions: <Widget>[
           IconButton(
             icon: Icon(Icons.save, color: Colors.white),
