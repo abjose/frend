@@ -55,7 +55,7 @@
     },
     {
       "id": "2:212201850084784958",
-      "lastPropertyId": "6:7928298988763933231",
+      "lastPropertyId": "7:783353267999505438",
       "name": "Friend",
       "properties": [
         {
@@ -78,6 +78,11 @@
           "id": "6:7928298988763933231",
           "name": "notes",
           "type": 30
+        },
+        {
+          "id": "7:783353267999505438",
+          "name": "reminderToSchedule",
+          "type": 6
         }
       ],
       "relations": [

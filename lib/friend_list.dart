@@ -43,9 +43,8 @@ class _FriendListState extends State<FriendList> {
                     Border(bottom: BorderSide(color: Colors.black12))),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
-                      vertical: 18.0, horizontal: 10.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                      vertical: 14.0, horizontal: 10.0),
+                  child: Row(
                     children: <Widget>[
                       Text(
                         friends[index].name,
@@ -55,6 +54,12 @@ class _FriendListState extends State<FriendList> {
                         // Provide a Key for the integration test
                         key: Key('list_item_$index'),
                       ),
+                      Spacer(),
+                      if (friends[index].overdue())
+                        const Icon(
+                          Icons.announcement,
+                          color: Colors.red,
+                        ),
                     ],
                   ),
                 ),

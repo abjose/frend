@@ -75,7 +75,7 @@ class ObjectBox {
     return qBuilder.watch(triggerImmediately: true);
   }
   List<Event> getRealEvents() {
-    final qBuilder = eventBox.query(Event_.isIdea.equals(false))
+    final qBuilder = eventBox.query((Event_.repeatDays.isNull() | Event_.repeatDays.equals(0)) & Event_.isIdea.equals(false))
       ..order(Event_.date);
     return qBuilder.build().find();
   }

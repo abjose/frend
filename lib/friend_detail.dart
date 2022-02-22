@@ -46,6 +46,7 @@ class _FriendDetailState extends State<FriendDetail> {
 
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
+  final TextEditingController _reminderController = TextEditingController();
   final List<NoteItem> _notes = [];
 
   @override
@@ -61,6 +62,9 @@ class _FriendDetailState extends State<FriendDetail> {
       if (friend != null) {
         _nameController.text = friend.name;
         _dateController.text = friend.dateFormat;
+        if (friend.reminderToSchedule != null) {
+          _reminderController.text = friend.reminderToSchedule.toString();
+        }
         birthdate = friend.birthdate;
 
         QueryBuilder<Event> builder = objectbox.eventBox.query();
@@ -72,9 +76,6 @@ class _FriendDetailState extends State<FriendDetail> {
         for (var note in friend.notes) {
           _notes.add(NoteItem(controller: TextEditingController(text: note)));
         }
-      } else {
-        _nameController.text = "Name";
-        _dateController.text = "Choose a date";
       }
     }
 
@@ -95,6 +96,7 @@ class _FriendDetailState extends State<FriendDetail> {
 
     friend.name = _nameController.text;
     friend.birthdate = DateFormat.yMMMMd('en_US').parse(_dateController.text);
+    friend.reminderToSchedule = int.tryParse(_reminderController.text);
 
     List<Tag> dbTags = [];
     for (var tag in _selectedTags.entries) {
@@ -320,11 +322,21 @@ class _FriendDetailState extends State<FriendDetail> {
               if (date != null) {
                 _dateController.text = DateFormat.yMMMMd('en_US').format(date);
               }
-
             },
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter a birthdate';
+              }
+              return null;
+            },
+          ),
+          TextFormField(
+            controller: _reminderController,
+            decoration: const InputDecoration(hintText: "Reminder to Schedule (days)"),
+            validator: (value) {
+              if (value == null || value.isEmpty) {
+                // also make sure it's a number? and positive or 0 - maybe have a checkbox?
+                return 'Please enter a value';
               }
               return null;
             },
@@ -370,6 +382,7 @@ class _FriendDetailState extends State<FriendDetail> {
   void dispose() {
     _nameController.dispose();
     _dateController.dispose();
+    _reminderController.dispose();
     _notes.forEach((element) {
       element.controller.dispose();
     });

@@ -86,14 +86,10 @@ class _EventCalendarState extends State<EventCalendar> {
     List<Event> events = List.from(_allEvents[day] ?? []);
 
     bool addedRepeatingEvent = false;
-    if (_repeatingEvents.isNotEmpty) {
-      for (var repeatingEvent in _repeatingEvents) {
-        DateTime dateOnly = DateUtils.dateOnly(repeatingEvent.date);
-        int dayDiff = (day.difference(dateOnly).inHours / 24).round();
-        if (dayDiff > 0 && dayDiff % repeatingEvent.repeatDays! == 0) {
-          events.add(repeatingEvent);
-          addedRepeatingEvent = true;
-        }
+    for (var repeatingEvent in _repeatingEvents) {
+      if (repeatingEvent.repeatsOnDay(date)) {
+        events.add(repeatingEvent);
+        addedRepeatingEvent = true;
       }
     }
 
