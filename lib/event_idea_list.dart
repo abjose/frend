@@ -89,7 +89,7 @@ class _EventIdeaListState extends State<EventIdeaList> {
       MaterialPageRoute<void>(
         builder: (context) {
           return EventDetail(
-            event: copy ? event.getConcreteEvent() : event,
+            event: copy ? event.getConcreteEvent(widget.date) : event,
             date: copy ? widget.date : null,
           );
         },
@@ -123,7 +123,7 @@ class _EventIdeaListState extends State<EventIdeaList> {
     body: Column(children: <Widget>[
       ElevatedButton(
         child: const Text('Custom Event'),
-        onPressed: () => _goToEventDetail(Event(""), false),
+        onPressed: () => _goToEventDetail(Event("", date: widget.date), false),
       ),
       _filterChips(),
       Expanded(

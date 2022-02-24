@@ -92,7 +92,6 @@ class Event {
   int? repeatDays;
 
   final friends = ToMany<Friend>();
-  // final tags = ToMany<Tag>();
   var tags = ToMany<Tag>();
 
   // TODO
@@ -103,9 +102,9 @@ class Event {
   String get timeFormat => DateFormat.Hm().format(date);
 
   // Get non-idea version of this event.
-  Event getConcreteEvent() {
+  Event getConcreteEvent(DateTime? date) {
     assert(isIdea);
-    var event = Event(title);
+    var event = Event(title, date: date);
     for (var tag in tags) {
       event.tags.add(tag);
     }
