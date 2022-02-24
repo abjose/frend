@@ -84,6 +84,18 @@ class ObjectBox {
       ..order(Event_.date);
     return qBuilder.build().find();
   }
+  List<Event> getRealEventsForFriend(Friend friend) {
+    final qBuilder = eventBox.query((Event_.repeatDays.isNull() | Event_.repeatDays.equals(0)) & Event_.isIdea.equals(false))
+      ..order(Event_.date);
+    qBuilder.linkMany(Event_.friends, Friend_.id.equals(friend.id));
+    return qBuilder.build().find();
+  }
+  List<Event> getRepeatingEventsForFriend(Friend friend) {
+    final qBuilder = eventBox.query(Event_.repeatDays.greaterThan(0) & Event_.isIdea.equals(false))
+      ..order(Event_.date);
+    qBuilder.linkMany(Event_.friends, Friend_.id.equals(friend.id));
+    return qBuilder.build().find();
+  }
 
   Stream<Query<Tag>> getTagQueryStream() {
     final qBuilder = tagBox.query()

@@ -67,9 +67,9 @@ class _FriendDetailState extends State<FriendDetail> {
         }
         birthdate = friend.birthdate;
 
-        QueryBuilder<Event> builder = objectbox.eventBox.query();
-        builder.linkMany(Event_.friends, Friend_.id.equals(_friendId!));
-        _events = builder.build().find();
+        _events = objectbox.getRealEventsForFriend(friend).where((event) => event.date.isAfter(DateTime.now())).toList();
+        _events.addAll(objectbox.getRepeatingEventsForFriend(friend));
+
         for (var tag in friend.interests) {
           _selectedTags[tag.id] = tag.title;
         }
