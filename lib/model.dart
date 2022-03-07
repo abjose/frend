@@ -139,6 +139,10 @@ class Event {
 
     // Cancel existing notification just in case.
     deleteNotification().then((value) {
+      if (date.isBefore(DateTime.now())) {
+        return;
+      }
+
       // Then re-schedule.
       String friendString = "With ";
       for (var friend in friends) {
