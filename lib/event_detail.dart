@@ -67,7 +67,18 @@ class _EventDetailState extends State<EventDetail> {
   save() {
     _event.title = _titleController.text;
     _event.repeatDays = int.parse(_repeatController.text);
-    // date saved by DatePicker
+
+    // Do horrible things to DateTime.
+    // Seems like date is UTC by default, but calendar and DateTimePicker don't handle UTC?
+    // TODO: come up with better solution for timezone.
+    var dateString = _event.date.toString();
+    if (dateString.endsWith("Z")) {
+      dateString = dateString.substring(0, dateString.length-1);
+    }
+    var maybeDate = DateTime.tryParse(dateString);
+    if (maybeDate != null) {
+      _event.date = maybeDate;
+    }
 
     // TODO: Better way to save friends?
     List<Friend> dbFriends = [];
