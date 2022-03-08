@@ -24,6 +24,10 @@ class FrendApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+        // theme: ThemeData(
+        //   primaryColor: Colors.white,
+        // ),
+
         home: FrendHome()
     );
   }
