@@ -1,4 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:frend/model.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -43,7 +44,7 @@ class NotificationService {
     print("tapped! $payload");
   }
 
-  Future<void> scheduleNotification(int notificationId, String title, String? body, String payload, DateTime date) async {
+  Future<void> scheduleNotification(int notificationId, String title, String? body, String payload, DateTime date, RepeatFrequency frequency) async {
     const CHANNEL_ID = "frend";
     const CHANNEL_NAME = "frend_channel";
 
@@ -52,9 +53,12 @@ class NotificationService {
         tz.TZDateTime.from(date, tz.local),
         // tz.TZDateTime.now(tz.local).add(const Duration(seconds: 1)),
         const NotificationDetails(android: AndroidNotificationDetails(CHANNEL_ID, CHANNEL_NAME)),
+        matchDateTimeComponents: frequency.dateTimeComponents,
         payload: payload,
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime);
   }
+
+
 }

@@ -5,7 +5,7 @@
   "entities": [
     {
       "id": "1:559684451497561990",
-      "lastPropertyId": "6:6030963276189978777",
+      "lastPropertyId": "7:6185370043127173824",
       "name": "Event",
       "properties": [
         {
@@ -30,14 +30,14 @@
           "type": 10
         },
         {
-          "id": "5:6962145885195010067",
-          "name": "repeatDays",
-          "type": 6
-        },
-        {
           "id": "6:6030963276189978777",
           "name": "isIdea",
           "type": 1
+        },
+        {
+          "id": "7:6185370043127173824",
+          "name": "dbFrequency",
+          "type": 6
         }
       ],
       "relations": [
@@ -154,7 +154,8 @@
   "retiredIndexUids": [],
   "retiredPropertyUids": [
     7582756072335075275,
-    2482921714770127383
+    2482921714770127383,
+    6962145885195010067
   ],
   "retiredRelationUids": [],
   "version": 1

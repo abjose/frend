@@ -21,8 +21,8 @@ int getHashCode(DateTime key) {
 }
 
 final kToday = DateTime.now();
-final kFirstDay = DateTime(kToday.year, kToday.month - 3, kToday.day);
-final kLastDay = DateTime(kToday.year, kToday.month + 3, kToday.day);
+final kFirstDay = DateTime(kToday.year, kToday.month - 6, kToday.day);
+final kLastDay = DateTime(kToday.year, kToday.month + 18, kToday.day);
 
 
 class EventCalendar extends StatefulWidget {

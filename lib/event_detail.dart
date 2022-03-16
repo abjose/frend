@@ -34,7 +34,7 @@ class _EventDetailState extends State<EventDetail> {
   Map<int, Set<String>> _interestMap = {};
 
   final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _repeatController = TextEditingController();
+  RepeatFrequency _repeatDropdownValue = RepeatFrequency.never;
 
   @override
   void initState() {
@@ -46,7 +46,10 @@ class _EventDetailState extends State<EventDetail> {
     }
 
     _titleController.text = _event.title;
-    _repeatController.text = (_event.repeatDays != null) ? _event.repeatDays.toString() : "0";
+
+    if (_event.frequency != null) {
+      _repeatDropdownValue = _event.frequency;
+    }
 
     for (var friend in _event.friends) {
       _selectedFriends[friend.id] = friend.name;
@@ -66,7 +69,6 @@ class _EventDetailState extends State<EventDetail> {
 
   save() {
     _event.title = _titleController.text;
-    _event.repeatDays = int.parse(_repeatController.text);
 
     // Do horrible things to DateTime.
     // Seems like date is UTC by default, but calendar and DateTimePicker don't handle UTC?
@@ -79,6 +81,8 @@ class _EventDetailState extends State<EventDetail> {
     if (maybeDate != null) {
       _event.date = maybeDate;
     }
+
+    _event.dbFrequency = _repeatDropdownValue.index;
 
     // TODO: Better way to save friends?
     List<Friend> dbFriends = [];
@@ -276,17 +280,26 @@ class _EventDetailState extends State<EventDetail> {
               )
             ),
           if (!_event.isIdea)
-            TextFormField(
-              controller: _repeatController,
-              decoration: const InputDecoration(hintText: "Input Repeat Frequency"),
-              validator: (value) {
-                if (value == null || value.isEmpty) {
-                  // also make sure it's a number? and positive or 0 - maybe have a checkbox?
-                  return 'Please enter a repeat value';
-                }
-                return null;
-              },
-            ),
+            Row(children: [
+              const Text("Repeat Frequency: "),
+              DropdownButton<RepeatFrequency>(
+                value: _repeatDropdownValue,
+                elevation: 16,
+                // style: const TextStyle(color: Colors.deepPurple),
+                onChanged: (RepeatFrequency? newValue) {
+                  setState(() {
+                    _repeatDropdownValue = newValue!;
+                  });
+                },
+                // TODO: ugly to do this based on index.
+                items: RepeatFrequency.values.sublist(1).map<DropdownMenuItem<RepeatFrequency>>((RepeatFrequency value) {
+                  return DropdownMenuItem<RepeatFrequency>(
+                    value: value,
+                    child: Text(value.string),
+                  );
+                }).toList(),
+              ),
+          ]),
           if (!_event.isIdea)
             Flexible(child: ListView(
               padding: const EdgeInsets.all(8),
@@ -328,7 +341,6 @@ class _EventDetailState extends State<EventDetail> {
   @override
   void dispose() {
     _titleController.dispose();
-    _repeatController.dispose();
     super.dispose();
   }
 }

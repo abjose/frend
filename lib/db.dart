@@ -74,24 +74,25 @@ class ObjectBox {
       ..order(Event_.title);
     return qBuilder.watch(triggerImmediately: true);
   }
+  // TODO: ugly to depend on enum index for all of these.
   List<Event> getRealEvents() {
-    final qBuilder = eventBox.query((Event_.repeatDays.isNull() | Event_.repeatDays.equals(0)) & Event_.isIdea.equals(false))
+    final qBuilder = eventBox.query(Event_.dbFrequency.equals(RepeatFrequency.never.index) & Event_.isIdea.equals(false))
       ..order(Event_.date);
     return qBuilder.build().find();
   }
   List<Event> getRepeatingEvents() {
-    final qBuilder = eventBox.query(Event_.repeatDays.greaterThan(0) & Event_.isIdea.equals(false))
+    final qBuilder = eventBox.query(Event_.dbFrequency.greaterThan(RepeatFrequency.never.index) & Event_.isIdea.equals(false))
       ..order(Event_.date);
     return qBuilder.build().find();
   }
   List<Event> getRealEventsForFriend(Friend friend) {
-    final qBuilder = eventBox.query((Event_.repeatDays.isNull() | Event_.repeatDays.equals(0)) & Event_.isIdea.equals(false))
+    final qBuilder = eventBox.query(Event_.dbFrequency.equals(RepeatFrequency.never.index) & Event_.isIdea.equals(false))
       ..order(Event_.date);
     qBuilder.linkMany(Event_.friends, Friend_.id.equals(friend.id));
     return qBuilder.build().find();
   }
   List<Event> getRepeatingEventsForFriend(Friend friend) {
-    final qBuilder = eventBox.query(Event_.repeatDays.greaterThan(0) & Event_.isIdea.equals(false))
+    final qBuilder = eventBox.query(Event_.dbFrequency.greaterThan(RepeatFrequency.never.index) & Event_.isIdea.equals(false))
       ..order(Event_.date);
     qBuilder.linkMany(Event_.friends, Friend_.id.equals(friend.id));
     return qBuilder.build().find();

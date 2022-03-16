@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
-import 'package:objectbox/objectbox.dart';
 
 import 'db.dart';
 import 'notification_service.dart';
@@ -8,6 +8,7 @@ import 'objectbox.g.dart';
 
 // run:
 // flutter pub run build_runner build
+
 
 @Entity()
 class Friend {
@@ -63,12 +64,12 @@ class Friend {
 
     // If not, check if maybe there's a repeating event happening soon.
     for (var event in events) {
-      if (event.repeatDays == null || event.repeatDays! == 0) {
+      DateTime? soonest = event.soonestRepeat(now);
+      if (soonest == null) {
         continue;
       }
 
-      int? soonestRepeat = event.soonestRepeat(now);
-      if (soonestRepeat != null && soonestRepeat <= reminderToSchedule!) {
+      if (soonest.isBefore(now.add(Duration(days: reminderToSchedule!))))  {
         return false;
       }
     }
@@ -76,6 +77,7 @@ class Friend {
     return true;
   }
 }
+
 
 @Entity()
 class Event {
@@ -88,15 +90,19 @@ class Event {
 
   @Property(type: PropertyType.date)
   DateTime date;
-  // If set, event repeats after this many days. TODO: this probably needs to be fancier
-  int? repeatDays;
+
+  // How often to repeat this event, if at all.
+  // NOTE: previously this was an int representing days between repeats, but due to limitations of
+  // the notification system, it was changed to an enum with just a few options. If ever switch to
+  // another notification system, might be worth reconsidering all the extra complexity of this change.
+  RepeatFrequency frequency;
 
   final friends = ToMany<Friend>();
   var tags = ToMany<Tag>();
 
-  // TODO
   Event(this.title, {this.id = 0, DateTime? date, bool? isIdea})
-      : date = date ?? DateTime.now(), isIdea = isIdea ?? false;
+      : date = date ?? DateTime.now(), isIdea = isIdea ?? false,
+        frequency = RepeatFrequency.never;
 
   String get dateFormat => DateFormat.yMd().format(date);
   String get timeFormat => DateFormat.Hm().format(date);
@@ -112,26 +118,47 @@ class Event {
   }
 
   bool repeatsOnDay(DateTime date) {
-    if (repeatDays ==  null || repeatDays! == 0) {
+    DateTime? soonest = soonestRepeat(date);
+    if (soonest == null) {
       return false;
     }
-    return soonestRepeat(date) == 0;
+
+    DateTime day = DateUtils.dateOnly(date);
+    return soonest == day;
   }
 
-  // Returns days until soonest repeat on or after passed date.
-  int? soonestRepeat(DateTime target) {
-    DateTime targetDay = DateUtils.dateOnly(target);
-    if (repeatDays != null && repeatDays! > 0) {
-      DateTime day = DateUtils.dateOnly(date);
-      if (targetDay.isBefore(day)) {
-        return (day.difference(targetDay).inHours / 24).round();
-      }
-
-      int dayDiff = (targetDay.difference(day).inHours / 24).round();
-      return dayDiff % repeatDays!;
+  // Returns date of soonest repeat on or after passed date.
+  DateTime? soonestRepeat(DateTime target) {
+    if (frequency == RepeatFrequency.never || frequency == RepeatFrequency.unknown) {
+      return null;
     }
 
-    return null;
+    DateTime targetDay = DateUtils.dateOnly(target);
+    DateTime day = DateUtils.dateOnly(date);
+    if (targetDay.isBefore(day)) {
+      return day;
+    }
+    if (frequency == RepeatFrequency.daily) {
+      return targetDay;
+    }
+
+    // Take a stab at closest day - if not right, just increment the guess.
+    DateTime maybeClosestDay = DateTime(
+      targetDay.year,
+      frequency == RepeatFrequency.yearly ? day.month : targetDay.month,
+      frequency == RepeatFrequency.weekly ? (targetDay.day / 7).floor() * 7 + day.day % 7 : day.day,
+    );
+
+    if (maybeClosestDay == targetDay || maybeClosestDay.isAfter(targetDay)) {
+      return maybeClosestDay;
+    }
+
+    // Otherwise, increment relevant field.
+    return DateTime(
+      frequency == RepeatFrequency.yearly ? maybeClosestDay.year + 1 : maybeClosestDay.year,
+      frequency == RepeatFrequency.monthly ? maybeClosestDay.month + 1 : maybeClosestDay.month,
+      frequency == RepeatFrequency.weekly ? maybeClosestDay.day + 7 : maybeClosestDay.day,
+    );
   }
 
   void updateNotification() {
@@ -139,7 +166,7 @@ class Event {
 
     // Cancel existing notification just in case.
     deleteNotification().then((value) {
-      if (date.isBefore(DateTime.now())) {
+      if (date.isBefore(DateTime.now()) || frequency == RepeatFrequency.unknown) {
         return;
       }
 
@@ -150,14 +177,38 @@ class Event {
       }
 
       NotificationService().scheduleNotification(
-          id, title, friends.isEmpty ? null : friendString, id.toString(), date);
+          id, title, friends.isEmpty ? null : friendString, id.toString(), date, frequency);
     });
   }
 
   Future<void> deleteNotification() async {
     await flutterLocalNotificationsPlugin.cancel(id);
   }
+
+  int? get dbFrequency {
+    _ensureStableEnumValues();
+    return frequency.index;
+  }
+
+  set dbFrequency(int? value) {
+    _ensureStableEnumValues();
+    if (value == null) {
+      frequency = RepeatFrequency.never;
+    } else {
+      frequency = RepeatFrequency.values[value];
+    }
+  }
+
+  void _ensureStableEnumValues() {
+    assert(RepeatFrequency.unknown.index == 0);
+    assert(RepeatFrequency.never.index == 1);
+    assert(RepeatFrequency.daily.index == 2);
+    assert(RepeatFrequency.weekly.index == 3);
+    assert(RepeatFrequency.monthly.index == 4);
+    assert(RepeatFrequency.yearly.index == 5);
+  }
 }
+
 
 @Entity()
 class Tag {
@@ -168,6 +219,7 @@ class Tag {
 
   Tag(this.title);
 }
+
 
 // probably don't need this, could just have a list of notes on Friend
 @Entity()
@@ -185,4 +237,53 @@ class Note {
       : date = date ?? DateTime.now();
 
   String get dateFormat => DateFormat('dd.MM.yyyy hh:mm:ss').format(date);
+}
+
+
+enum RepeatFrequency {
+  unknown,
+  never,
+  daily,
+  weekly,
+  monthly,
+  yearly,
+}
+
+
+extension RepeatFrequencyExtension on RepeatFrequency {
+  String get string {
+    switch (this) {
+      case RepeatFrequency.never:
+        return 'Never';
+      case RepeatFrequency.daily:
+        return 'Daily';
+      case RepeatFrequency.weekly:
+        return 'Weekly';
+      case RepeatFrequency.monthly:
+        return 'Monthly';
+      case RepeatFrequency.yearly:
+        return 'Yearly';
+      default:
+        return 'Unknown';
+    }
+  }
+}
+
+
+extension RepeatFrequencyDateTimeComponentsExtension on RepeatFrequency {
+  DateTimeComponents? get dateTimeComponents {
+    switch (this) {
+      case RepeatFrequency.unknown:  // fall through
+      case RepeatFrequency.never:
+        return null;
+      case RepeatFrequency.daily:
+        return DateTimeComponents.time;
+      case RepeatFrequency.weekly:
+        return DateTimeComponents.dayOfWeekAndTime;
+      case RepeatFrequency.monthly:
+        return DateTimeComponents.dayOfMonthAndTime;
+      case RepeatFrequency.yearly:
+        return DateTimeComponents.dateAndTime;
+    }
+  }
 }
