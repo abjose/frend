@@ -40,7 +40,6 @@ class _FriendDetailState extends State<FriendDetail> {
   final _formKey = GlobalKey<FormState>();
 
   int? _friendId;
-  DateTime birthdate = DateTime.now();
   List<Event> _events = [];
 
   Map<int, String> _selectedTags = {};
@@ -57,7 +56,6 @@ class _FriendDetailState extends State<FriendDetail> {
     _friendId = widget.friendId;
 
     Friend? friend;
-    // birthdate = DateTime.now();
     if (_friendId != null) {
       friend = objectbox.friendBox.get(_friendId!);
       if (friend != null) {
@@ -66,7 +64,6 @@ class _FriendDetailState extends State<FriendDetail> {
         if (friend.reminderToSchedule != null) {
           _reminderController.text = friend.reminderToSchedule.toString();
         }
-        birthdate = friend.birthdate;
 
         _events = objectbox.getOneOffEventsForFriend(friend).where((event) => event.date.isAfter(DateTime.now())).toList();
         _events.addAll(objectbox.getRepeatingEventsForFriend(friend));
@@ -315,15 +312,19 @@ class _FriendDetailState extends State<FriendDetail> {
             controller: _dateController,
             decoration: InputDecoration(hintText: 'Pick Birthdate'),
             onTap: () async {
-              var date = await showDatePicker(
+              DateTime oldDate = DateTime.now();
+              if (_dateController.text.isNotEmpty) {
+                oldDate = DateFormat.yMMMMd('en_US').parse(_dateController.text);
+              }
+
+              var newDate = await showDatePicker(
                   context: context,
-                  // maybe get most recent birthdate? if click away then lose date
-                  initialDate: birthdate, // DateTime.now(),
+                  initialDate: oldDate,
                   firstDate: DateTime(1900),
                   lastDate: DateTime(2100));
               // TODO: use dateFormat from Friend instead.
-              if (date != null) {
-                _dateController.text = DateFormat.yMMMMd('en_US').format(date);
+              if (newDate != null) {
+                _dateController.text = DateFormat.yMMMMd('en_US').format(newDate);
               }
             },
             validator: (value) {
