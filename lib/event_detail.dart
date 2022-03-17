@@ -1,5 +1,6 @@
 import 'package:date_time_picker/date_time_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:frend/confirmation_dialog.dart';
 import 'package:frend/searchable_selection_list.dart';
 
 import 'db.dart';
@@ -119,16 +120,18 @@ class _EventDetailState extends State<EventDetail> {
   }
 
   _deleteEvent() {
-    if (_event.id != 0) {
-      objectbox.eventBox.remove(_event.id);
-    }
+    showConfirmationDialog(context, "event", () {
+      if (_event.id != 0) {
+        objectbox.eventBox.remove(_event.id);
+      }
 
-    if (_event.isIdea) {
-      Navigator.pop(context);
-    } else {
-      _event.deleteNotification();
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    }
+      if (_event.isIdea) {
+        Navigator.pop(context);
+      } else {
+        _event.deleteNotification();
+        Navigator.of(context).popUntil((route) => route.isFirst);
+      }
+    });
   }
 
   _editFriends() {

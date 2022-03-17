@@ -4,6 +4,7 @@ import 'package:frend/objectbox.g.dart';
 import 'package:frend/searchable_selection_list.dart';
 import 'package:intl/intl.dart';
 
+import 'confirmation_dialog.dart';
 import 'db.dart';
 import 'event_detail.dart';
 import 'model.dart';
@@ -118,10 +119,12 @@ class _FriendDetailState extends State<FriendDetail> {
   }
 
   _deleteFriend() {
-    if (_friendId != null) {
-      objectbox.friendBox.remove(_friendId!);
-      Navigator.pop(context);
-    }
+    showConfirmationDialog(context, "friend", () {
+      if (_friendId != null) {
+        objectbox.friendBox.remove(_friendId!);
+        Navigator.pop(context);
+      }
+    });
   }
 
   void _goToEventDetail(Event event) {
