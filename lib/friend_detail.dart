@@ -67,7 +67,7 @@ class _FriendDetailState extends State<FriendDetail> {
         }
         birthdate = friend.birthdate;
 
-        _events = objectbox.getRealEventsForFriend(friend).where((event) => event.date.isAfter(DateTime.now())).toList();
+        _events = objectbox.getOneOffEventsForFriend(friend).where((event) => event.date.isAfter(DateTime.now())).toList();
         _events.addAll(objectbox.getRepeatingEventsForFriend(friend));
 
         for (var tag in friend.interests) {

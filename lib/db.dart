@@ -75,7 +75,7 @@ class ObjectBox {
     return qBuilder.watch(triggerImmediately: true);
   }
   // TODO: ugly to depend on enum index for all of these.
-  List<Event> getRealEvents() {
+  List<Event> getOneOffEvents() {
     final qBuilder = eventBox.query(Event_.dbFrequency.equals(RepeatFrequency.never.index) & Event_.isIdea.equals(false))
       ..order(Event_.date);
     return qBuilder.build().find();
@@ -85,7 +85,7 @@ class ObjectBox {
       ..order(Event_.date);
     return qBuilder.build().find();
   }
-  List<Event> getRealEventsForFriend(Friend friend) {
+  List<Event> getOneOffEventsForFriend(Friend friend) {
     final qBuilder = eventBox.query(Event_.dbFrequency.equals(RepeatFrequency.never.index) & Event_.isIdea.equals(false))
       ..order(Event_.date);
     qBuilder.linkMany(Event_.friends, Friend_.id.equals(friend.id));

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:frend/db.dart';
 import 'package:frend/model.dart';
@@ -8,16 +10,12 @@ import 'event_detail.dart';
 import 'event_idea_list.dart';
 
 
-/// Example events.
-///
-/// Using a [LinkedHashMap] is highly recommended if you decide to use a map.
-// final kEvents = LinkedHashMap<DateTime, List<ExampleEvent>>(
-//   equals: isSameDay,
-//   hashCode: getHashCode,
-// )..addAll(_kEventSource);
-
 int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
+}
+
+DateTime getFirstOfMonth(DateTime date) {
+  return DateTime(date.year, date.month, 1);
 }
 
 final kToday = DateTime.now();
@@ -33,43 +31,67 @@ class EventCalendar extends StatefulWidget {
 }
 
 class _EventCalendarState extends State<EventCalendar> {
-  final _allEvents = LinkedHashMap<DateTime, List<Event>>(
+  final _events = LinkedHashMap<DateTime, List<Event>>(
     equals: isSameDay,
     hashCode: getHashCode,
   );
-  final List<Event> _repeatingEvents = [];
+
   late final ValueNotifier<List<Event>> _selectedEvents;
-  CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _selectedDay = DateTime.now();
+
+  CalendarFormat _calendarFormat = CalendarFormat.month;
 
   @override
   void initState() {
     super.initState();
+
+    _selectedEvents = ValueNotifier([]);
 
     // Listen for event changes and setState so will properly display changes to even times.
     objectbox.getEventQueryStream().listen((event) {
       // TODO: better way to do this?
       setState(() {
         if (mounted) {
-          _refreshEventCache();
+          _refreshEventCache(_selectedDay);
         }
       });
     });
-
-    _selectedEvents = ValueNotifier([]);
-    _refreshEventCache();
   }
 
-  void _refreshEventCache() {
-    _repeatingEvents.clear();
-    _repeatingEvents.addAll(objectbox.getRepeatingEvents());
+  // Caches events for the passed month.
+  void _refreshEventCache(DateTime date) {
+    DateTime firstOfMonth = getFirstOfMonth(date);
+    _events.clear();
 
-    _allEvents.clear();
-    for (var event in objectbox.getRealEvents()) {
-      if (!_allEvents.containsKey(event.date)) {
-        _allEvents[event.date] = [];
+    // Collect one-offs for this month.
+    for (var event in objectbox.getOneOffEvents()) {
+      if (!_events.containsKey(event.date)) {
+        _events[event.date] = [];
       }
-      _allEvents[event.date]?.add(event);
+      _events[event.date]?.add(event);
+    }
+
+    // Collect repeats for this month.
+    DateTime nextMonth = DateTime(firstOfMonth.year, firstOfMonth.month + 1, firstOfMonth.day);
+    for (var event in objectbox.getRepeatingEvents()) {
+      DateTime currRepeatDate = event.soonestRepeat(firstOfMonth)!;
+      while (currRepeatDate.isBefore(nextMonth)) {
+        if (!_events.containsKey(currRepeatDate)) {
+          _events[currRepeatDate] = [];
+        }
+        _events[currRepeatDate]?.add(event);
+
+        currRepeatDate = event.soonestRepeat(currRepeatDate.add(Duration(days: 1)))!;
+      }
+    }
+
+    // Sort everything by time (repeating events might be out of order).
+    DateTime currDay = DateTime(firstOfMonth.year, firstOfMonth.month, firstOfMonth.day);
+    while (currDay.isBefore(nextMonth)) {
+      if (_events.containsKey(currDay)) {
+        _events[currDay]?.sort((a, b) => a.date.compareTo(b.date));
+      }
+      currDay = currDay.add(Duration(days: 1));
     }
 
     _selectedEvents.value = _getEventsForDay(_selectedDay);
@@ -81,32 +103,18 @@ class _EventCalendarState extends State<EventCalendar> {
     super.dispose();
   }
 
+  // Note that this is getting called for EVERY DAY every time setState is called, so should be
+  // very lightweight.
   List<Event> _getEventsForDay(DateTime date) {
-    DateTime day = DateUtils.dateOnly(date);
-    List<Event> events = List.from(_allEvents[day] ?? []);
-
-    bool addedRepeatingEvent = false;
-    for (var repeatingEvent in _repeatingEvents) {
-      if (repeatingEvent.repeatsOnDay(date)) {
-        events.add(repeatingEvent);
-        addedRepeatingEvent = true;
-      }
-    }
-
-    if (addedRepeatingEvent) {
-      events.sort((a, b) => a.date.compareTo(b.date));
-    }
-
-    return events;
+    return _events[date] ?? [];
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
+        _selectedEvents.value = _getEventsForDay(selectedDay);
       });
-
-      _selectedEvents.value = _getEventsForDay(selectedDay);
     }
   }
 
@@ -148,8 +156,7 @@ class _EventCalendarState extends State<EventCalendar> {
             rangeSelectionMode: RangeSelectionMode.toggledOff,
             eventLoader: _getEventsForDay,
             startingDayOfWeek: StartingDayOfWeek.monday,
-            calendarStyle: CalendarStyle(
-              // Use `CalendarStyle` to customize the UI
+            calendarStyle: const CalendarStyle(
               outsideDaysVisible: false,
             ),
             onDaySelected: _onDaySelected,
@@ -161,6 +168,13 @@ class _EventCalendarState extends State<EventCalendar> {
                   _calendarFormat = format;
                 });
               }
+            },
+            onPageChanged: (date) {
+              setState(() {
+                _selectedDay = DateTime(date.year, date.month,
+                    min(_selectedDay.day, DateUtils.getDaysInMonth(date.year, date.month)));
+                _refreshEventCache(_selectedDay);
+              });
             },
           ),
           const SizedBox(height: 8.0),
