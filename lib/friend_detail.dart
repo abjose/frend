@@ -60,7 +60,9 @@ class _FriendDetailState extends State<FriendDetail> {
       friend = objectbox.friendBox.get(_friendId!);
       if (friend != null) {
         _nameController.text = friend.name;
-        _dateController.text = friend.dateFormat;
+        if (friend.birthdateSet) {
+          _dateController.text = friend.dateFormat;
+        }
         if (friend.reminderToSchedule != null) {
           _reminderController.text = friend.reminderToSchedule.toString();
         }
@@ -93,7 +95,10 @@ class _FriendDetailState extends State<FriendDetail> {
     }
 
     friend.name = _nameController.text;
-    friend.birthdate = DateFormat.yMMMMd('en_US').parse(_dateController.text);
+    if (_dateController.text.isNotEmpty) {
+      friend.birthdate = DateFormat.yMMMMd('en_US').parse(_dateController.text);
+      friend.birthdateSet = true;
+    }
     friend.reminderToSchedule = int.tryParse(_reminderController.text);
 
     List<Tag> dbTags = [];
@@ -310,7 +315,7 @@ class _FriendDetailState extends State<FriendDetail> {
           TextFormField(
             readOnly: true,
             controller: _dateController,
-            decoration: InputDecoration(hintText: 'Pick Birthdate'),
+            decoration: InputDecoration(hintText: 'Set Birthdate'),
             onTap: () async {
               DateTime oldDate = DateTime.now();
               if (_dateController.text.isNotEmpty) {
@@ -327,23 +332,10 @@ class _FriendDetailState extends State<FriendDetail> {
                 _dateController.text = DateFormat.yMMMMd('en_US').format(newDate);
               }
             },
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter a birthdate';
-              }
-              return null;
-            },
           ),
           TextFormField(
             controller: _reminderController,
             decoration: const InputDecoration(hintText: "Reminder to Schedule (days)"),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                // also make sure it's a number? and positive or 0 - maybe have a checkbox?
-                return 'Please enter a value';
-              }
-              return null;
-            },
           ),
         ],
       ),

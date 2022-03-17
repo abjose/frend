@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
+import 'package:objectbox/objectbox.dart';  // don't get rid of this...
 
 import 'db.dart';
 import 'notification_service.dart';
@@ -8,6 +9,7 @@ import 'objectbox.g.dart';
 
 // run:
 // flutter pub run build_runner build
+// also... might have to comment out objectbox.g.dart import above?
 
 
 @Entity()
@@ -18,6 +20,9 @@ class Friend {
   @Property(type: PropertyType.date)
   DateTime birthdate;
 
+  // Objectbox doesn't seem to like nullable DateTimes, so approximate it with this.
+  bool birthdateSet;
+
   // If set, remind user to schedule an event with this Friend if there are no upcoming events
   // within the next `reminderToSchedule` days.
   int? reminderToSchedule;
@@ -27,9 +32,10 @@ class Friend {
 
   // TODO
   Friend(this.name, {this.id = 0, DateTime? date})
-      : birthdate = date ?? DateTime.now();
+      : birthdate = date ?? DateTime.now(),
+        birthdateSet = date != null;
 
-  String get dateFormat => DateFormat.yMMMMd('en_US').format(birthdate);
+  String get dateFormat => birthdateSet ? DateFormat.yMMMMd('en_US').format(birthdate) : "Unknown";
 
   // Returns true if this friend doesn't have an upcoming event within reminderToSchedule weeks.
   bool overdue() {

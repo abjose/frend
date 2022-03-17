@@ -55,7 +55,7 @@
     },
     {
       "id": "2:212201850084784958",
-      "lastPropertyId": "7:783353267999505438",
+      "lastPropertyId": "8:5305802741807031758",
       "name": "Friend",
       "properties": [
         {
@@ -83,6 +83,11 @@
           "id": "7:783353267999505438",
           "name": "reminderToSchedule",
           "type": 6
+        },
+        {
+          "id": "8:5305802741807031758",
+          "name": "birthdateSet",
+          "type": 1
         }
       ],
       "relations": [
