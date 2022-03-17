@@ -181,6 +181,7 @@ class Event {
       for (var friend in friends) {
         friendString += "${friend.name}, ";
       }
+      friendString = friendString.substring(0, friendString.length - 2);
 
       NotificationService().scheduleNotification(
           id, title, friends.isEmpty ? null : friendString, id.toString(), date, frequency);
