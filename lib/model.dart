@@ -24,8 +24,8 @@ class Friend {
   bool birthdateSet;
 
   // If set, remind user to schedule an event with this Friend if there are no upcoming events
-  // within the next `reminderToSchedule` days.
-  int? reminderToSchedule;
+  // within the next `overdueWeeks` weeks.
+  int? overdueWeeks;
 
   final interests = ToMany<Tag>();
   List<String> notes = [];
@@ -39,8 +39,7 @@ class Friend {
 
   // Returns true if this friend doesn't have an upcoming event within reminderToSchedule weeks.
   bool overdue() {
-    if (reminderToSchedule == null) {
-      // print("reminderToSchedule is null");
+    if (overdueWeeks == null) {
       return false;
     }
 
@@ -55,13 +54,15 @@ class Friend {
       return true;
     }
 
+    int overdueDays = overdueWeeks! * 7;
+
     var now = DateTime.now();  // TODO: bad idea?
     // events.removeWhere((event) => event.date.isBefore(now));
 
     // Check if first event is soon enough.
     try {
       Event soonestEvent = events.firstWhere((event) => event.date.isAfter(now));
-      if (soonestEvent.date.difference(now).inDays <= reminderToSchedule!) {
+      if (soonestEvent.date.difference(now).inDays <= overdueDays) {
         return false;
       }
     } catch (e) {
@@ -75,7 +76,7 @@ class Friend {
         continue;
       }
 
-      if (soonest.isBefore(now.add(Duration(days: reminderToSchedule!))))  {
+      if (soonest.isBefore(now.add(Duration(days: overdueDays))))  {
         return false;
       }
     }

@@ -63,8 +63,8 @@ class _FriendDetailState extends State<FriendDetail> {
         if (friend.birthdateSet) {
           _dateController.text = friend.dateFormat;
         }
-        if (friend.reminderToSchedule != null) {
-          _reminderController.text = friend.reminderToSchedule.toString();
+        if (friend.overdueWeeks != null) {
+          _reminderController.text = friend.overdueWeeks.toString();
         }
 
         _events = objectbox.getOneOffEventsForFriend(friend).where((event) => event.date.isAfter(DateTime.now())).toList();
@@ -99,7 +99,7 @@ class _FriendDetailState extends State<FriendDetail> {
       friend.birthdate = DateFormat.yMMMMd('en_US').parse(_dateController.text);
       friend.birthdateSet = true;
     }
-    friend.reminderToSchedule = int.tryParse(_reminderController.text);
+    friend.overdueWeeks = int.tryParse(_reminderController.text);
 
     List<Tag> dbTags = [];
     for (var tag in _selectedTags.entries) {
@@ -335,7 +335,7 @@ class _FriendDetailState extends State<FriendDetail> {
           ),
           TextFormField(
             controller: _reminderController,
-            decoration: const InputDecoration(hintText: "Reminder to Schedule (days)"),
+            decoration: const InputDecoration(hintText: "Threshold for overdue warning (in weeks)"),
           ),
         ],
       ),
