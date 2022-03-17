@@ -197,6 +197,7 @@ class _EventCalendarState extends State<EventCalendar> {
                       child: ListTile(
                         onTap: () => _goToEventDetail(value[index]),
                         title: Text('${value[index].title}'),
+                        subtitle: value[index].friends.isEmpty ? null : Text(value[index].getFriendString()),
                         trailing: Text("${value[index].timeFormat}"),
                       ),
                     );

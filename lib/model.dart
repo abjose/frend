@@ -113,6 +113,16 @@ class Event {
   String get dateFormat => DateFormat.yMd().format(date);
   String get timeFormat => DateFormat.Hm().format(date);
 
+  String getFriendString() {
+    String friendString = "With ";
+    for (var friend in friends) {
+      friendString += "${friend.name}, ";
+    }
+    friendString = friendString.substring(0, friendString.length - 2);
+
+    return friendString;
+  }
+
   // Get non-idea version of this event.
   Event getConcreteEvent(DateTime? date) {
     assert(isIdea);
@@ -177,14 +187,8 @@ class Event {
       }
 
       // Then re-schedule.
-      String friendString = "With ";
-      for (var friend in friends) {
-        friendString += "${friend.name}, ";
-      }
-      friendString = friendString.substring(0, friendString.length - 2);
-
       NotificationService().scheduleNotification(
-          id, title, friends.isEmpty ? null : friendString, id.toString(), date, frequency);
+          id, title, friends.isEmpty ? null : getFriendString(), id.toString(), date, frequency);
     });
   }
 
