@@ -123,9 +123,6 @@ class _EventCalendarState extends State<EventCalendar> {
       MaterialPageRoute<void>(
         builder: (context) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Event Ideas'),
-            ),
             body: EventIdeaList(date: _selectedDay),
           );
         },

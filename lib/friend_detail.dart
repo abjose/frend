@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:expandable/expandable.dart';
+import 'package:frend/event_idea_list.dart';
 import 'package:frend/objectbox.g.dart';
 import 'package:frend/searchable_selection_list.dart';
 import 'package:intl/intl.dart';
@@ -139,6 +140,19 @@ class _FriendDetailState extends State<FriendDetail> {
     );
   }
 
+  void _goToEventIdeaList() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return EventIdeaList(
+            friendId: _friendId,
+            tags: _selectedTags.values.toSet(),
+          );
+        },
+      ),
+    );
+  }
+
   _editTags() {
     Map<int, String> allTags = {};
     for (var tag in objectbox.tagBox.getAll()) {
@@ -192,14 +206,18 @@ class _FriendDetailState extends State<FriendDetail> {
           )
       );
     }
-    tagList.add(
-      ElevatedButton(
+
+    return tagList;
+  }
+
+  Widget _buildAddTagButton() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 100),
+      child: ElevatedButton(
         onPressed: _editTags,
         child: const Text('Edit Interests'),
       ),
     );
-
-    return tagList;
   }
 
   List<Widget> _buildEventList() {
@@ -282,16 +300,30 @@ class _FriendDetailState extends State<FriendDetail> {
       }).toList(),
     ));
 
-    noteList.add(ElevatedButton(
-      child: const Text('Add New Note'),
-      onPressed: () {
-        setState(() {
-          _notes.add(NoteItem(controller: TextEditingController(text: "New Note")));
-        });
-      },
-    ));
+    noteList.add(
+      Container(
+        padding: const EdgeInsets.only(left: 100, right: 100),
+        child: ElevatedButton(
+          child: const Text('Add New Note'),
+          onPressed: () {
+            setState(() {
+              _notes.add(NoteItem(controller: TextEditingController(text: "New Note")));
+            });
+          },
+        )));
 
     return noteList;
+  }
+
+  Widget _buildScheduleButton() {
+    return Container(
+        padding: const EdgeInsets.only(left: 100, right: 100),
+        child: ElevatedButton(
+          child: const Text("Schedule Event"),
+          onPressed: () {
+            _goToEventIdeaList();
+          },
+        ));
   }
 
   Widget _buildForm(BuildContext context) {
@@ -366,7 +398,9 @@ class _FriendDetailState extends State<FriendDetail> {
       body: ListView(
         children: [
           _buildForm(context),
+          _buildScheduleButton(),
           if (_selectedTags.isNotEmpty) ..._buildTagList(),
+          _buildAddTagButton(),
           if (_events.isNotEmpty) ..._buildEventList(),
           if (_notes.isNotEmpty) ..._buildNotesPanel(),
         ],

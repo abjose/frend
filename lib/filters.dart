@@ -1,15 +1,9 @@
-import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 
 
-class ActorFilterEntry {
-  const ActorFilterEntry(this.name, this.initials);
-  final String name;
-  final String initials;
-}
-
 class FilterList extends StatefulWidget {
-  final List<String> tags;
+  final Set<String> tags;
+  final Set<String>? initialSelection;
   final ValueSetter<String> selectionCallback;
   final ValueSetter<String> deselectionCallback;
   
@@ -17,16 +11,23 @@ class FilterList extends StatefulWidget {
     Key? key,
     required this.tags,
     required this.selectionCallback,
-    required this.deselectionCallback}) : super(key: key);
+    required this.deselectionCallback,
+    this.initialSelection}) : super(key: key);
 
   @override
   State createState() => _FilterListState();
 }
 
 class _FilterListState extends State<FilterList> {
-  final List<String> _selected = <String>[];
+  late Set<String> _selected;
 
-  Iterable<Widget> get actorWidgets sync* {
+  @override
+  void initState() {
+    super.initState();
+    _selected = widget.initialSelection ?? <String>{};
+  }
+
+  Iterable<Widget> get chipWidgets sync* {
     for (final String tag in widget.tags) {
       yield Padding(
         padding: const EdgeInsets.all(2.0),
@@ -60,7 +61,7 @@ class _FilterListState extends State<FilterList> {
           title: const Text('Filter by Tag'),
           children: <Widget>[
             Wrap(
-              children: actorWidgets.toList(),
+              children: chipWidgets.toList(),
             ),
           ],
         ),

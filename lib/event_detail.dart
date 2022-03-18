@@ -1,4 +1,5 @@
 import 'package:date_time_picker/date_time_picker.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:frend/confirmation_dialog.dart';
 import 'package:frend/searchable_selection_list.dart';
@@ -10,8 +11,9 @@ import 'model.dart';
 class EventDetail extends StatefulWidget {
   final Event event;
   final DateTime? date;
+  final int? friendId;
 
-  const EventDetail({Key? key, required this.event, this.date}): super(key: key);
+  const EventDetail({Key? key, required this.event, this.date, this.friendId}): super(key: key);
 
   @override
   _EventDetailState createState() => _EventDetailState();
@@ -54,6 +56,10 @@ class _EventDetailState extends State<EventDetail> {
 
     for (var friend in _event.friends) {
       _selectedFriends[friend.id] = friend.name;
+    }
+    if (widget.friendId != null) {
+      Friend passedFriend = objectbox.friendBox.get(widget.friendId!)!;
+      _selectedFriends[passedFriend.id] = passedFriend.name;
     }
     for (var tag in _event.tags) {
       _selectedTags[tag.id] = tag.title;
@@ -192,30 +198,32 @@ class _EventDetailState extends State<EventDetail> {
 
   Widget _buildForm(BuildContext context) {
     List<Widget> friendList = [];
-    for (var friendName in _selectedFriends.values) {
+    if (!_event.isIdea) {
+      for (var friendName in _selectedFriends.values) {
+        friendList.add(
+            Card(
+              color: Colors.amberAccent,
+              elevation: 4,
+              margin: const EdgeInsets.symmetric(vertical: 10),
+              child: ListTile(
+                // leading: Text(
+                //   _foundUsers[index]["id"].toString(),
+                //   style: const TextStyle(fontSize: 24),
+                // ),
+                title: Text(friendName),
+                // trailing:
+                // onTap: _editFriends,
+              ),
+            )
+        );
+      }
       friendList.add(
-          Card(
-            color: Colors.amberAccent,
-            elevation: 4,
-            margin: const EdgeInsets.symmetric(vertical: 10),
-            child: ListTile(
-              // leading: Text(
-              //   _foundUsers[index]["id"].toString(),
-              //   style: const TextStyle(fontSize: 24),
-              // ),
-              title: Text(friendName),
-              // trailing:
-              // onTap: _editFriends,
-            ),
-          )
+        ElevatedButton(
+          onPressed: _editFriends,
+          child: const Text('Edit Friends'),
+        ),
       );
     }
-    friendList.add(
-      ElevatedButton(
-        onPressed: _editFriends,
-        child: const Text('Edit Friends'),
-      ),
-    );
 
     // Maybe should abstract this...
     List<Widget> tagList = [];

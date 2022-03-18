@@ -106,7 +106,7 @@ class _SearchableSelectionListState extends State<SearchableSelectionList> {
   }
 
   Widget _filterChips() {
-    List<String> tagNames = [];
+    Set<String> tagNames = {};
     for (var tag in _allTags) {
       tagNames.add(tag);
     }
