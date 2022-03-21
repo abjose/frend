@@ -36,11 +36,11 @@ class _EventIdeaListState extends State<EventIdeaList> {
       }
     }
 
-    objectbox.getEventIdeaQueryStream().map((q) {
-      _dataUpdated(q.find());
+    objectbox.getEventIdeaQueryStream().listen((q) {
+      if (mounted) {
+        _dataUpdated(q.find());
+      }
     });
-
-    _dataUpdated(objectbox.eventBox.query(Event_.isIdea.equals(true)).build().find());
   }
 
   @override
