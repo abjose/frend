@@ -54,38 +54,49 @@ class FrendHome extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: 2,
         child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Frend'),
-            bottom: const TabBar(
-              tabs: [
-                Tab(text: "Events"),
-                Tab(text: "Friends"),
-              ],
-            ),
-            actions: [
-              DropdownButton<String>(
-                icon: const Icon(Icons.settings, color: Colors.white),
-                // elevation: 16,
-                style: const TextStyle(color: Colors.black),
-                underline: Container(height: 0),
-                onChanged: (String? newValue) {},// onChanged: null,
-                items: [
-                  DropdownMenuItem<String>(
-                    value: "Tags",
-                    child: Text("Tags"),
-                    onTap: () => _goToTagList(context),
+          appBar: PreferredSize(
+            preferredSize: const Size.fromHeight(60),
+              child: AppBar(
+              toolbarHeight: 25,
+              title: const Text('Frend'),
+              bottom: const TabBar(
+                tabs: [
+                  SizedBox(
+                    height: 35,
+                    child: Tab(text: "Events"),
                   ),
-                  DropdownMenuItem<String>(
-                    value: "Settings",
-                    child: Text("Settings"),
-                    onTap: () => print("settings!"),
-                  ),
+                  SizedBox(
+                    height: 35,
+                    child: Tab(text: "Friends"),
+                  )
                 ],
               ),
-            ],
+              actions: [
+                DropdownButton<String>(
+                  icon: const Icon(Icons.settings, color: Colors.white),
+                  // elevation: 16,
+                  style: const TextStyle(color: Colors.black),
+                  underline: Container(height: 0),
+                  onChanged: (String? newValue) {},
+                  items: [
+                    DropdownMenuItem<String>(
+                      value: "Tags",
+                      child: Text("Tags"),
+                      onTap: () => _goToTagList(context),
+                    ),
+                    DropdownMenuItem<String>(
+                      value: "Settings",
+                      child: Text("Settings"),
+                      onTap: () => print("settings!"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
           body: TabBarView(
             children: [
