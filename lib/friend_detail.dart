@@ -45,6 +45,8 @@ class _FriendDetailState extends State<FriendDetail> {
 
   Map<int, String> _selectedTags = {};
 
+  FriendshipLevel _friendshipLevelDropdownValue = FriendshipLevel.friend;
+
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _reminderController = TextEditingController();
@@ -67,6 +69,8 @@ class _FriendDetailState extends State<FriendDetail> {
         if (friend.overdueWeeks != null) {
           _reminderController.text = friend.overdueWeeks.toString();
         }
+
+        _friendshipLevelDropdownValue = friend.friendshipLevel;
 
         _events = objectbox.getOneOffEventsForFriend(friend).where((event) => event.date.isAfter(DateTime.now())).toList();
         _events.addAll(objectbox.getRepeatingEventsForFriend(friend));
@@ -101,6 +105,7 @@ class _FriendDetailState extends State<FriendDetail> {
       friend.birthdateSet = true;
     }
     friend.overdueWeeks = int.tryParse(_reminderController.text);
+    friend.dbFriendshipLevel = _friendshipLevelDropdownValue.index;
 
     List<Tag> dbTags = [];
     for (var tag in _selectedTags.entries) {
@@ -369,6 +374,25 @@ class _FriendDetailState extends State<FriendDetail> {
             controller: _reminderController,
             decoration: const InputDecoration(hintText: "Threshold for overdue warning (in weeks)"),
           ),
+          Row(children: [
+            const Text("Friendship Level: "),
+            DropdownButton<FriendshipLevel>(
+              value: _friendshipLevelDropdownValue,
+              elevation: 16,
+              onChanged: (FriendshipLevel? newValue) {
+                setState(() {
+                  _friendshipLevelDropdownValue = newValue!;
+                });
+              },
+              // TODO: ugly to do this based on index.
+              items: FriendshipLevel.values.sublist(1).map<DropdownMenuItem<FriendshipLevel>>((FriendshipLevel value) {
+                return DropdownMenuItem<FriendshipLevel>(
+                  value: value,
+                  child: Text(value.string),
+                );
+              }).toList(),
+            ),
+          ]),
         ],
       ),
     );

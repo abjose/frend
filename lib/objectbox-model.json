@@ -55,7 +55,7 @@
     },
     {
       "id": "2:212201850084784958",
-      "lastPropertyId": "8:5305802741807031758",
+      "lastPropertyId": "10:1404554587877024728",
       "name": "Friend",
       "properties": [
         {
@@ -80,14 +80,19 @@
           "type": 30
         },
         {
-          "id": "7:783353267999505438",
-          "name": "reminderToSchedule",
-          "type": 6
-        },
-        {
           "id": "8:5305802741807031758",
           "name": "birthdateSet",
           "type": 1
+        },
+        {
+          "id": "9:4554974468192016098",
+          "name": "overdueWeeks",
+          "type": 6
+        },
+        {
+          "id": "10:1404554587877024728",
+          "name": "dbFriendshipLevel",
+          "type": 6
         }
       ],
       "relations": [
@@ -160,7 +165,8 @@
   "retiredPropertyUids": [
     7582756072335075275,
     2482921714770127383,
-    6962145885195010067
+    6962145885195010067,
+    783353267999505438
   ],
   "retiredRelationUids": [],
   "version": 1

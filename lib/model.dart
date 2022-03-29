@@ -27,13 +27,17 @@ class Friend {
   // within the next `overdueWeeks` weeks.
   int? overdueWeeks;
 
+  // Used for making "targeted" suggestions for this friendship, and for grouping friends together.
+  FriendshipLevel friendshipLevel;
+
   final interests = ToMany<Tag>();
   List<String> notes = [];
 
   // TODO
   Friend(this.name, {this.id = 0, DateTime? date})
       : birthdate = date ?? DateTime.now(),
-        birthdateSet = date != null;
+        birthdateSet = date != null,
+        friendshipLevel = FriendshipLevel.friend;
 
   String get dateFormat => birthdateSet ? DateFormat.yMMMMd('en_US').format(birthdate) : "Unknown";
 
@@ -82,6 +86,27 @@ class Friend {
     }
 
     return true;
+  }
+
+  int? get dbFriendshipLevel {
+    _ensureStableEnumValues();
+    return friendshipLevel.index;
+  }
+
+  set dbFriendshipLevel(int? value) {
+    _ensureStableEnumValues();
+    if (value == null) {
+      friendshipLevel = FriendshipLevel.friend;
+    } else {
+      friendshipLevel = FriendshipLevel.values[value];
+    }
+  }
+
+  void _ensureStableEnumValues() {
+    assert(FriendshipLevel.unknown.index == 0);
+    assert(FriendshipLevel.acquaintance.index == 1);
+    assert(FriendshipLevel.outOfTouch.index == 2);
+    assert(FriendshipLevel.friend.index == 3);
   }
 }
 
@@ -296,6 +321,31 @@ extension RepeatFrequencyDateTimeComponentsExtension on RepeatFrequency {
         return DateTimeComponents.dayOfMonthAndTime;
       case RepeatFrequency.yearly:
         return DateTimeComponents.dateAndTime;
+    }
+  }
+}
+
+
+enum FriendshipLevel {
+  unknown,
+  acquaintance,
+  outOfTouch,
+  friend,
+}
+
+
+extension FriendshipLevelExtension on FriendshipLevel {
+  String get string {
+    switch (this) {
+      case FriendshipLevel.acquaintance:
+        return 'Acquaintance';
+      case FriendshipLevel.outOfTouch:
+        return 'Out-of-touch Friend';
+      case FriendshipLevel.friend:
+        return 'Friend';
+
+      default:
+        return 'Unknown';
     }
   }
 }
