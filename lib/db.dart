@@ -54,12 +54,29 @@ class ObjectBox {
     return qBuilder.watch(triggerImmediately: true);
   }
 
-  Stream<Query<Friend>> getFriendQueryStream() {
+  Stream<Query<Friend>> getAllFriendQueryStream() {
     // This doesn't seem right - previously was passing queryStream as init'd
     // in _create, but was getting: Bad State: Stream has already been listened to.
     // But is returning a new stream every time OK?
     // TODO: maybe ask on IRC if this seems right.
     final qBuilder = friendBox.query()
+      ..order(Friend_.name);
+    return qBuilder.watch(triggerImmediately: true);
+  }
+
+  // Query streams for specific friend levels. See warnings above.
+  Stream<Query<Friend>> getFriendQueryStream() {
+    final qBuilder = friendBox.query(Friend_.dbFriendshipLevel.equals(FriendshipLevel.friend.index))
+      ..order(Friend_.name);
+    return qBuilder.watch(triggerImmediately: true);
+  }
+  Stream<Query<Friend>> getAcquaintanceQueryStream() {
+    final qBuilder = friendBox.query(Friend_.dbFriendshipLevel.equals(FriendshipLevel.acquaintance.index))
+      ..order(Friend_.name);
+    return qBuilder.watch(triggerImmediately: true);
+  }
+  Stream<Query<Friend>> getOutOfTouchFriendQueryStream() {
+    final qBuilder = friendBox.query(Friend_.dbFriendshipLevel.equals(FriendshipLevel.outOfTouch.index))
       ..order(Friend_.name);
     return qBuilder.watch(triggerImmediately: true);
   }
