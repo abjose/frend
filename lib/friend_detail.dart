@@ -371,14 +371,24 @@ class _FriendDetailState extends State<FriendDetail> {
             },
           ),
           Row(children: [
-            const Text("Overdue threshold (in weeks): "),
+            if (_friendId != null && objectbox.friendBox.get(_friendId!)!.overdue())
+              const Icon(
+                Icons.announcement,
+                color: Colors.red,
+              ),
+            const Text("Overdue threshold (weeks), or 'none': "),
             Container(
-              width: 100,
+              width: 125,
               child: TextFormField(
                 controller: _reminderController,
                 validator: (value) {
-                  if (value != null && num.tryParse(value) == null) {
-                    return 'Enter a number';
+                  if (value == null || value.toLowerCase() == "none") {
+                    return null;
+                  }
+
+                  var maybeInt = int.tryParse(value);
+                  if (maybeInt == null || maybeInt < 0) {
+                    return 'Enter positive number';
                   }
                   return null;
                 },
