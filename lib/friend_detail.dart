@@ -370,10 +370,20 @@ class _FriendDetailState extends State<FriendDetail> {
               }
             },
           ),
-          TextFormField(
-            controller: _reminderController,
-            decoration: const InputDecoration(hintText: "Threshold for overdue warning (in weeks)"),
-          ),
+          Row(children: [
+            const Text("Overdue threshold (in weeks): "),
+            Container(
+              width: 100,
+              child: TextFormField(
+                controller: _reminderController,
+                validator: (value) {
+                  if (value != null && num.tryParse(value) == null) {
+                    return 'Enter a number';
+                  }
+                  return null;
+                },
+              )
+          )]),
           Row(children: [
             const Text("Friendship Level: "),
             DropdownButton<FriendshipLevel>(
