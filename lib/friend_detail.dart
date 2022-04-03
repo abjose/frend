@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:expandable/expandable.dart';
 import 'package:frend/event_idea_list.dart';
-import 'package:frend/objectbox.g.dart';
 import 'package:frend/searchable_selection_list.dart';
 import 'package:intl/intl.dart';
 
 import 'confirmation_dialog.dart';
 import 'db.dart';
 import 'event_detail.dart';
+import 'filter_list.dart';
 import 'model.dart';
 
 
@@ -20,6 +19,18 @@ class NoteItem {
   TextEditingController controller;
   bool isExpanded;
 }
+
+
+class EPListItem {
+  EPListItem({
+    required this.headerValue,
+    this.isExpanded = false,
+  });
+
+  String headerValue;
+  bool isExpanded;
+}
+
 
 class FriendDetail extends StatefulWidget {
   final int? friendId;
@@ -41,7 +52,6 @@ class _FriendDetailState extends State<FriendDetail> {
   final _formKey = GlobalKey<FormState>();
 
   int? _friendId;
-  List<Event> _events = [];
 
   Map<int, String> _selectedTags = {};
 
@@ -51,6 +61,15 @@ class _FriendDetailState extends State<FriendDetail> {
   final TextEditingController _dateController = TextEditingController();
   final TextEditingController _reminderController = TextEditingController();
   final List<NoteItem> _notes = [];
+
+  static const int PAST_EVENT_IDX = 0;
+  static const int UPCOMING_EVENT_IDX = 1;
+  static const int INTEREST_IDX = 2;
+  final List<EPListItem> _epItems = [
+    EPListItem(headerValue: "Past Events"),
+    EPListItem(headerValue: "Upcoming Events"),
+    EPListItem(headerValue: "Interests"),
+  ];
 
   @override
   void initState() {
@@ -71,9 +90,6 @@ class _FriendDetailState extends State<FriendDetail> {
         }
 
         _friendshipLevelDropdownValue = friend.friendshipLevel;
-
-        _events = objectbox.getOneOffEventsForFriend(friend).where((event) => event.date.isAfter(DateTime.now())).toList();
-        _events.addAll(objectbox.getRepeatingEventsForFriend(friend));
 
         for (var tag in friend.interests) {
           _selectedTags[tag.id] = tag.title;
@@ -184,37 +200,6 @@ class _FriendDetailState extends State<FriendDetail> {
     );
   }
 
-  List<Widget> _buildTagList() {
-    List<Widget> tagList = [];
-    tagList.add(
-      Container(
-        padding: const EdgeInsets.only(top: 15),
-        child: Align(
-          alignment: AlignmentDirectional.center,
-          child: Text(
-            'Interests',
-            style: Theme.of(context).textTheme.caption,
-            textScaleFactor: 1.5,
-          ),
-        ),
-      )
-    );
-    for (var tagTitle in _selectedTags.values) {
-      tagList.add(
-          Card(
-            color: Colors.amberAccent,
-            elevation: 4,
-            // margin: const EdgeInsets.symmetric(vertical: 10),
-            child: ListTile(
-              title: Text(tagTitle),
-            ),
-          )
-      );
-    }
-
-    return tagList;
-  }
-
   Widget _buildAddTagButton() {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 100),
@@ -225,35 +210,93 @@ class _FriendDetailState extends State<FriendDetail> {
     );
   }
 
-  List<Widget> _buildEventList() {
-    List<Widget> eventList = [];
-    eventList.add(
-        Container(
-          padding: const EdgeInsets.only(top: 15),
-          child: Align(
-            alignment: AlignmentDirectional.center,
-            child: Text(
-              'Upcoming Events',
-              style: Theme.of(context).textTheme.caption,
-              textScaleFactor: 1.5,
-            ),
-          ),
-        )
+  ExpansionPanel _getEventExpansionPanel(EPListItem item, List<Event> events) {
+    return ExpansionPanel(
+      headerBuilder: (BuildContext context, bool isExpanded) {
+        return ListTile(
+          title: Text(item.headerValue),
+        );
+      },
+      body: ListView(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          children: events.map<Container>((event) {
+            return Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 4.0,
+              ),
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              child: ListTile(
+                onTap: () => _goToEventDetail(event),
+                title: Text(event.title),
+                subtitle: event.friends.isEmpty ? null : Text(event.getFriendString()),
+                trailing: Text("${event.timeFormat}"),
+              ),
+            );
+          }).toList()),
+      isExpanded: item.isExpanded,
     );
+  }
 
-    for (var event in _events) {
-      eventList.add(
-          Card(
-            color: Colors.amberAccent,
-            child: ListTile(
-              title: Text(event.title),
-              onTap: () => _goToEventDetail(event),
-            ),
-          )
-      );
+  ExpansionPanel _getInterestExpansionPanel(EPListItem item, List<String> tags) {
+    return ExpansionPanel(
+      headerBuilder: (BuildContext context, bool isExpanded) {
+        return ListTile(
+          title: Text(item.headerValue),
+        );
+      },
+      body: FilterList(tags: _selectedTags.values.toSet()),
+      isExpanded: item.isExpanded,
+    );
+  }
+  
+  Widget _buildEP() {
+    assert(_friendId != null);
+
+    var friend = objectbox.friendBox.get(_friendId!);
+
+    var pastEventItem = _epItems[PAST_EVENT_IDX];
+    var upcomingEventItem = _epItems[UPCOMING_EVENT_IDX];
+    var interestItem = _epItems[INTEREST_IDX];
+
+    List<Event> pastEvents = [];
+    if (pastEventItem.isExpanded) {
+      pastEvents = objectbox.getOneOffEventsForFriend(friend!).where((event) =>
+          event.date.isBefore(DateTime.now())).toList();
     }
 
-    return eventList;
+    List<Event> upcomingEvents = [];
+    if (upcomingEventItem.isExpanded) {
+      upcomingEvents = objectbox.getOneOffEventsForFriend(friend!).where((event) =>
+          event.date.isAfter(DateTime.now())).toList();
+      upcomingEvents.addAll(objectbox.getRepeatingEventsForFriend(friend));
+    }
+
+    List<String> interests = [];
+    if (interestItem.isExpanded) {
+      interests = _selectedTags.values.toList();
+    }
+
+
+    // getting called again every time you try to expand!
+    // print("called");
+
+    return ExpansionPanelList(
+      expansionCallback: (int index, bool isExpanded) {
+        setState(() {
+          _epItems[index].isExpanded = !isExpanded;
+        });
+      },
+      children: [
+        _getEventExpansionPanel(pastEventItem, pastEvents),
+        _getEventExpansionPanel(upcomingEventItem, upcomingEvents),
+        _getInterestExpansionPanel(interestItem, interests),
+      ],
+    );
   }
 
   List<Widget> _buildNotesPanel() {
@@ -376,7 +419,7 @@ class _FriendDetailState extends State<FriendDetail> {
                 Icons.announcement,
                 color: Colors.red,
               ),
-            const Text("Overdue threshold (weeks), or 'none': "),
+            const Text("Overdue threshold (weeks) or 'none': "),
             Container(
               width: 125,
               child: TextFormField(
@@ -443,9 +486,8 @@ class _FriendDetailState extends State<FriendDetail> {
         children: [
           _buildForm(context),
           _buildScheduleButton(),
-          if (_selectedTags.isNotEmpty) ..._buildTagList(),
+          _buildEP(),
           _buildAddTagButton(),
-          if (_events.isNotEmpty) ..._buildEventList(),
           if (_notes.isNotEmpty) ..._buildNotesPanel(),
         ],
       )
