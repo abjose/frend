@@ -117,12 +117,7 @@ class _EventDetailState extends State<EventDetail> {
     }
 
     objectbox.eventBox.put(_event);
-
-    if (_event.isIdea) {
-      Navigator.pop(context);
-    } else {
-      Navigator.of(context).popUntil((route) => route.isFirst);
-    }
+    _pop();
   }
 
   _deleteEvent() {
@@ -131,13 +126,22 @@ class _EventDetailState extends State<EventDetail> {
         objectbox.eventBox.remove(_event.id);
       }
 
-      if (_event.isIdea) {
-        Navigator.pop(context);
-      } else {
+      if (!_event.isIdea) {
         _event.deleteNotification();
-        Navigator.of(context).popUntil((route) => route.isFirst);
       }
+
+      _pop();
     });
+  }
+
+  _pop() {
+    if (_event.isIdea) {
+      Navigator.pop(context);
+    } else {
+      Navigator.of(context).popUntil((route) {
+        return route.isFirst || route.settings.name == "friend";
+      });
+    }
   }
 
   _editFriends() {

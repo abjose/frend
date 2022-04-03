@@ -82,6 +82,7 @@ class _FriendListState extends State<FriendList> {
   void _goToFriendDetail(int? id) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
+        settings: const RouteSettings(name: "friend"),
         builder: (context) {
           return FriendDetail(friendId: id);
         },
