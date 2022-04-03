@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 
-import 'filters.dart';
+import 'filter_list.dart';
 import 'model.dart';
 import 'db.dart';
 

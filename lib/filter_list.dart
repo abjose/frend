@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 class FilterList extends StatefulWidget {
   final Set<String> tags;
   final Set<String>? initialSelection;
-  final ValueSetter<String> selectionCallback;
-  final ValueSetter<String> deselectionCallback;
+  final ValueSetter<String>? selectionCallback;
+  final ValueSetter<String>? deselectionCallback;
   
   const FilterList({
     Key? key,
     required this.tags,
-    required this.selectionCallback,
-    required this.deselectionCallback,
+    this.selectionCallback,
+    this.deselectionCallback,
     this.initialSelection}) : super(key: key);
 
   @override
@@ -35,15 +35,19 @@ class _FilterListState extends State<FilterList> {
           label: Text(tag, textScaleFactor: .8),
           selected: _selected.contains(tag),
           onSelected: (bool value) {
+            if (widget.selectionCallback == null || widget.deselectionCallback == null) {
+              return;
+            }
+
             setState(() {
               if (value) {
                 _selected.add(tag);
-                widget.selectionCallback(tag);
+                widget.selectionCallback!(tag);
               } else {
                 _selected.removeWhere((String s) {
                   return s == tag;
                 });
-                widget.deselectionCallback(tag);
+                widget.deselectionCallback!(tag);
               }
             });
           },
@@ -54,6 +58,12 @@ class _FilterListState extends State<FilterList> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.selectionCallback == null || widget.deselectionCallback == null) {
+      return Wrap(
+        children: chipWidgets.toList(),
+      );
+    }
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[

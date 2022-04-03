@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:frend/filters.dart';
+import 'package:frend/filter_list.dart';
 import 'package:frend/objectbox.g.dart';
 
 import 'model.dart';
