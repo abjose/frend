@@ -152,6 +152,13 @@ class _FriendDetailState extends State<FriendDetail> {
   }
 
   void _goToEventDetail(Event event) {
+    // Collapse lists so they won't be out of date if/when we come back.
+    // TODO: do this better.
+    for (var item in _epItems) {
+      item.isExpanded = false;
+    }
+    setState(() {});
+
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) {
