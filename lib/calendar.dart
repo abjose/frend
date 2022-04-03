@@ -50,11 +50,11 @@ class _EventCalendarState extends State<EventCalendar> {
     // Listen for event changes and setState so will properly display changes to even times.
     objectbox.getEventQueryStream().listen((event) {
       // TODO: better way to do this?
-      setState(() {
-        if (mounted) {
+      if (mounted) {
+        setState(() {
           _refreshEventCache(_selectedDay);
-        }
-      });
+        });
+      }
     });
   }
 
