@@ -31,7 +31,8 @@ class Friend {
   FriendshipLevel friendshipLevel;
 
   final interests = ToMany<Tag>();
-  List<String> notes = [];
+  // List<String> notes = [];
+  String note = "";
 
   // TODO
   Friend(this.name, {this.id = 0, DateTime? date})
