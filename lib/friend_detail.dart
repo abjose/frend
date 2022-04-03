@@ -352,13 +352,13 @@ class _FriendDetailState extends State<FriendDetail> {
                 Icons.announcement,
                 color: Colors.red,
               ),
-            const Text("Overdue threshold (weeks) or 'none': "),
+            const Text("Overdue threshold (weeks): "),
             Container(
               width: 125,
               child: TextFormField(
                 controller: _reminderController,
                 validator: (value) {
-                  if (value == null || value.toLowerCase() == "none") {
+                  if (value == null || value.isEmpty) {
                     return null;
                   }
 
