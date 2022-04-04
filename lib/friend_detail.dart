@@ -101,11 +101,17 @@ class _FriendDetailState extends State<FriendDetail> {
     }
 
     friend.name = _nameController.text;
+
     if (_dateController.text.isNotEmpty) {
       friend.birthdate = DateFormat.yMMMMd('en_US').parse(_dateController.text);
       friend.birthdateSet = true;
     }
+
     friend.overdueWeeks = int.tryParse(_reminderController.text);
+    if (friend.overdueWeeks == 0) {
+      friend.overdueWeeks = null;
+    }
+
     friend.dbFriendshipLevel = _friendshipLevelDropdownValue.index;
     friend.note = _noteController.text;
 
