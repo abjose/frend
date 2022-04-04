@@ -65,20 +65,21 @@ class ObjectBox {
   }
 
   // Query streams for specific friend levels. See warnings above.
+  // TODO: figure out why need to make these broadcast streams - i.e. where multiple listeners are coming from.
   Stream<Query<Friend>> getFriendQueryStream() {
     final qBuilder = friendBox.query(Friend_.dbFriendshipLevel.equals(FriendshipLevel.friend.index))
       ..order(Friend_.name);
-    return qBuilder.watch(triggerImmediately: true);
+    return qBuilder.watch(triggerImmediately: true).asBroadcastStream();
   }
   Stream<Query<Friend>> getAcquaintanceQueryStream() {
     final qBuilder = friendBox.query(Friend_.dbFriendshipLevel.equals(FriendshipLevel.acquaintance.index))
       ..order(Friend_.name);
-    return qBuilder.watch(triggerImmediately: true);
+    return qBuilder.watch(triggerImmediately: true).asBroadcastStream();
   }
   Stream<Query<Friend>> getOutOfTouchFriendQueryStream() {
     final qBuilder = friendBox.query(Friend_.dbFriendshipLevel.equals(FriendshipLevel.outOfTouch.index))
       ..order(Friend_.name);
-    return qBuilder.watch(triggerImmediately: true);
+    return qBuilder.watch(triggerImmediately: true).asBroadcastStream();
   }
 
   Stream<Query<Event>> getEventQueryStream() {

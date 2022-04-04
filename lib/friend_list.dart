@@ -14,30 +14,10 @@ class FriendList extends StatefulWidget {
 }
 
 class _FriendListState extends State<FriendList> {
-  Map<FriendshipLevel, StreamController<List<Friend>>> _listControllers = {};
-
-  @override
-  void initState() {
-    super.initState();
-
-    _listControllers[FriendshipLevel.friend] = StreamController<List<Friend>>(sync: true);
-    _listControllers[FriendshipLevel.friend]?.addStream(objectbox.getFriendQueryStream().map((q) => q.find()));
-
-    _listControllers[FriendshipLevel.acquaintance] = StreamController<List<Friend>>(sync: true);
-    _listControllers[FriendshipLevel.acquaintance]?.addStream(objectbox.getAcquaintanceQueryStream().map((q) => q.find()));
-
-    _listControllers[FriendshipLevel.outOfTouch] = StreamController<List<Friend>>(sync: true);
-    _listControllers[FriendshipLevel.outOfTouch]?.addStream(objectbox.getOutOfTouchFriendQueryStream().map((q) => q.find()));
-
-    setState(() {});
-  }
+  Map<FriendshipLevel, StreamBuilder<List<Friend>>> _streamBuilders = {};
 
   @override
   void dispose() {
-    for (var c in _listControllers.values) {
-      c.close();
-    }
-
     super.dispose();
   }
 
@@ -99,38 +79,51 @@ class _FriendListState extends State<FriendList> {
       alignment: Alignment.centerLeft,
     );
   }
+  
+  Stream<List<Friend>>? _getStream(FriendshipLevel level) {
+    // TODO: is the `map`-ing here the source of the multiple listeners issue?
+    switch (level) {
+      case FriendshipLevel.friend:
+        return objectbox.getFriendQueryStream().map((q) => q.find());
+      case FriendshipLevel.acquaintance:
+        return objectbox.getAcquaintanceQueryStream().map((q) => q.find());
+      case FriendshipLevel.outOfTouch:
+        return objectbox.getOutOfTouchFriendQueryStream().map((q) => q.find());
+      default:
+        assert(false);  // TODO
+    }
+
+    return null;
+  }
+
+  Widget _getFriendStreamWidget(FriendshipLevel level) {
+    if (!_streamBuilders.containsKey(level)) {
+      _streamBuilders[level] = StreamBuilder<List<Friend>>(
+          stream: _getStream(level),
+          builder: (context, snapshot) => ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              padding: const EdgeInsets.symmetric(horizontal: 20.0),
+              itemCount: snapshot.hasData ? snapshot.data!.length : 0,
+              itemBuilder: _itemBuilder(snapshot.data ?? [])));
+    }
+
+
+    return _streamBuilders[level]!;
+  }
 
   @override
   Widget build(BuildContext context) => Scaffold(
     body: ListView(children: <Widget>[
+      // TODO: hide conditionally?
       _getSectionHeader("Friends"),
-      StreamBuilder<List<Friend>>(
-          stream: _listControllers[FriendshipLevel.friend]?.stream,
-          builder: (context, snapshot) => ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              itemCount: snapshot.hasData ? snapshot.data!.length : 0,
-              itemBuilder: _itemBuilder(snapshot.data ?? []))),
-      // TODO: hide conditionally
+      _getFriendStreamWidget(FriendshipLevel.friend),
+
       _getSectionHeader("Out-of-touch Friends"),
-      StreamBuilder<List<Friend>>(
-          stream: _listControllers[FriendshipLevel.outOfTouch]?.stream,
-          builder: (context, snapshot) => ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              itemCount: snapshot.hasData ? snapshot.data!.length : 0,
-              itemBuilder: _itemBuilder(snapshot.data ?? []))),
+      _getFriendStreamWidget(FriendshipLevel.outOfTouch),
+
       _getSectionHeader("Acquaintances"),
-      StreamBuilder<List<Friend>>(
-          stream: _listControllers[FriendshipLevel.acquaintance]?.stream,
-          builder: (context, snapshot) => ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              padding: const EdgeInsets.symmetric(horizontal: 20.0),
-              itemCount: snapshot.hasData ? snapshot.data!.length : 0,
-              itemBuilder: _itemBuilder(snapshot.data ?? []))),
+      _getFriendStreamWidget(FriendshipLevel.acquaintance),
     ]),
     floatingActionButton: FloatingActionButton(
       key: const Key('submit'),
