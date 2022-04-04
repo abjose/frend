@@ -13,7 +13,7 @@ class SearchableSelectionList extends StatefulWidget {
   final bool showX; // Will show red X if true; otherwise green checkmark.
   final Map<int, Set<String>>? tags;  // If present, will show a list of tags to filter by.
 
-  // Called when widget is disposed of with Set of selected element ids.
+  // Called when user accepts with Set of selected element ids.
   final ValueSetter<Set<int>> onDone;
 
   const SearchableSelectionList(
@@ -119,17 +119,20 @@ class _SearchableSelectionListState extends State<SearchableSelectionList> {
   }
 
   @override
-  void dispose() {
-    widget.onDone(_selectedElements);
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final mapValues = _foundElements.entries.toList();  // ehhhh
     return Scaffold(
       appBar: AppBar(
         title: const Text('Edit Selection'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.check),
+            onPressed: () {
+              widget.onDone(_selectedElements);
+              Navigator.pop(context);
+            }
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(10),
