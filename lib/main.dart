@@ -6,7 +6,6 @@ import 'dart:async';
 import 'db.dart';
 import 'notification_service.dart';
 
-
 Future<void> main() async {
   // This is required so ObjectBox can get the application directory
   // to store the database in.
@@ -16,26 +15,17 @@ Future<void> main() async {
 
   await NotificationService().init();
 
-  // runApp(const FrendApp());
   runApp(FrendApp());
 }
 
 class FrendApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        // theme: ThemeData(
-        //   primaryColor: Colors.white,
-        // ),
-
-        home: FrendHome()
-    );
+    return MaterialApp(home: FrendHome());
   }
 }
 
 class FrendHome extends StatelessWidget {
-  // const FrendHome({Key? key}) : super(key: key);
-
   void _goToTagList(context) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -60,7 +50,7 @@ class FrendHome extends StatelessWidget {
         child: Scaffold(
           appBar: PreferredSize(
             preferredSize: const Size.fromHeight(60),
-              child: AppBar(
+            child: AppBar(
               toolbarHeight: 25,
               title: const Text('Frend'),
               bottom: const TabBar(
@@ -85,12 +75,12 @@ class FrendHome extends StatelessWidget {
                   items: [
                     DropdownMenuItem<String>(
                       value: "Tags",
-                      child: Text("Tags"),
+                      child: const Text("Tags"),
                       onTap: () => _goToTagList(context),
                     ),
                     DropdownMenuItem<String>(
                       value: "Settings",
-                      child: Text("Settings"),
+                      child: const Text("Settings"),
                       onTap: () => print("settings!"),
                     ),
                   ],
@@ -109,4 +99,3 @@ class FrendHome extends StatelessWidget {
     );
   }
 }
-
