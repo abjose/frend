@@ -60,6 +60,12 @@ class _FriendDetailState extends State<FriendDetail> {
     EPListItem(headerValue: "Interests"),
   ];
 
+  // TODO: get these tags in a smarter way.
+  final Map<FriendshipLevel, Set<String>> _extraTagsForFriendshipLevel = {
+    FriendshipLevel.acquaintance: {"acquaintance"},
+    FriendshipLevel.outOfTouch: {"out-of-touch"},
+  };
+
   @override
   void initState() {
     super.initState();
@@ -154,13 +160,17 @@ class _FriendDetailState extends State<FriendDetail> {
     );
   }
 
-  void _goToEventIdeaList() {
+  // Note that this adds _selectedTags by default.
+  void _goToEventIdeaList(Set<String> extraTags) {
+    Set<String> allTags = _selectedTags.values.toSet();
+    allTags.addAll(extraTags);
+
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) {
           return EventIdeaList(
             friendId: _friendId,
-            tags: _selectedTags.values.toSet(),
+            tags: allTags,
           );
         },
       ),
@@ -309,14 +319,34 @@ class _FriendDetailState extends State<FriendDetail> {
   }
 
   Widget _buildScheduleButton() {
-    return Container(
-        padding: const EdgeInsets.only(left: 100, right: 100),
-        child: ElevatedButton(
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ElevatedButton(
           child: const Text("Schedule Event"),
           onPressed: () {
-            _goToEventIdeaList();
+            _goToEventIdeaList({});
           },
-        ));
+        ),
+        if (_friendshipLevelDropdownValue == FriendshipLevel.acquaintance ||
+            _friendshipLevelDropdownValue == FriendshipLevel.outOfTouch) 
+          const Padding(padding: EdgeInsets.symmetric(horizontal: 5)),
+        if (_friendshipLevelDropdownValue == FriendshipLevel.acquaintance)
+          ElevatedButton(
+            child: const Text("Deepen Friendship"),
+            onPressed: () {
+              _goToEventIdeaList(_extraTagsForFriendshipLevel[FriendshipLevel.acquaintance]!);
+            },
+          ),
+        if (_friendshipLevelDropdownValue == FriendshipLevel.outOfTouch)
+          ElevatedButton(
+            child: const Text("Get Back In Touch"),
+            onPressed: () {
+              _goToEventIdeaList(_extraTagsForFriendshipLevel[FriendshipLevel.outOfTouch]!);
+            },
+          ),
+      ],
+    );
   }
 
   Widget _buildForm(BuildContext context) {
