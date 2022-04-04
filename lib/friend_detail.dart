@@ -242,7 +242,12 @@ class _FriendDetailState extends State<FriendDetail> {
           title: Text(item.headerValue),
         );
       },
-      body: FilterList(tags: _selectedTags.values.toSet()),
+      body: Column(
+        children: [
+          FilterList(tags: _selectedTags.values.toSet()),
+          _buildAddTagButton(),
+        ],
+      ),
       isExpanded: item.isExpanded,
     );
   }
@@ -293,6 +298,7 @@ class _FriendDetailState extends State<FriendDetail> {
 
   Widget _buildNotesPanel() {
     return ListTile(
+      minVerticalPadding: 20,
       title: Text("Notes"),
       subtitle: TextFormField(
         controller: _noteController,
@@ -426,7 +432,6 @@ class _FriendDetailState extends State<FriendDetail> {
           _buildForm(context),
           _buildScheduleButton(),
           _buildEP(),
-          _buildAddTagButton(),
           _buildNotesPanel(),
         ],
       )
