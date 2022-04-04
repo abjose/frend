@@ -64,11 +64,13 @@ class _FilterListState extends State<FilterList> {
       );
     }
 
+    bool expand = widget.initialSelection != null ? widget.initialSelection!.isNotEmpty : false;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         ExpansionTile(
           title: const Text('Filter by Tag'),
+          initiallyExpanded: expand,
           children: <Widget>[
             Wrap(
               children: chipWidgets.toList(),
