@@ -12,6 +12,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   objectbox = await ObjectBox.create();
+  objectbox.maybePopulate();
 
   await NotificationService().init();
 

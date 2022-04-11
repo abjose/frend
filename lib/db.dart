@@ -30,72 +30,37 @@ class ObjectBox {
     // final qBuilder = noteBox.query()
     //   ..order(Note_.date, flags: Order.descending);
     // queryStream = qBuilder.watch(triggerImmediately: true);
+  }
 
-    // Add seed data if the box is empty.
-    if (eventBox.isEmpty()) {
-      eventBox.put(Event("ask how they're doing", isIdea: true));
-      eventBox.put(Event("ask advice on book / music / film", isIdea: true));
-      eventBox.put(Event("ask what some of their favorite things to do / places to go are", isIdea: true));
-      eventBox.put(Event("share something you think is interesting or funny", isIdea: true));
-      eventBox.put(Event("reminisce about a shared experience", isIdea: true));
-      eventBox.put(Event("ask if they share {one of your interests}", isIdea: true));
-      eventBox.put(Event("go to a bar", isIdea: true));
-      eventBox.put(Event("invite to existing plans", isIdea: true));
-      eventBox.put(Event("share something personal (like a quirk, a dream for the future, a secret wish...)", isIdea: true));
-      eventBox.put(Event("go get coffee", isIdea: true));
-      eventBox.put(Event("ask how one of their projects is going", isIdea: true));
-      eventBox.put(Event("ask how one of their close relations is doing", isIdea: true));
-      eventBox.put(Event("go to a comedy show", isIdea: true));
-      eventBox.put(Event("ask about one of their substantial life events", isIdea: true));
-      eventBox.put(Event("play a game online, remotely", isIdea: true));
-      eventBox.put(Event("watch videos on the internet", isIdea: true));
-      eventBox.put(Event("take an exercise class", isIdea: true));
-      eventBox.put(Event("go to a restaurant", isIdea: true));
-      eventBox.put(Event("share a fear, flaw, or insecurity", isIdea: true));
-      eventBox.put(Event("go to an open mic night", isIdea: true));
-      eventBox.put(Event("go to a concert", isIdea: true));
-      eventBox.put(Event("go to a festival", isIdea: true));
-      eventBox.put(Event("host a potluck", isIdea: true));
-      eventBox.put(Event("go see a film", isIdea: true));
-      eventBox.put(Event("go to a museum", isIdea: true));
-      eventBox.put(Event("go to a bookstore", isIdea: true));
-      eventBox.put(Event("invite them over for a meal", isIdea: true));
-      eventBox.put(Event("go hiking", isIdea: true));
-      eventBox.put(Event("explore a part of your neighborhood / town / city", isIdea: true));
-      eventBox.put(Event("play a game in real life", isIdea: true));
-      eventBox.put(Event("volunteer", isIdea: true));
-      eventBox.put(Event("start reading a book", isIdea: true));
-      eventBox.put(Event("take a class", isIdea: true));
-      eventBox.put(Event("go to a convention", isIdea: true));
-      eventBox.put(Event("cook or bake something", isIdea: true));
-      eventBox.put(Event("learn a new skill", isIdea: true));
-      eventBox.put(Event("start a project", isIdea: true));
-      eventBox.put(Event("get them a gift", isIdea: true));
-      eventBox.put(Event("go on a road trip", isIdea: true));
-      eventBox.put(Event("go on a camping trip", isIdea: true));
-    }
+  /// Create an instance of ObjectBox to use throughout the app.
+  static Future<ObjectBox> create() async {
+    // Future<Store> openStore() {...} is defined in the generated objectbox.g.dart
+    final store = await openStore();
+    return ObjectBox._create(store);
+  }
+
+  void maybePopulate() {
+    // eventBox.removeAll();
+    // tagBox.removeAll();
 
     if (tagBox.isEmpty()) {
       // Friendship levels
-      tagBox.put(Tag("partner"));
       tagBox.put(Tag("acquaintance"));
       tagBox.put(Tag("out-of-touch"));
+      tagBox.put(Tag("partner"));
 
       // Categories
       tagBox.put(Tag("art"));
       tagBox.put(Tag("comedy"));
       tagBox.put(Tag("comics"));
-      tagBox.put(Tag("concerts and music"));
       tagBox.put(Tag("cooking and baking"));
       tagBox.put(Tag("dancing"));
-      tagBox.put(Tag("eating out"));
       tagBox.put(Tag("fitness"));
       tagBox.put(Tag("games"));
       tagBox.put(Tag("movies"));
       tagBox.put(Tag("music"));
+      tagBox.put(Tag("nature"));
       tagBox.put(Tag("nightlife"));
-      tagBox.put(Tag("outdoors"));
-      tagBox.put(Tag("poetry"));
       tagBox.put(Tag("reading"));
       tagBox.put(Tag("singing"));
       tagBox.put(Tag("theater"));
@@ -104,13 +69,89 @@ class ObjectBox {
       tagBox.put(Tag("volunteering"));
       tagBox.put(Tag("writing"));
     }
-  }
 
-  /// Create an instance of ObjectBox to use throughout the app.
-  static Future<ObjectBox> create() async {
-    // Future<Store> openStore() {...} is defined in the generated objectbox.g.dart
-    final store = await openStore();
-    return ObjectBox._create(store);
+    if (eventBox.isEmpty()) {
+      eventBox.put(Event("ask how they're doing", isIdea: true,
+          initialTags: ["acquaintance", "out-of-touch"]));
+      eventBox.put(Event("ask advice on book / music / film", isIdea: true,
+          initialTags: ["acquaintance", "movies", "music", "reading"]));
+      eventBox.put(Event("ask what some of their favorite things to do / places to go are", isIdea: true,
+          initialTags: ["acquaintance", ]));
+      eventBox.put(Event("share something you think is interesting or funny", isIdea: true,
+          initialTags: ["acquaintance", ]));
+      eventBox.put(Event("reminisce about a shared experience", isIdea: true,
+          initialTags: ["acquaintance", "out-of-touch"]));
+      eventBox.put(Event("ask if they share {one of your interests}", isIdea: true,
+          initialTags: ["acquaintance", ]));
+      eventBox.put(Event("go to a bar", isIdea: true,
+          initialTags: ["acquaintance", "nightlife"]));
+      eventBox.put(Event("invite to existing plans", isIdea: true,
+          initialTags: ["acquaintance", ]));
+      eventBox.put(Event("go get coffee", isIdea: true,
+          initialTags: ["acquaintance", ]));
+      eventBox.put(Event("ask how one of their projects is going", isIdea: true,
+          initialTags: ["acquaintance", ]));
+      eventBox.put(Event("share something personal (like a quirk, a dream for the future, a secret wish...)", isIdea: true,
+          initialTags: []));
+      eventBox.put(Event("ask how one of their close relations is doing", isIdea: true,
+          initialTags: []));
+      eventBox.put(Event("go to a comedy show", isIdea: true,
+          initialTags: ["comedy", "nightlife"]));
+      eventBox.put(Event("ask about one of their substantial life events", isIdea: true,
+          initialTags: []));
+      eventBox.put(Event("play a game online, remotely", isIdea: true,
+          initialTags: ["games"]));
+      eventBox.put(Event("watch videos on the internet", isIdea: true,
+          initialTags: []));
+      eventBox.put(Event("take an exercise class", isIdea: true,
+          initialTags: ["dancing", "fitness"]));
+      eventBox.put(Event("go to a restaurant", isIdea: true,
+          initialTags: []));
+      eventBox.put(Event("share a fear, flaw, or insecurity", isIdea: true,
+          initialTags: []));
+      eventBox.put(Event("go to an open mic night", isIdea: true,
+          initialTags: ["nightlife"]));
+      eventBox.put(Event("go to a concert", isIdea: true,
+          initialTags: ["dancing", "music", "nightlife"]));
+      eventBox.put(Event("go to a festival", isIdea: true,
+          initialTags: ["dancing", "music"]));
+      eventBox.put(Event("host a potluck", isIdea: true,
+          initialTags: ["cooking and baking"]));
+      eventBox.put(Event("go see a film", isIdea: true,
+          initialTags: ["movies"]));
+      eventBox.put(Event("go to a museum", isIdea: true,
+          initialTags: ["art"]));
+      eventBox.put(Event("go to a bookstore", isIdea: true,
+          initialTags: ["reading"]));
+      eventBox.put(Event("invite them over for a meal", isIdea: true,
+          initialTags: []));
+      eventBox.put(Event("go hiking", isIdea: true,
+          initialTags: ["nature"]));
+      eventBox.put(Event("explore a part of your neighborhood / town / city", isIdea: true,
+          initialTags: ["nightlife"]));
+      eventBox.put(Event("play a game in real life", isIdea: true,
+          initialTags: ["games"]));
+      eventBox.put(Event("volunteer", isIdea: true,
+          initialTags: ["volunteering"]));
+      eventBox.put(Event("start reading a book", isIdea: true,
+          initialTags: ["reading"]));
+      eventBox.put(Event("take a class", isIdea: true,
+          initialTags: []));
+      eventBox.put(Event("go to a convention", isIdea: true,
+          initialTags: ["comics", "games"]));
+      eventBox.put(Event("cook or bake something", isIdea: true,
+          initialTags: ["cooking and baking"]));
+      eventBox.put(Event("learn a new skill", isIdea: true,
+          initialTags: ["art", "comedy", "dancing", "music", "volunteering", "writing"]));
+      eventBox.put(Event("start a project", isIdea: true,
+          initialTags: ["art", "comedy", "music", "volunteering", "writing"]));
+      eventBox.put(Event("get them a gift", isIdea: true,
+          initialTags: []));
+      eventBox.put(Event("go on a road trip", isIdea: true,
+          initialTags: ["nature", "travel"]));
+      eventBox.put(Event("go on a camping trip", isIdea: true,
+          initialTags: ["nature"]));
+    }
   }
 
   Stream<Query<Note>> getNoteQueryStream() {

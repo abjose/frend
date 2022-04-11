@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
-import 'package:objectbox/objectbox.dart';  // don't get rid of this...
+import 'package:objectbox/objectbox.dart'; // don't get rid of this...
 
 import 'db.dart';
 import 'notification_service.dart';
@@ -10,7 +10,6 @@ import 'objectbox.g.dart';
 // run:
 // flutter pub run build_runner build
 // also... might have to comment out objectbox.g.dart import above?
-
 
 @Entity()
 class Friend {
@@ -61,7 +60,7 @@ class Friend {
 
     int overdueDays = overdueWeeks! * 7;
 
-    var now = DateTime.now();  // TODO: bad idea?
+    var now = DateTime.now(); // TODO: bad idea?
     // events.removeWhere((event) => event.date.isBefore(now));
 
     // Check if first event is soon enough.
@@ -81,7 +80,7 @@ class Friend {
         continue;
       }
 
-      if (soonest.isBefore(now.add(Duration(days: overdueDays))))  {
+      if (soonest.isBefore(now.add(Duration(days: overdueDays)))) {
         return false;
       }
     }
@@ -111,7 +110,6 @@ class Friend {
   }
 }
 
-
 @Entity()
 class Event {
   int id = 0;
@@ -133,9 +131,17 @@ class Event {
   final friends = ToMany<Friend>();
   var tags = ToMany<Tag>();
 
-  Event(this.title, {this.id = 0, DateTime? date, bool? isIdea})
-      : date = date ?? DateTime.now(), isIdea = isIdea ?? false,
-        frequency = RepeatFrequency.never;
+  Event(this.title, {this.id = 0, DateTime? date, bool? isIdea, List<String>? initialTags})
+      : date = date ?? DateTime.now(),
+        isIdea = isIdea ?? false,
+        frequency = RepeatFrequency.never {
+    if (initialTags != null) {
+      for (var tag in initialTags) {
+        List<Tag> matches = objectbox.tagBox.query(Tag_.title.equals(tag)).build().find();
+        tags.add(matches.single);
+      }
+    }
+  }
 
   String get dateFormat => DateFormat.yMd().format(date);
   String get timeFormat => DateFormat.Hm().format(date);
@@ -247,7 +253,6 @@ class Event {
   }
 }
 
-
 @Entity()
 class Tag {
   int id = 0;
@@ -257,7 +262,6 @@ class Tag {
 
   Tag(this.title);
 }
-
 
 // probably don't need this, could just have a list of notes on Friend
 @Entity()
@@ -271,12 +275,10 @@ class Note {
   @Property(type: PropertyType.date)
   DateTime date;
 
-  Note(this.text, {this.id = 0, this.comment, DateTime? date})
-      : date = date ?? DateTime.now();
+  Note(this.text, {this.id = 0, this.comment, DateTime? date}) : date = date ?? DateTime.now();
 
   String get dateFormat => DateFormat('dd.MM.yyyy hh:mm:ss').format(date);
 }
-
 
 enum RepeatFrequency {
   unknown,
@@ -286,7 +288,6 @@ enum RepeatFrequency {
   monthly,
   yearly,
 }
-
 
 extension RepeatFrequencyExtension on RepeatFrequency {
   String get string {
@@ -307,11 +308,10 @@ extension RepeatFrequencyExtension on RepeatFrequency {
   }
 }
 
-
 extension RepeatFrequencyDateTimeComponentsExtension on RepeatFrequency {
   DateTimeComponents? get dateTimeComponents {
     switch (this) {
-      case RepeatFrequency.unknown:  // fall through
+      case RepeatFrequency.unknown: // fall through
       case RepeatFrequency.never:
         return null;
       case RepeatFrequency.daily:
@@ -326,14 +326,12 @@ extension RepeatFrequencyDateTimeComponentsExtension on RepeatFrequency {
   }
 }
 
-
 enum FriendshipLevel {
   unknown,
   acquaintance,
   outOfTouch,
   friend,
 }
-
 
 extension FriendshipLevelExtension on FriendshipLevel {
   String get string {
