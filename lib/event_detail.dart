@@ -121,7 +121,7 @@ class _EventDetailState extends State<EventDetail> {
   }
 
   _deleteEvent() {
-    showConfirmationDialog(context, "event${_event.isIdea ? ' idea' : ''}", () {
+    showConfirmationDialog(context, _event.isIdea ? "idea" : "event", () {
       if (_event.id != 0) {
         objectbox.eventBox.remove(_event.id);
       }
