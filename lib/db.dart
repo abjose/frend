@@ -49,7 +49,7 @@ class ObjectBox {
       tagBox.put(Tag("out-of-touch"));
       tagBox.put(Tag("partner"));
 
-      // Categories
+      // Interests
       tagBox.put(Tag("art"));
       tagBox.put(Tag("comedy"));
       tagBox.put(Tag("comics"));
@@ -76,21 +76,21 @@ class ObjectBox {
       eventBox.put(Event("ask advice on book / music / film", isIdea: true,
           initialTags: ["acquaintance", "movies", "music", "reading"]));
       eventBox.put(Event("ask what some of their favorite things to do / places to go are", isIdea: true,
-          initialTags: ["acquaintance", ]));
+          initialTags: ["acquaintance"]));
       eventBox.put(Event("share something you think is interesting or funny", isIdea: true,
-          initialTags: ["acquaintance", ]));
+          initialTags: ["acquaintance"]));
       eventBox.put(Event("reminisce about a shared experience", isIdea: true,
           initialTags: ["acquaintance", "out-of-touch"]));
       eventBox.put(Event("ask if they share {one of your interests}", isIdea: true,
-          initialTags: ["acquaintance", ]));
+          initialTags: ["acquaintance"]));
       eventBox.put(Event("go to a bar", isIdea: true,
           initialTags: ["acquaintance", "nightlife"]));
       eventBox.put(Event("invite to existing plans", isIdea: true,
-          initialTags: ["acquaintance", ]));
+          initialTags: ["acquaintance"]));
       eventBox.put(Event("go get coffee", isIdea: true,
-          initialTags: ["acquaintance", ]));
+          initialTags: ["acquaintance", "out-of-touch"]));
       eventBox.put(Event("ask how one of their projects is going", isIdea: true,
-          initialTags: ["acquaintance", ]));
+          initialTags: ["acquaintance"]));
       eventBox.put(Event("share something personal (like a quirk, a dream for the future, a secret wish...)", isIdea: true,
           initialTags: []));
       eventBox.put(Event("ask how one of their close relations is doing", isIdea: true,
@@ -117,7 +117,7 @@ class ObjectBox {
           initialTags: ["dancing", "music"]));
       eventBox.put(Event("host a potluck", isIdea: true,
           initialTags: ["cooking and baking"]));
-      eventBox.put(Event("go see a film", isIdea: true,
+      eventBox.put(Event("watch a movie", isIdea: true,
           initialTags: ["movies"]));
       eventBox.put(Event("go to a museum", isIdea: true,
           initialTags: ["art"]));
