@@ -263,23 +263,21 @@ class _FriendDetailState extends State<FriendDetail> {
   }
   
   Widget _buildEP() {
-    assert(_friendId != null);
-
-    var friend = objectbox.friendBox.get(_friendId!);
+    var friend = _friendId != null ? objectbox.friendBox.get(_friendId!) : null;
 
     var pastEventItem = _epItems[PAST_EVENT_IDX];
     var upcomingEventItem = _epItems[UPCOMING_EVENT_IDX];
     var interestItem = _epItems[INTEREST_IDX];
 
     List<Event> pastEvents = [];
-    if (pastEventItem.isExpanded) {
-      pastEvents = objectbox.getOneOffEventsForFriend(friend!).where((event) =>
+    if (pastEventItem.isExpanded && friend != null) {
+      pastEvents = objectbox.getOneOffEventsForFriend(friend).where((event) =>
           event.date.isBefore(DateTime.now())).toList();
     }
 
     List<Event> upcomingEvents = [];
-    if (upcomingEventItem.isExpanded) {
-      upcomingEvents = objectbox.getOneOffEventsForFriend(friend!).where((event) =>
+    if (upcomingEventItem.isExpanded && friend != null) {
+      upcomingEvents = objectbox.getOneOffEventsForFriend(friend).where((event) =>
           event.date.isAfter(DateTime.now())).toList();
       upcomingEvents.addAll(objectbox.getRepeatingEventsForFriend(friend));
     }
