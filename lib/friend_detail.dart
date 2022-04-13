@@ -350,78 +350,91 @@ class _FriendDetailState extends State<FriendDetail> {
   }
 
   Widget _buildForm(BuildContext context) {
-    // Build a Form widget using the _formKey created above.
     return Form(
       key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextFormField(
-            controller: _nameController,
-            decoration: const InputDecoration(hintText: "Input Name"),
-            // The validator receives the text that the user has entered.
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
-            },
-          ),
-          TextFormField(
-            readOnly: true,
-            controller: _dateController,
-            decoration: InputDecoration(hintText: 'Set Birthdate'),
-            onTap: () async {
-              DateTime oldDate = DateTime.now();
-              if (_dateController.text.isNotEmpty) {
-                oldDate = DateFormat.yMMMMd('en_US').parse(_dateController.text);
-              }
+      child: FractionallySizedBox(
+        widthFactor: 0.95,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            TextFormField(
+              controller: _nameController,
 
-              var newDate = await showDatePicker(
-                  context: context,
-                  initialDate: oldDate,
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime(2100));
-              // TODO: use dateFormat from Friend instead.
-              if (newDate != null) {
-                _dateController.text = DateFormat.yMMMMd('en_US').format(newDate);
-              }
-            },
-          ),
-          Row(children: [
-            if (_friendId != null && objectbox.friendBox.get(_friendId!)!.overdue())
-              const Icon(
-                Icons.announcement,
-                color: Colors.red,
+              decoration: const InputDecoration(
+                labelText: 'Name',
+                labelStyle: TextStyle(
+                  color: Colors.black54,
+                ),
               ),
-            const Text("Overdue threshold (weeks): "),
-            Container(
-              width: 125,
-              child: TextFormField(
-                controller: _reminderController,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return null;
-                  }
 
-                  var maybeInt = int.tryParse(value);
-                  if (maybeInt == null || maybeInt < 0) {
-                    return 'Enter positive number';
-                  }
-                  return null;
-                },
-              )
-          )]),
-          Row(children: [
-            const Text("Friendship Level: "),
-            DropdownButton<FriendshipLevel>(
-              value: _friendshipLevelDropdownValue,
-              elevation: 16,
-              onChanged: (FriendshipLevel? newValue) {
-                setState(() {
-                  _friendshipLevelDropdownValue = newValue!;
-                });
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter some text';
+                }
+                return null;
               },
+            ),
+
+            TextFormField(
+              readOnly: true,
+              controller: _dateController,
+
+              decoration: const InputDecoration(
+                labelText: 'Birthdate',
+                labelStyle: TextStyle(
+                  color: Colors.black54,
+                ),
+              ),
+
+              onTap: () async {
+                DateTime oldDate = DateTime.now();
+                if (_dateController.text.isNotEmpty) {
+                  oldDate = DateFormat.yMMMMd('en_US').parse(_dateController.text);
+                }
+
+                var newDate = await showDatePicker(
+                    context: context,
+                    initialDate: oldDate,
+                    firstDate: DateTime(1900),
+                    lastDate: DateTime(2100));
+                // TODO: use dateFormat from Friend instead.
+                if (newDate != null) {
+                  _dateController.text = DateFormat.yMMMMd('en_US').format(newDate);
+                }
+              },
+            ),
+
+            TextFormField(
+              controller: _reminderController,
+
+              decoration: InputDecoration(
+                icon: (_friendId != null && objectbox.friendBox.get(_friendId!)!.overdue()) ?
+                  const Icon(
+                    Icons.announcement,
+                    color: Colors.red,
+                  ) : null,
+                labelText: 'Overdue threshold (weeks)',
+                labelStyle: const TextStyle(
+                  color: Colors.black54,
+                ),
+              ),
+
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return null;
+                }
+
+                var maybeInt = int.tryParse(value);
+                if (maybeInt == null || maybeInt < 0) {
+                  return 'Enter positive number';
+                }
+                return null;
+              },
+            ),
+
+            DropdownButtonFormField(
+              value: _friendshipLevelDropdownValue,
+
               // TODO: ugly to do this based on index.
               items: FriendshipLevel.values.sublist(1).map<DropdownMenuItem<FriendshipLevel>>((FriendshipLevel value) {
                 return DropdownMenuItem<FriendshipLevel>(
@@ -429,9 +442,22 @@ class _FriendDetailState extends State<FriendDetail> {
                   child: Text(value.string),
                 );
               }).toList(),
+
+              decoration: const InputDecoration(
+                labelText: 'Friendship Level',
+                labelStyle: TextStyle(
+                  color: Colors.black54,
+                ),
+              ),
+
+              onChanged: (FriendshipLevel? newValue) {
+                setState(() {
+                  _friendshipLevelDropdownValue = newValue!;
+                });
+              },
             ),
-          ]),
-        ],
+          ],
+        ),
       ),
     );
   }
