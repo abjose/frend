@@ -404,6 +404,7 @@ class _FriendDetailState extends State<FriendDetail> {
 
             TextFormField(
               controller: _reminderController,
+              keyboardType: TextInputType.number,
 
               decoration: InputDecoration(
                 icon: (_friendId != null && objectbox.friendBox.get(_friendId!)!.overdue()) ?
