@@ -49,10 +49,7 @@ class _EventDetailState extends State<EventDetail> {
     }
 
     _titleController.text = _event.title;
-
-    if (_event.frequency != null) {
-      _repeatDropdownValue = _event.frequency;
-    }
+    _repeatDropdownValue = _event.frequency;
 
     for (var friend in _event.friends) {
       _selectedFriends[friend.id] = friend.name;
@@ -201,7 +198,15 @@ class _EventDetailState extends State<EventDetail> {
   }
 
   Widget _buildForm(BuildContext context) {
-    List<Widget> friendList = [];
+    List<Widget> friendList = [
+      Center(
+        child: ElevatedButton(
+          onPressed: _editFriends,
+          child: const Text('Edit Friends'),
+        ),
+      ),
+    ];
+
     if (!_event.isIdea) {
       for (var friendName in _selectedFriends.values) {
         friendList.add(
@@ -221,16 +226,18 @@ class _EventDetailState extends State<EventDetail> {
             )
         );
       }
-      friendList.add(
-        ElevatedButton(
-          onPressed: _editFriends,
-          child: const Text('Edit Friends'),
-        ),
-      );
     }
 
     // Maybe should abstract this...
-    List<Widget> tagList = [];
+    List<Widget> tagList = [
+      Center(
+        child: ElevatedButton(
+          onPressed: _editTags,
+          child: const Text('Edit Tags'),
+        ),
+      ),
+    ];
+
     for (var tagTitle in _selectedTags.values) {
       tagList.add(
           Card(
@@ -244,34 +251,35 @@ class _EventDetailState extends State<EventDetail> {
           )
       );
     }
-    tagList.add(
-      ElevatedButton(
-        onPressed: _editTags,
-        child: const Text('Edit Tags'),
-      ),
-    );
 
     // Build a Form widget using the _formKey created above.
     return Form(
       key: _formKey,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          TextFormField(
-            controller: _titleController,
-            decoration: const InputDecoration(hintText: "Input Title"),
-            // The validator receives the text that the user has entered.
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter some text';
-              }
-              return null;
-            },
-          ),
-          if (!_event.isIdea)
-            Container(
-              padding: EdgeInsets.only(left: 20, right: 20, top: 10),
-              child: DateTimePicker(
+      child: FractionallySizedBox(
+        widthFactor: 0.95,
+        child: Column(
+          children: [
+            TextFormField(
+              controller: _titleController,
+
+              decoration: const InputDecoration(
+                labelText: 'Title',
+                labelStyle: TextStyle(
+                  color: Colors.black54,
+                ),
+              ),
+
+              // The validator receives the text that the user has entered.
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Please enter some text';
+                }
+                return null;
+              },
+            ),
+
+            if (!_event.isIdea)
+              DateTimePicker(
                 type: DateTimePickerType.dateTimeSeparate,
                 dateMask: 'd MMM, yyyy',
                 initialValue: _event.date.toString(),
@@ -292,20 +300,12 @@ class _EventDetailState extends State<EventDetail> {
                     _event.date = maybeDate;
                   }
                 },
-              )
-            ),
-          if (!_event.isIdea)
-            Row(children: [
-              const Text("Repeat Frequency: "),
-              DropdownButton<RepeatFrequency>(
+              ),
+
+            if (!_event.isIdea)
+              DropdownButtonFormField(
                 value: _repeatDropdownValue,
-                elevation: 16,
-                // style: const TextStyle(color: Colors.deepPurple),
-                onChanged: (RepeatFrequency? newValue) {
-                  setState(() {
-                    _repeatDropdownValue = newValue!;
-                  });
-                },
+
                 // TODO: ugly to do this based on index.
                 items: RepeatFrequency.values.sublist(1).map<DropdownMenuItem<RepeatFrequency>>((RepeatFrequency value) {
                   return DropdownMenuItem<RepeatFrequency>(
@@ -313,18 +313,37 @@ class _EventDetailState extends State<EventDetail> {
                     child: Text(value.string),
                   );
                 }).toList(),
+
+                decoration: const InputDecoration(
+                  labelText: 'Repeat Frequency',
+                  labelStyle: TextStyle(
+                    color: Colors.black54,
+                  ),
+                ),
+
+                onChanged: (RepeatFrequency? newValue) {
+                  setState(() {
+                    _repeatDropdownValue = newValue!;
+                  });
+                },
               ),
-          ]),
-          if (!_event.isIdea)
-            Flexible(child: ListView(
-              padding: const EdgeInsets.all(8),
-              children: friendList,
-            )),
-          Flexible(child: ListView(
-            padding: const EdgeInsets.all(8),
-            children: tagList,
-          )),
-        ],
+
+            const Padding(
+              padding: EdgeInsets.only(top: 10),
+            ),
+
+            if (!_event.isIdea)
+              Flexible(child: ListView(
+                // shrinkWrap: true,
+                children: friendList,
+              )),
+            if (_event.isIdea)
+              Flexible(child: ListView(
+                // shrinkWrap: true,
+                children: tagList,
+              )),
+          ],
+        ),
       ),
     );
   }
@@ -336,7 +355,7 @@ class _EventDetailState extends State<EventDetail> {
         title: Text('${_event.id == 0 ? "Add" : "Edit"} Event${_event.isIdea ? " Idea" : ""}'),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.save, color: Colors.white),
+            icon: const Icon(Icons.save, color: Colors.white),
             onPressed: () {
               if (_formKey.currentState!.validate()) {
                 save();
@@ -344,12 +363,16 @@ class _EventDetailState extends State<EventDetail> {
             },
           ),
           IconButton(
-            icon: Icon(Icons.delete, color: Colors.white),
+            icon: const Icon(Icons.delete, color: Colors.white),
             onPressed: _deleteEvent,
           )
         ],
       ),
-      body: _buildForm(context),
+
+      body: Container(
+        alignment: Alignment.center,
+        child: _buildForm(context)
+      ),
     );
   }
 
