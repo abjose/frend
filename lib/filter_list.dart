@@ -69,7 +69,12 @@ class _FilterListState extends State<FilterList> {
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         ExpansionTile(
-          title: const Text('Filter by Tag'),
+          title: const Text(
+            'Filter by Tag',
+            style: TextStyle(
+              fontSize: 13,
+            ),
+          ),
           initiallyExpanded: expand,
           children: <Widget>[
             Wrap(

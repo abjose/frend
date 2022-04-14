@@ -131,12 +131,22 @@ class _EventIdeaListState extends State<EventIdeaList> {
   @override
   Widget build(BuildContext context) => Scaffold(
     appBar: AppBar(
-      title: const Text('Event Ideas'),
+      title: const Text('Create an Event'),
     ),
     body: Column(children: <Widget>[
+      const Padding(padding: EdgeInsets.only(top: 10)),
       ElevatedButton(
-        child: const Text('Custom Event'),
+        child: const Text('One-off Event'),
         onPressed: () => _goToEventDetail(Event("", date: widget.date), false),
+      ),
+      Container(
+        padding: const EdgeInsets.only(top: 10),
+        child: const Text(
+            "Event Ideas",
+            style: TextStyle(
+              fontSize: 20,
+            ),
+        ),
       ),
       _filterChips(),
       Expanded(
