@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:frend/friend_list.dart';
 import 'package:frend/calendar.dart';
 import 'package:frend/tag_list.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'dart:async';
 import 'db.dart';
 import 'help_page.dart';
@@ -28,6 +30,8 @@ class FrendApp extends StatelessWidget {
 }
 
 class FrendHome extends StatelessWidget {
+  const FrendHome({Key? key}) : super(key: key);
+
   void _goToTagList(context) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
@@ -60,6 +64,13 @@ class FrendHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    SharedPreferences.getInstance().then((prefs) {
+      var shown = prefs.getBool("introShown");
+      if (shown == null || !shown) {
+        _goToHelpPage(context);
+      }
+    });
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
@@ -110,7 +121,7 @@ class FrendHome extends StatelessWidget {
               ],
             ),
           ),
-          body: TabBarView(
+          body: const TabBarView(
             children: [
               EventCalendar(),
               FriendList(),
