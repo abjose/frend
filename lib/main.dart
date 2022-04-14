@@ -4,6 +4,7 @@ import 'package:frend/calendar.dart';
 import 'package:frend/tag_list.dart';
 import 'dart:async';
 import 'db.dart';
+import 'help_page.dart';
 import 'notification_service.dart';
 
 Future<void> main() async {
@@ -36,6 +37,21 @@ class FrendHome extends StatelessWidget {
               title: const Text('Tags'),
             ),
             body: TagList(),
+          );
+        },
+      ),
+    );
+  }
+
+  void _goToHelpPage(context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Help'),
+            ),
+            body: HelpPage(),
           );
         },
       ),
@@ -83,6 +99,11 @@ class FrendHome extends StatelessWidget {
                       value: "Settings",
                       child: const Text("Settings"),
                       onTap: () => print("settings!"),
+                    ),
+                    DropdownMenuItem<String>(
+                      value: "Help",
+                      child: const Text("Help"),
+                      onTap: () => _goToHelpPage(context),
                     ),
                   ],
                 ),
