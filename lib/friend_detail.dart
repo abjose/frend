@@ -51,13 +51,13 @@ class _FriendDetailState extends State<FriendDetail> {
   final TextEditingController _reminderController = TextEditingController();
   final TextEditingController _noteController = TextEditingController();
 
-  static const int PAST_EVENT_IDX = 0;
-  static const int UPCOMING_EVENT_IDX = 1;
-  static const int INTEREST_IDX = 2;
+  static const int INTEREST_IDX = 0;
+  static const int PAST_EVENT_IDX = 1;
+  static const int UPCOMING_EVENT_IDX = 2;
   final List<EPListItem> _epItems = [
+    EPListItem(headerValue: "Interests"),
     EPListItem(headerValue: "Past Events"),
     EPListItem(headerValue: "Upcoming Events"),
-    EPListItem(headerValue: "Interests"),
   ];
 
   // TODO: get these tags in a smarter way.
@@ -296,10 +296,15 @@ class _FriendDetailState extends State<FriendDetail> {
           _epItems[index].isExpanded = !isExpanded;
         });
       },
+
+      // If change this order, make sure to update _epItems and _IDX vars.
+      // TODO: clean this up so can rearrange without causing issues.
       children: [
-        _getEventExpansionPanel(pastEventItem, pastEvents),
-        _getEventExpansionPanel(upcomingEventItem, upcomingEvents),
         _getInterestExpansionPanel(interestItem, interests),
+        if (friend != null)
+          _getEventExpansionPanel(pastEventItem, pastEvents),
+        if (friend != null)
+          _getEventExpansionPanel(upcomingEventItem, upcomingEvents),
       ],
     );
   }
@@ -485,7 +490,7 @@ class _FriendDetailState extends State<FriendDetail> {
       body: ListView(
         children: [
           _buildForm(context),
-          _buildScheduleButton(),
+          if (_friendId != null) _buildScheduleButton(),
           _buildEP(),
           _buildNotesPanel(),
         ],
