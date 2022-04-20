@@ -135,7 +135,7 @@ class _FriendDetailState extends State<FriendDetail> {
   }
 
   _deleteFriend() {
-    showConfirmationDialog(context, "friend", () {
+    showConfirmationDialog(context, "Are you sure you want to delete this friend?", () {
       if (_friendId != null) {
         objectbox.friendBox.remove(_friendId!);
         Navigator.pop(context);
