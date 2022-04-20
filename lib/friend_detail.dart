@@ -58,6 +58,11 @@ class _FriendDetailState extends State<FriendDetail> {
     EPListItem(headerValue: "Upcoming Events"),
   ];
 
+  // Do this some other way?
+  final List<String> _friendshipLevelTags = [
+    "acquaintance", "out-of-touch", "partner",
+  ];
+
   // TODO: get these tags in a smarter way.
   final Map<FriendshipLevel, Set<String>> _extraTagsForFriendshipLevel = {
     FriendshipLevel.acquaintance: {"acquaintance"},
@@ -184,7 +189,9 @@ class _FriendDetailState extends State<FriendDetail> {
   _editTags() {
     Map<int, String> allTags = {};
     for (var tag in objectbox.tagBox.getAll()) {
-      allTags[tag.id] = tag.title;
+      if (!_friendshipLevelTags.contains(tag.title)) {
+        allTags[tag.id] = tag.title;
+      }
     }
 
     Navigator.of(context).push(
