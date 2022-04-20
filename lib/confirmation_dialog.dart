@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-void showConfirmationDialog(BuildContext context, String text, VoidCallback cb) {
+void showConfirmationDialog(BuildContext context, String? title, String text, VoidCallback cb) {
   showDialog(
       context: context,
       useRootNavigator: false,
       builder: (BuildContext ctx) {
         return AlertDialog(
-          title: const Text('Please Confirm'),
+          title: Text(title ?? 'Please Confirm'),
           content: Text(text),
           actions: [
 

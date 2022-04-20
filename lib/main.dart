@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frend/confirmation_dialog.dart';
 import 'package:frend/friend_list.dart';
 import 'package:frend/calendar.dart';
 import 'package:frend/tag_list.dart';
@@ -67,7 +68,8 @@ class FrendHome extends StatelessWidget {
     SharedPreferences.getInstance().then((prefs) {
       var shown = prefs.getBool("introShown");
       if (shown == null || !shown) {
-        _goToHelpPage(context);
+        showConfirmationDialog(context, "Welcome!", "Would you like to view the help page?",
+                () => _goToHelpPage(context));
       }
     });
 
