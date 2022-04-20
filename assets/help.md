@@ -30,25 +30,27 @@ You can add new Event Ideas by pressing the + button in the bottom-right of the 
 
 ## Friends tab
 
-By clicking in the "Friends" tab, you can view your Friend list. Clicking the + button in the
-bottom-right of the screen will take you to the "Add Friend" screen, where you can edit the details
-of a new friend entry. To save the new friend, click the floppy disk icon in the top right.
+By clicking the "Friends" tab, you can view your Friend list. Clicking the + button in the
+bottom-right of the screen will take you to the "Add Friend" page.
 
-Some fields that might be confusing on the Friend page:
+[comment]: <> (To save the new friend, click the)
+[comment]: <> (floppy disk icon in the top right.)
+
+Some fields that might be confusing on the Add Friend page:
 - *Overdue threshold (weeks)*: if specified, a warning symbol will be displayed next to friends that 
-  don't have an event scheduled with this number of weeks.
+  don't have an event scheduled within this number of weeks.
 - *Friendship Level*: Whether this friend is a "regular" friend, an acquaintance, a friend you've
   fallen out of touch with, etc. Based on your selection, different buttons may appear on the page.
 - *Interests*: A list of tags describing things this friend is interested in.
 
-Once you've added some friends, they'll appear in the Friends tab. You can click on them to edit
-their details, or find buttons to schedule events. When you schedule events through the Edit Friend
+Once you've added some friends, they'll appear in the Friends tab. You can tap on them to edit
+their details and schedule events with them. When you schedule events through the Edit Friend
 page, that friend's name and interests will automatically be populated in the new Event.
 
 ## Tags
 
 Tags are used for noting people's interests and for marking Event Ideas with relevant interests.
-You can filter through the Event Idea list based on tag when searching for things to do.
+You can filter through the Event Idea list based on tags when searching for things to do.
 
 You can edit available tags by clicking on the Gear icon in the top-right of the main screen of 
 Frend and selecting "Tags" from the dropdown.
