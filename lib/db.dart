@@ -47,7 +47,7 @@ class ObjectBox {
       // Friendship levels
       tagBox.put(Tag("acquaintance"));
       tagBox.put(Tag("out-of-touch"));
-      tagBox.put(Tag("partner"));
+      // tagBox.put(Tag("partner"));
 
       // Interests
       tagBox.put(Tag("art"));
