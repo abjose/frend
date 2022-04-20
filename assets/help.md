@@ -47,10 +47,11 @@ You can also schedule events with specific friends via their Friend page. When y
 through the Edit Friend page, that friend's name and interests will automatically be populated in
 the new Event.
 
-## Tags
+## Tags / Interests
 
-**Tags** are used for noting people's interests and for marking Event Ideas with relevant interests.
-You can filter through the Event Idea list based on tags when searching for things to do.
+**Tags** (sometimes referred to as **Interests**) are used for noting people's interests and for
+marking Event Ideas with relevant interests. You can filter through the Event Idea list based on
+tags when searching for things to do.
 
 You can edit available tags by tapping on the Gear icon in the top-right of the main screen of
 Frend and selecting "Tags" from the dropdown.
