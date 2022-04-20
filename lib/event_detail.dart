@@ -152,6 +152,7 @@ class _EventDetailState extends State<EventDetail> {
       MaterialPageRoute<void>(
         builder: (context) {
           return SearchableSelectionList(
+              title: "Edit Selected Friends",
               elements: allFriends,
               selectedItems: _selectedFriends.keys.toSet(),
               tags: _interestMap,
@@ -181,6 +182,7 @@ class _EventDetailState extends State<EventDetail> {
       MaterialPageRoute<void>(
         builder: (context) {
           return SearchableSelectionList(
+            title: "Edit Tags",
             elements: allTags,
             selectedItems: _selectedTags.keys.toSet(),
             onDone: (newSelected) {

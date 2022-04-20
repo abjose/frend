@@ -8,6 +8,7 @@ import 'db.dart';
 
 // https://www.kindacode.com/article/how-to-create-a-filter-search-listview-in-flutter/
 class SearchableSelectionList extends StatefulWidget {
+  final String title;
   final Map<int, String> elements;  // {id: value}
   final Set<int>? selectedItems; // Ids of already selected rows, if any.
   final bool showX; // Will show red X if true; otherwise green checkmark.
@@ -17,7 +18,7 @@ class SearchableSelectionList extends StatefulWidget {
   final ValueSetter<Set<int>> onDone;
 
   const SearchableSelectionList(
-      {Key? key, required this.elements,
+      {Key? key, this.title = "Edit Selection", required this.elements,
         this.selectedItems, this.showX = false, this.tags,
         required this.onDone})
       : super(key: key);
@@ -123,10 +124,10 @@ class _SearchableSelectionListState extends State<SearchableSelectionList> {
     final mapValues = _foundElements.entries.toList();  // ehhhh
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Selection'),
+        title: Text(widget.title),
         actions: [
           IconButton(
-            icon: Icon(Icons.check),
+            icon: const Icon(Icons.check),
             onPressed: () {
               widget.onDone(_selectedElements);
               Navigator.pop(context);

@@ -191,6 +191,7 @@ class _FriendDetailState extends State<FriendDetail> {
       MaterialPageRoute<void>(
         builder: (context) {
           return SearchableSelectionList(
+            title: "Edit Interests",
             elements: allTags,
             selectedItems: _selectedTags.keys.toSet(),
             onDone: (newSelected) {
