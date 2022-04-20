@@ -9,7 +9,6 @@ import 'event_detail.dart';
 import 'filter_list.dart';
 import 'model.dart';
 
-
 class EPListItem {
   EPListItem({
     required this.headerValue,
@@ -19,7 +18,6 @@ class EPListItem {
   String headerValue;
   bool isExpanded;
 }
-
 
 class FriendDetail extends StatefulWidget {
   final int? friendId;
@@ -197,11 +195,11 @@ class _FriendDetailState extends State<FriendDetail> {
             selectedItems: _selectedTags.keys.toSet(),
             onDone: (newSelected) {
               WidgetsBinding.instance?.addPostFrameCallback((_) => setState(() {
-                _selectedTags.clear();
-                for (var id in newSelected) {
-                  _selectedTags[id] = allTags[id]!;
-                }
-              }));
+                    _selectedTags.clear();
+                    for (var id in newSelected) {
+                      _selectedTags[id] = allTags[id]!;
+                    }
+                  }));
             },
           );
         },
@@ -277,14 +275,18 @@ class _FriendDetailState extends State<FriendDetail> {
 
     List<Event> pastEvents = [];
     if (pastEventItem.isExpanded && friend != null) {
-      pastEvents = objectbox.getOneOffEventsForFriend(friend).where((event) =>
-          event.date.isBefore(DateTime.now())).toList();
+      pastEvents = objectbox
+          .getOneOffEventsForFriend(friend)
+          .where((event) => event.date.isBefore(DateTime.now()))
+          .toList();
     }
 
     List<Event> upcomingEvents = [];
     if (upcomingEventItem.isExpanded && friend != null) {
-      upcomingEvents = objectbox.getOneOffEventsForFriend(friend).where((event) =>
-          event.date.isAfter(DateTime.now())).toList();
+      upcomingEvents = objectbox
+          .getOneOffEventsForFriend(friend)
+          .where((event) => event.date.isAfter(DateTime.now()))
+          .toList();
       upcomingEvents.addAll(objectbox.getRepeatingEventsForFriend(friend));
     }
 
@@ -307,24 +309,22 @@ class _FriendDetailState extends State<FriendDetail> {
       // TODO: clean this up so can rearrange without causing issues.
       children: [
         _getInterestExpansionPanel(interestItem, interests),
-        if (friend != null)
-          _getEventExpansionPanel(pastEventItem, pastEvents),
-        if (friend != null)
-          _getEventExpansionPanel(upcomingEventItem, upcomingEvents),
+        if (friend != null) _getEventExpansionPanel(pastEventItem, pastEvents),
+        if (friend != null) _getEventExpansionPanel(upcomingEventItem, upcomingEvents),
       ],
     );
   }
 
   Widget _buildNotesPanel() {
     return ListTile(
-      minVerticalPadding: 20,
-      title: Text("Notes"),
-      subtitle: TextFormField(
-        controller: _noteController,
-        decoration: const InputDecoration(hintText: 'Edit Note'),
-        maxLines: null,
-        keyboardType: TextInputType.multiline,
-      ));
+        minVerticalPadding: 20,
+        title: Text("Notes"),
+        subtitle: TextFormField(
+          controller: _noteController,
+          decoration: const InputDecoration(hintText: 'Edit Note'),
+          maxLines: null,
+          keyboardType: TextInputType.multiline,
+        ));
   }
 
   Widget _buildScheduleButton() {
@@ -368,14 +368,12 @@ class _FriendDetailState extends State<FriendDetail> {
           children: [
             TextFormField(
               controller: _nameController,
-
               decoration: const InputDecoration(
                 labelText: 'Name',
                 labelStyle: TextStyle(
                   color: Colors.black54,
                 ),
               ),
-
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Please enter some text';
@@ -383,18 +381,15 @@ class _FriendDetailState extends State<FriendDetail> {
                 return null;
               },
             ),
-
             TextFormField(
               readOnly: true,
               controller: _dateController,
-
               decoration: const InputDecoration(
                 labelText: 'Birthdate',
                 labelStyle: TextStyle(
                   color: Colors.black54,
                 ),
               ),
-
               onTap: () async {
                 DateTime oldDate = DateTime.now();
                 if (_dateController.text.isNotEmpty) {
@@ -412,23 +407,21 @@ class _FriendDetailState extends State<FriendDetail> {
                 }
               },
             ),
-
             TextFormField(
               controller: _reminderController,
               keyboardType: TextInputType.number,
-
               decoration: InputDecoration(
-                icon: (_friendId != null && objectbox.friendBox.get(_friendId!)!.overdue()) ?
-                  const Icon(
-                    Icons.announcement,
-                    color: Colors.red,
-                  ) : null,
+                icon: (_friendId != null && objectbox.friendBox.get(_friendId!)!.overdue())
+                    ? const Icon(
+                        Icons.announcement,
+                        color: Colors.red,
+                      )
+                    : null,
                 labelText: 'Overdue threshold (weeks)',
                 labelStyle: const TextStyle(
                   color: Colors.black54,
                 ),
               ),
-
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return null;
@@ -441,12 +434,13 @@ class _FriendDetailState extends State<FriendDetail> {
                 return null;
               },
             ),
-
             DropdownButtonFormField(
               value: _friendshipLevelDropdownValue,
 
               // TODO: ugly to do this based on index.
-              items: FriendshipLevel.values.sublist(1).map<DropdownMenuItem<FriendshipLevel>>((FriendshipLevel value) {
+              items: FriendshipLevel.values
+                  .sublist(1)
+                  .map<DropdownMenuItem<FriendshipLevel>>((FriendshipLevel value) {
                 return DropdownMenuItem<FriendshipLevel>(
                   value: value,
                   child: Text(value.string),
@@ -475,33 +469,32 @@ class _FriendDetailState extends State<FriendDetail> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('${_friendId == null ? "Add" : "Edit"} Friend'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.save, color: Colors.white),
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                save();
-              }
-            },
-          ),
-          IconButton(
-            icon: Icon(Icons.delete, color: Colors.white),
-            onPressed: _deleteFriend,
-          )
-        ],
-      ),
-      // body: _buildForm(context),
-      body: ListView(
-        children: [
-          _buildForm(context),
-          if (_friendId != null) _buildScheduleButton(),
-          _buildEP(),
-          _buildNotesPanel(),
-        ],
-      )
-    );
+        appBar: AppBar(
+          title: Text('${_friendId == null ? "Add" : "Edit"} Friend'),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.save, color: Colors.white),
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  save();
+                }
+              },
+            ),
+            IconButton(
+              icon: Icon(Icons.delete, color: Colors.white),
+              onPressed: _deleteFriend,
+            )
+          ],
+        ),
+        // body: _buildForm(context),
+        body: ListView(
+          children: [
+            _buildForm(context),
+            if (_friendId != null) _buildScheduleButton(),
+            _buildEP(),
+            _buildNotesPanel(),
+          ],
+        ));
   }
 
   @override
