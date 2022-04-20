@@ -98,7 +98,7 @@ class _FriendDetailState extends State<FriendDetail> {
     setState(() {}); // need this?
   }
 
-  save() {
+  save([pop = true]) {
     var friend = Friend("");
     if (_friendId != null) {
       friend = objectbox.friendBox.get(_friendId!)!;
@@ -131,7 +131,10 @@ class _FriendDetailState extends State<FriendDetail> {
     friend.interests.addAll(dbTags);
 
     _friendId = objectbox.friendBox.put(friend);
-    Navigator.pop(context);
+
+    if (pop) {
+      Navigator.pop(context);
+    }
   }
 
   _deleteFriend() {
@@ -162,6 +165,9 @@ class _FriendDetailState extends State<FriendDetail> {
 
   // Note that this adds _selectedTags by default.
   void _goToEventIdeaList(Set<String> extraTags) {
+    // Save changes to friend before we switch pages.
+    save(false);
+
     Set<String> allTags = _selectedTags.values.toSet();
     allTags.addAll(extraTags);
 
@@ -261,7 +267,7 @@ class _FriendDetailState extends State<FriendDetail> {
       isExpanded: item.isExpanded,
     );
   }
-  
+
   Widget _buildEP() {
     var friend = _friendId != null ? objectbox.friendBox.get(_friendId!) : null;
 
@@ -332,7 +338,7 @@ class _FriendDetailState extends State<FriendDetail> {
           },
         ),
         if (_friendshipLevelDropdownValue == FriendshipLevel.acquaintance ||
-            _friendshipLevelDropdownValue == FriendshipLevel.outOfTouch) 
+            _friendshipLevelDropdownValue == FriendshipLevel.outOfTouch)
           const Padding(padding: EdgeInsets.symmetric(horizontal: 5)),
         if (_friendshipLevelDropdownValue == FriendshipLevel.acquaintance)
           ElevatedButton(
