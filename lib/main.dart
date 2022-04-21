@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frend/confirmation_dialog.dart';
 import 'package:frend/friend_list.dart';
 import 'package:frend/calendar.dart';
+import 'package:frend/settings_page.dart';
 import 'package:frend/tag_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -63,6 +64,21 @@ class FrendHome extends StatelessWidget {
     );
   }
 
+  void _goToSettingsPage(context) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Settings'),
+            ),
+            body: SettingsPage(),
+          );
+        },
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     SharedPreferences.getInstance().then((prefs) {
@@ -111,7 +127,7 @@ class FrendHome extends StatelessWidget {
                     DropdownMenuItem<String>(
                       value: "Settings",
                       child: const Text("Settings"),
-                      onTap: () => print("settings!"),
+                      onTap: () => _goToSettingsPage(context),
                     ),
                     DropdownMenuItem<String>(
                       value: "Help",
