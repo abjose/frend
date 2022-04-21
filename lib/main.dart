@@ -5,6 +5,7 @@ import 'package:frend/calendar.dart';
 import 'package:frend/settings_page.dart';
 import 'package:frend/tag_list.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 
 import 'dart:async';
 import 'db.dart';
@@ -20,6 +21,8 @@ Future<void> main() async {
   objectbox.maybePopulate();
 
   await NotificationService().init();
+
+  await Settings.init();
 
   runApp(FrendApp());
 }
@@ -68,12 +71,7 @@ class FrendHome extends StatelessWidget {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) {
-          return Scaffold(
-            appBar: AppBar(
-              title: const Text('Settings'),
-            ),
-            body: SettingsPage(),
-          );
+          return SettingsPage();
         },
       ),
     );
@@ -81,11 +79,13 @@ class FrendHome extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SharedPreferences.getInstance().then((prefs) {
-      var shown = prefs.getBool("introShown");
-      if (shown == null || !shown) {
+    // TODO: this getInstance is no longer necessary but keeps the widget from crashing, should fix.
+    SharedPreferences.getInstance().then((prefs) async {
+      var showHelp = Settings.getValue<bool>("show-help", true);
+      if (showHelp) {
         showConfirmationDialog(context, "Welcome!", "Would you like to view the help page?",
                 () => _goToHelpPage(context));
+        await Settings.setValue<bool>("show-help", false);
       }
     });
 
