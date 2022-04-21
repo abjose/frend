@@ -20,12 +20,13 @@ In the "Create an Event" page, you can see a list of **Event Ideas**. Event Idea
 blueprints for new events - feel free to remove or change any of the existing ones, and add your own
 ideas! You can edit an Event Idea by tapping on the "edit" (pencil) button on any row.
 
-You can add new Event Ideas by pressing the + button in the bottom-right of the screen, and you can
-filter through existing ideas using "Filter by Tag". We'll talk more about tags later.
+You can add new Event Ideas by pressing the + button in the bottom-right of the screen, then
+selecting "Add Event Idea". You can filter through existing ideas using "Filter by Tag". We'll talk
+more about tags later.
 
 To create an Event based on an Event Idea, just press the "copy" (two squares) button on any row.
-You can also make a one-off Event by tapping the "One-off Event" button at the top-center. This
-will take you to the "Add Event" page.
+You can also make a one-off Event by tapping the the + button in the bottom-right corner and
+pressing "Create One-off Event". This will take you to the "Add Event" page.
 
 Once you've set the event details as you desire, tap the "save" (floppy disk) button in the top
 right of the Add Event page. This will save the event and take you back to the calendar.

@@ -43,6 +43,7 @@ dependencies:
   flutter_local_notifications: ^9.2.0
   flutter_markdown: ^0.6.9+1
   shared_preferences: ^2.0.13
+  flutter_speed_dial: ^5.1.0
 
 dev_dependencies:
   flutter_test:

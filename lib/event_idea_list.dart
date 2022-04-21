@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:frend/filter_list.dart';
 import 'package:frend/objectbox.g.dart';
 
@@ -134,20 +135,6 @@ class _EventIdeaListState extends State<EventIdeaList> {
       title: const Text('Create an Event'),
     ),
     body: Column(children: <Widget>[
-      const Padding(padding: EdgeInsets.only(top: 10)),
-      ElevatedButton(
-        child: const Text('One-off Event'),
-        onPressed: () => _goToEventDetail(Event("", date: widget.date), false),
-      ),
-      Container(
-        padding: const EdgeInsets.only(top: 10),
-        child: const Text(
-            "Event Ideas",
-            style: TextStyle(
-              fontSize: 20,
-            ),
-        ),
-      ),
       _filterChips(),
       Expanded(
           child: StreamBuilder<List<Event>>(
@@ -157,10 +144,22 @@ class _EventIdeaListState extends State<EventIdeaList> {
                   itemCount: _events.length,
                   itemBuilder: _itemBuilder(_events)))),
     ]),
-    floatingActionButton: FloatingActionButton(
-      key: const Key('submit'),
-      onPressed: () => _goToEventDetail(Event("", isIdea: true), false),
-      child: const Icon(Icons.add),
+
+    floatingActionButton: SpeedDial(
+      icon: Icons.add,
+      spaceBetweenChildren: 5,
+      children: [
+        SpeedDialChild(
+          child: const Icon(Icons.lightbulb),
+          label: 'Add Event Idea',
+          onTap: () => _goToEventDetail(Event("", isIdea: true), false),
+        ),
+        SpeedDialChild(
+          child: const Icon(Icons.event),
+          label: 'Create One-off Event',
+          onTap: () => _goToEventDetail(Event("", date: widget.date), false),
+        ),
+      ],
     ),
   );
 }
