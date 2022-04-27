@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 
+// https://pub.dev/packages/flutter_settings_screens/versions/0.3.2-null-safety
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);
 
@@ -15,17 +16,16 @@ class _SettingsPageState extends State<SettingsPage> {
       title: "Settings",
       children: [
         TextInputSettingsTile(
-          title: 'Show notifications X minutes before event',
+          title: 'Minutes before event to show notification',
           settingKey: 'reminder-before-event-minutes',
           initialValue: '15',
-          validator: (String? username) {
-            if (username != null && username.length > 3) {
+          keyboardType: TextInputType.number,
+          validator: (String? value) {
+            if (value != null && int.tryParse(value) != null) {
               return null;
             }
-            return "User Name can't be smaller than 4 letters";
+            return "Please input an integer.";
           },
-          borderColor: Colors.blueAccent,
-          errorColor: Colors.deepOrangeAccent,
         ),
         CheckboxSettingsTile(
           settingKey: 'show-help',

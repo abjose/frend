@@ -48,6 +48,11 @@ class NotificationService {
     const CHANNEL_ID = "frend";
     const CHANNEL_NAME = "frend_channel";
 
+    if (date.isBefore(DateTime.now())) {
+      print("Warning - trying to schedule notification in the past.");
+      return;
+    }
+
     await flutterLocalNotificationsPlugin.zonedSchedule(
         notificationId, title, body,
         tz.TZDateTime.from(date, tz.local),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_settings_screens/flutter_settings_screens.dart';
 import 'package:intl/intl.dart';
 import 'package:objectbox/objectbox.dart'; // don't get rid of this...
 
@@ -220,8 +221,11 @@ class Event {
       }
 
       // Then re-schedule.
+      String minsAdvanceStr = Settings.getValue<String>("reminder-before-event-minutes", "0");
+      int? minsAdvance = int.tryParse(minsAdvanceStr);
       NotificationService().scheduleNotification(
-          id, title, friends.isEmpty ? null : getFriendString(), id.toString(), date, frequency);
+          id, title, friends.isEmpty ? null : getFriendString(), id.toString(),
+          date.subtract(Duration(minutes: minsAdvance ?? 0)), frequency);
     });
   }
 
