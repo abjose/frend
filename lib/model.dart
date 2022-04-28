@@ -89,6 +89,29 @@ class Friend {
     return true;
   }
 
+  int notificationId() {
+    return id;
+  }
+
+  void updateBirthdayNotification() {
+    if (!Settings.getValue<bool>("show-birthday-notification", false)) {
+      return;
+    }
+
+    assert(birthdateSet);
+
+    // Cancel existing notification just in case.
+    deleteBirthdayNotification().then((value) {
+      NotificationService().scheduleNotification(
+          notificationId(), "$name's Birthday is tomorrow", null, id.toString(),
+          birthdate.subtract(Duration(days: 1)), DateTimeComponents.dateAndTime);
+    });
+  }
+
+  Future<void> deleteBirthdayNotification() async {
+    await flutterLocalNotificationsPlugin.cancel(notificationId());
+  }
+
   int? get dbFriendshipLevel {
     _ensureStableEnumValues();
     return friendshipLevel.index;
@@ -211,6 +234,12 @@ class Event {
     );
   }
 
+  int notificationId() {
+    // TODO: use hash or something, to separate birthday from event notifications.
+    int eventNotificationIdOffset = 10000;
+    return id + eventNotificationIdOffset;
+  }
+
   void updateNotification() {
     assert(!isIdea);
 
@@ -224,13 +253,13 @@ class Event {
       String minsAdvanceStr = Settings.getValue<String>("reminder-before-event-minutes", "0");
       int? minsAdvance = int.tryParse(minsAdvanceStr);
       NotificationService().scheduleNotification(
-          id, title, friends.isEmpty ? null : getFriendString(), id.toString(),
-          date.subtract(Duration(minutes: minsAdvance ?? 0)), frequency);
+          notificationId(), title, friends.isEmpty ? null : getFriendString(), id.toString(),
+          date.subtract(Duration(minutes: minsAdvance ?? 0)), frequency.dateTimeComponents!);
     });
   }
 
   Future<void> deleteNotification() async {
-    await flutterLocalNotificationsPlugin.cancel(id);
+    await flutterLocalNotificationsPlugin.cancel(notificationId());
   }
 
   int? get dbFrequency {

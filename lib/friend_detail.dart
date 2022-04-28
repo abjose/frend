@@ -114,6 +114,8 @@ class _FriendDetailState extends State<FriendDetail> {
     if (_dateController.text.isNotEmpty) {
       friend.birthdate = DateFormat.yMMMMd('en_US').parse(_dateController.text);
       friend.birthdateSet = true;
+
+      friend.updateBirthdayNotification();
     }
 
     friend.overdueWeeks = int.tryParse(_reminderController.text);

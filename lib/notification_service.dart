@@ -44,7 +44,7 @@ class NotificationService {
     print("tapped! $payload");
   }
 
-  Future<void> scheduleNotification(int notificationId, String title, String? body, String payload, DateTime date, RepeatFrequency frequency) async {
+  Future<void> scheduleNotification(int notificationId, String title, String? body, String payload, DateTime date, DateTimeComponents frequency) async {
     const CHANNEL_ID = "frend";
     const CHANNEL_NAME = "frend_channel";
 
@@ -58,12 +58,10 @@ class NotificationService {
         tz.TZDateTime.from(date, tz.local),
         // tz.TZDateTime.now(tz.local).add(const Duration(seconds: 1)),
         const NotificationDetails(android: AndroidNotificationDetails(CHANNEL_ID, CHANNEL_NAME)),
-        matchDateTimeComponents: frequency.dateTimeComponents,
+        matchDateTimeComponents: frequency,
         payload: payload,
         androidAllowWhileIdle: true,
         uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime);
   }
-
-
 }

@@ -28,8 +28,13 @@ class _SettingsPageState extends State<SettingsPage> {
           },
         ),
         CheckboxSettingsTile(
-          settingKey: 'show-help',
+          title: 'Show notifications on birthdays?',
+          settingKey: 'show-birthday-notifications',
+          defaultValue: true,
+        ),
+        CheckboxSettingsTile(
           title: 'Show Help page on next startup?',
+          settingKey: 'show-help',
           defaultValue: true,
         ),
       ],
