@@ -123,35 +123,6 @@
         }
       ],
       "relations": []
-    },
-    {
-      "id": "4:7665321041017520773",
-      "lastPropertyId": "4:4530883630420436753",
-      "name": "Note",
-      "properties": [
-        {
-          "id": "1:2486886209238397411",
-          "name": "id",
-          "type": 6,
-          "flags": 1
-        },
-        {
-          "id": "2:3546151692293052111",
-          "name": "text",
-          "type": 9
-        },
-        {
-          "id": "3:1003805384776306023",
-          "name": "comment",
-          "type": 9
-        },
-        {
-          "id": "4:4530883630420436753",
-          "name": "date",
-          "type": 10
-        }
-      ],
-      "relations": []
     }
   ],
   "lastEntityId": "4:7665321041017520773",
@@ -160,14 +131,20 @@
   "lastSequenceId": "0:0",
   "modelVersion": 5,
   "modelVersionParserMinimum": 5,
-  "retiredEntityUids": [],
+  "retiredEntityUids": [
+    7665321041017520773
+  ],
   "retiredIndexUids": [],
   "retiredPropertyUids": [
     7582756072335075275,
     2482921714770127383,
     6962145885195010067,
     783353267999505438,
-    7928298988763933231
+    7928298988763933231,
+    2486886209238397411,
+    3546151692293052111,
+    1003805384776306023,
+    4530883630420436753
   ],
   "retiredRelationUids": [],
   "version": 1

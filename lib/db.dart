@@ -13,7 +13,6 @@ class ObjectBox {
   /// The Store of this app.
   late final Store store;
 
-  late final Box<Note> noteBox;  // TODO: remove
   late final Box<Friend> friendBox;
   late final Box<Event> eventBox;
   late final Box<Tag> tagBox;
@@ -23,7 +22,6 @@ class ObjectBox {
   late final Stream<Query<Friend>> outOfTouchQueryStream;
 
   ObjectBox._create(this.store) {
-    noteBox = Box<Note>(store);
     friendBox = Box<Friend>(store);
     eventBox = Box<Event>(store);
     tagBox = Box<Tag>(store);
@@ -166,16 +164,6 @@ class ObjectBox {
       eventBox.put(Event("go on a camping trip", isIdea: true,
           initialTags: ["nature"]));
     }
-  }
-
-  Stream<Query<Note>> getNoteQueryStream() {
-    // This doesn't seem right - previously was passing queryStream as init'd
-    // in _create, but was getting: Bad State: Stream has already been listened to.
-    // But is returning a new stream every time OK?
-    // TODO: maybe ask on IRC if this seems right.
-    final qBuilder = noteBox.query()
-      ..order(Note_.date, flags: Order.descending);
-    return qBuilder.watch(triggerImmediately: true);
   }
 
   Stream<Query<Friend>> getAllFriendQueryStream() {

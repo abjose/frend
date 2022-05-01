@@ -31,7 +31,6 @@ class Friend {
   FriendshipLevel friendshipLevel;
 
   final interests = ToMany<Tag>();
-  // List<String> notes = [];
   String note = "";
 
   // TODO
@@ -294,23 +293,6 @@ class Tag {
   String title;
 
   Tag(this.title);
-}
-
-// probably don't need this, could just have a list of notes on Friend
-@Entity()
-class Note {
-  int id;
-
-  String text;
-  String? comment;
-
-  /// Note: Stored in milliseconds without time zone info.
-  @Property(type: PropertyType.date)
-  DateTime date;
-
-  Note(this.text, {this.id = 0, this.comment, DateTime? date}) : date = date ?? DateTime.now();
-
-  String get dateFormat => DateFormat('dd.MM.yyyy hh:mm:ss').format(date);
 }
 
 enum RepeatFrequency {
