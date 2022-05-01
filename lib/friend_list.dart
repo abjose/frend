@@ -84,11 +84,11 @@ class _FriendListState extends State<FriendList> {
     // TODO: is the `map`-ing here the source of the multiple listeners issue?
     switch (level) {
       case FriendshipLevel.friend:
-        return objectbox.getFriendQueryStream().map((q) => q.find());
+        return objectbox.friendQueryStream.map((q) => q.find());
       case FriendshipLevel.acquaintance:
-        return objectbox.getAcquaintanceQueryStream().map((q) => q.find());
+        return objectbox.acquaintanceQueryStream.map((q) => q.find());
       case FriendshipLevel.outOfTouch:
-        return objectbox.getOutOfTouchFriendQueryStream().map((q) => q.find());
+        return objectbox.outOfTouchQueryStream.map((q) => q.find());
       default:
         assert(false);  // TODO
     }
