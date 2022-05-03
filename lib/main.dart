@@ -93,6 +93,7 @@ class FrendHome extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: 2,
+        animationDuration: Duration.zero,
         child: Scaffold(
           appBar: PreferredSize(
             preferredSize: const Size.fromHeight(60),
