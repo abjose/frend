@@ -306,6 +306,7 @@ class _FriendDetailState extends State<FriendDetail> {
     }
 
     // getting called again every time you try to expand!
+    // TODO: make fewer queries
     // print("called");
 
     return ExpansionPanelList(

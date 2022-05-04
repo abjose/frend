@@ -34,8 +34,8 @@ right of the Add Event page. This will save the event and take you back to the c
 ## Friends tab
 
 By pressing the **Friends** tab, you can view your Friend list. If you've already added some
-friends, you can tap on them here to edit their details. Tapping the + button in the bottom-right
-of the screen will take you to the "Add Friend" page.
+friends, you can tap on them here to edit their details. Tapping the + button in the bottom-right of
+the screen will take you to the "Add Friend" page.
 
 Some fields that might be confusing on the Add Friend page:
 
@@ -54,9 +54,33 @@ the new Event.
 marking Event Ideas with relevant interests. You can filter through the Event Idea list based on
 tags when searching for things to do.
 
-You can edit available tags by tapping on the Gear icon in the top-right of the main screen of
-Frend and selecting "Tags" from the dropdown.
+You can edit available tags by tapping on the Gear icon in the top-right of the main screen of Frend
+and selecting "Tags" from the dropdown.
 
 ---
 
 That's about it. I hope you enjoy using it, and remember to cherish your friendships.
+
+## Tips and Ideas
+
+- Sometimes building a friendship requires taking the emotional risk of being more vulnerable than
+  you've been in that relationship before. Don't be afraid to be the one to take that risk! Try
+  scheduling some intentionally more "friend-y" events with acquaintances you'd like to be closer
+  with.
+- That said, not every friendship is going to work out. If someone isn't reciprocating, give them
+  space.
+- Consider scheduling a repeating event that you can invite your existing friends to, but which is
+  casual enough to invite new acquaintances to as well. This can be a great way to maintain your
+  existing friendships and deepen new ones.
+- Some ideas for casual recurring events:
+    - hanging out in a park, cafe, or bar
+    - board game nights or playing a game together virtually
+    - reading discussion groups or movie nights
+    - potlucks
+- Some ideas on how to meet potential new friends:
+    - local meetups (like from meetup.com)
+    - find a group of people doing an activity or hobby you're interested in
+    - go to conventions on topics you're interested in
+    - volunteering groups
+    - reconnect with old friends
+    - find local members of an online community you enjoy
