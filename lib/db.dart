@@ -51,6 +51,15 @@ class ObjectBox {
     return ObjectBox._create(store);
   }
 
+  void maybeFix() {
+    for (var friend in friendBox.getAll()) {
+      if (friend.friendshipLevel == FriendshipLevel.unknown) {
+        friend.friendshipLevel = FriendshipLevel.friend;
+        friendBox.put(friend);
+      }
+    }
+  }
+
   void maybePopulate() {
     // eventBox.removeAll();
     // tagBox.removeAll();
