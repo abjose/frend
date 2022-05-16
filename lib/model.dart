@@ -40,6 +40,7 @@ class Friend {
         friendshipLevel = FriendshipLevel.friend;
 
   String get dateFormat => birthdateSet ? DateFormat.yMMMMd('en_US').format(birthdate) : "Unknown";
+  String get timeFormat => birthdateSet ? DateFormat.Hm().format(birthdate) : "Unknown";
 
   // Returns true if this friend doesn't have an upcoming event within reminderToSchedule weeks.
   bool overdue() {

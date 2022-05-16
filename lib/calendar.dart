@@ -8,7 +8,23 @@ import 'dart:collection';
 
 import 'event_detail.dart';
 import 'event_idea_list.dart';
+import 'friend_detail.dart';
 
+
+class CalendarItem {
+  CalendarItem({this.event, this.friend}) {
+    if (event != null) {
+      date = event!.date;
+    } else if (friend != null) {
+      date = friend!.birthdate;
+    }
+  }
+
+  Event? event;
+  Friend? friend;
+
+  DateTime date = DateTime.now();
+}
 
 int getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
@@ -31,12 +47,12 @@ class EventCalendar extends StatefulWidget {
 }
 
 class _EventCalendarState extends State<EventCalendar> {
-  final _events = LinkedHashMap<DateTime, List<Event>>(
+  final _calendarItems = LinkedHashMap<DateTime, List<CalendarItem>>(
     equals: isSameDay,
     hashCode: getHashCode,
   );
 
-  late final ValueNotifier<List<Event>> _selectedEvents;
+  late final ValueNotifier<List<CalendarItem>> _selectedItems;
   DateTime _selectedDay = DateTime.now();
 
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -45,7 +61,7 @@ class _EventCalendarState extends State<EventCalendar> {
   void initState() {
     super.initState();
 
-    _selectedEvents = ValueNotifier([]);
+    _selectedItems = ValueNotifier([]);
 
     // Listen for event changes and setState so will properly display changes to even times.
     objectbox.getEventQueryStream().listen((event) {
@@ -61,14 +77,18 @@ class _EventCalendarState extends State<EventCalendar> {
   // Caches events for the passed month.
   void _refreshEventCache(DateTime date) {
     DateTime firstOfMonth = getFirstOfMonth(date);
-    _events.clear();
+    _calendarItems.clear();
 
     // Collect one-offs for this month.
     for (var event in objectbox.getOneOffEvents()) {
-      if (!_events.containsKey(event.date)) {
-        _events[event.date] = [];
+      if (!DateUtils.isSameMonth(event.date, firstOfMonth)) {
+        continue;
       }
-      _events[event.date]?.add(event);
+
+      if (!_calendarItems.containsKey(event.date)) {
+        _calendarItems[event.date] = [];
+      }
+      _calendarItems[event.date]?.add(CalendarItem(event: event));
     }
 
     // Collect repeats for this month.
@@ -76,44 +96,60 @@ class _EventCalendarState extends State<EventCalendar> {
     for (var event in objectbox.getRepeatingEvents()) {
       DateTime currRepeatDate = event.soonestRepeat(firstOfMonth)!;
       while (currRepeatDate.isBefore(nextMonth)) {
-        if (!_events.containsKey(currRepeatDate)) {
-          _events[currRepeatDate] = [];
+        if (!_calendarItems.containsKey(currRepeatDate)) {
+          _calendarItems[currRepeatDate] = [];
         }
-        _events[currRepeatDate]?.add(event);
+        _calendarItems[currRepeatDate]?.add(CalendarItem(event: event));
 
         currRepeatDate = event.soonestRepeat(currRepeatDate.add(Duration(days: 1)))!;
       }
     }
 
+    // Collect birthdays.
+    for (var friend in objectbox.friendBox.getAll()) {
+      if (!friend.birthdateSet) {
+        continue;
+      }
+
+      if (!DateUtils.isSameMonth(friend.birthdate, firstOfMonth)) {
+        continue;
+      }
+
+      if (!_calendarItems.containsKey(friend.birthdate)) {
+        _calendarItems[friend.birthdate] = [];
+      }
+      _calendarItems[friend.birthdate]?.add(CalendarItem(friend: friend));
+    }
+
     // Sort everything by time (repeating events might be out of order).
     DateTime currDay = DateTime(firstOfMonth.year, firstOfMonth.month, firstOfMonth.day);
     while (currDay.isBefore(nextMonth)) {
-      if (_events.containsKey(currDay)) {
-        _events[currDay]?.sort((a, b) => a.date.compareTo(b.date));
+      if (_calendarItems.containsKey(currDay)) {
+        _calendarItems[currDay]?.sort((a, b) => a.date.compareTo(b.date));
       }
       currDay = currDay.add(Duration(days: 1));
     }
 
-    _selectedEvents.value = _getEventsForDay(_selectedDay);
+    _selectedItems.value = _getItemsForDay(_selectedDay);
   }
 
   @override
   void dispose() {
-    _selectedEvents.dispose();
+    _selectedItems.dispose();
     super.dispose();
   }
 
   // Note that this is getting called for EVERY DAY every time setState is called, so should be
   // very lightweight.
-  List<Event> _getEventsForDay(DateTime date) {
-    return _events[date] ?? [];
+  List<CalendarItem> _getItemsForDay(DateTime date) {
+    return _calendarItems[date] ?? [];
   }
 
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
-        _selectedEvents.value = _getEventsForDay(selectedDay);
+        _selectedItems.value = _getItemsForDay(selectedDay);
       });
     }
   }
@@ -140,18 +176,53 @@ class _EventCalendarState extends State<EventCalendar> {
     );
   }
 
+  void _goToFriendDetail(int? id) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        settings: const RouteSettings(name: "friend"),
+        builder: (context) {
+          return FriendDetail(friendId: id);
+        },
+      ),
+    );
+  }
+
+  ListTile _getListTile(CalendarItem item) {
+    assert(item.event != null || item.friend != null);
+
+    if (item.event != null) {
+      return ListTile(
+        onTap: () => _goToEventDetail(item.event!),
+        title: Text(item.event!.title),
+        subtitle: item.event!.friends.isEmpty ? null : Text(
+            item.event!.getFriendString()),
+        trailing: Text(item.event!.timeFormat),
+      );
+    }
+
+    if (item.friend != null) {
+      return ListTile(
+        onTap: () => _goToFriendDetail(item.friend!.id),
+        title: Text("${item.friend!.name}'s Birthday"),
+        trailing: Text(item.friend!.timeFormat),
+      );
+    }
+    
+    return const ListTile();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
         children: [
-          TableCalendar<Event>(
+          TableCalendar<CalendarItem>(
             firstDay: kFirstDay,
             lastDay: kLastDay,
             focusedDay: _selectedDay,
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
             rangeSelectionMode: RangeSelectionMode.toggledOff,
-            eventLoader: _getEventsForDay,
+            eventLoader: _getItemsForDay,
             startingDayOfWeek: StartingDayOfWeek.monday,
             calendarStyle: const CalendarStyle(
               outsideDaysVisible: false,
@@ -176,8 +247,8 @@ class _EventCalendarState extends State<EventCalendar> {
           ),
           const SizedBox(height: 8.0),
           Expanded(
-            child: ValueListenableBuilder<List<Event>>(
-              valueListenable: _selectedEvents,
+            child: ValueListenableBuilder<List<CalendarItem>>(
+              valueListenable: _selectedItems,
               builder: (context, value, _) {
                 return ListView.builder(
                   itemCount: value.length,
@@ -191,12 +262,7 @@ class _EventCalendarState extends State<EventCalendar> {
                         border: Border.all(),
                         borderRadius: BorderRadius.circular(12.0),
                       ),
-                      child: ListTile(
-                        onTap: () => _goToEventDetail(value[index]),
-                        title: Text('${value[index].title}'),
-                        subtitle: value[index].friends.isEmpty ? null : Text(value[index].getFriendString()),
-                        trailing: Text("${value[index].timeFormat}"),
-                      ),
+                      child: _getListTile(value[index]),
                     );
                   },
                 );
