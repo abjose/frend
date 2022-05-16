@@ -440,7 +440,7 @@ class _FriendDetailState extends State<FriendDetail> {
 
                 var maybeInt = int.tryParse(value);
                 if (maybeInt == null || maybeInt < 0) {
-                  return 'Enter positive number';
+                  return 'Enter positive whole number';
                 }
                 return null;
               },
