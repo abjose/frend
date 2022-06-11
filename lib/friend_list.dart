@@ -119,11 +119,11 @@ class _FriendListState extends State<FriendList> {
       _getSectionHeader("Friends"),
       _getFriendStreamWidget(FriendshipLevel.friend),
 
-      _getSectionHeader("Out-of-touch Friends"),
-      _getFriendStreamWidget(FriendshipLevel.outOfTouch),
-
       _getSectionHeader("Acquaintances"),
       _getFriendStreamWidget(FriendshipLevel.acquaintance),
+
+      _getSectionHeader("Out-of-touch Friends"),
+      _getFriendStreamWidget(FriendshipLevel.outOfTouch),
     ]),
     floatingActionButton: FloatingActionButton(
       key: const Key('submit'),
