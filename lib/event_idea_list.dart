@@ -116,11 +116,11 @@ class _EventIdeaListState extends State<EventIdeaList> {
             trailing: Wrap(
               children: [
                 IconButton(
-                  icon: const Icon(Icons.copy, color: Colors.black),
+                  icon: const Icon(Icons.copy),
                   onPressed: () => _goToEventDetail(events[index], true),
                 ),
                 IconButton(
-                  icon: const Icon(Icons.edit, color: Colors.black),
+                  icon: const Icon(Icons.edit),
                   onPressed: () => _goToEventDetail(events[index], false),
                 ),
               ],

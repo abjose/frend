@@ -213,7 +213,6 @@ class _EventDetailState extends State<EventDetail> {
       for (var friendName in _selectedFriends.values) {
         friendList.add(
             Card(
-              color: Colors.amberAccent,
               elevation: 4,
               margin: const EdgeInsets.symmetric(vertical: 10),
               child: ListTile(
@@ -243,7 +242,6 @@ class _EventDetailState extends State<EventDetail> {
     for (var tagTitle in _selectedTags.values) {
       tagList.add(
           Card(
-            color: Colors.amberAccent,
             elevation: 4,
             margin: const EdgeInsets.symmetric(vertical: 10),
             child: ListTile(
@@ -266,9 +264,6 @@ class _EventDetailState extends State<EventDetail> {
 
               decoration: const InputDecoration(
                 labelText: 'Title',
-                labelStyle: TextStyle(
-                  color: Colors.black54,
-                ),
               ),
 
               // The validator receives the text that the user has entered.
@@ -318,9 +313,6 @@ class _EventDetailState extends State<EventDetail> {
 
                 decoration: const InputDecoration(
                   labelText: 'Repeat Frequency',
-                  labelStyle: TextStyle(
-                    color: Colors.black54,
-                  ),
                 ),
 
                 onChanged: (RepeatFrequency? newValue) {

@@ -45,8 +45,7 @@ class _TagListState extends State<TagList> {
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
-                    border:
-                    Border(bottom: BorderSide(color: Colors.black12))),
+                    border: Border(bottom: BorderSide(color: Colors.black54))),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical: 18.0, horizontal: 10.0),

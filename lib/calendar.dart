@@ -226,6 +226,9 @@ class _EventCalendarState extends State<EventCalendar> {
             startingDayOfWeek: StartingDayOfWeek.monday,
             calendarStyle: const CalendarStyle(
               outsideDaysVisible: false,
+              markerDecoration: BoxDecoration(
+                  color: Color(0xFF5097FF),
+                  shape: BoxShape.circle),
             ),
             onDaySelected: _onDaySelected,
             availableCalendarFormats: {CalendarFormat.month : '2 Weeks', CalendarFormat.twoWeeks : 'Month'},

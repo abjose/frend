@@ -381,9 +381,6 @@ class _FriendDetailState extends State<FriendDetail> {
               controller: _nameController,
               decoration: const InputDecoration(
                 labelText: 'Name',
-                labelStyle: TextStyle(
-                  color: Colors.black54,
-                ),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -397,9 +394,6 @@ class _FriendDetailState extends State<FriendDetail> {
               controller: _dateController,
               decoration: const InputDecoration(
                 labelText: 'Birthdate',
-                labelStyle: TextStyle(
-                  color: Colors.black54,
-                ),
               ),
               onTap: () async {
                 DateTime oldDate = DateTime.now();
@@ -429,9 +423,6 @@ class _FriendDetailState extends State<FriendDetail> {
                       )
                     : null,
                 labelText: 'Overdue threshold (weeks)',
-                labelStyle: const TextStyle(
-                  color: Colors.black54,
-                ),
               ),
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -460,9 +451,6 @@ class _FriendDetailState extends State<FriendDetail> {
 
               decoration: const InputDecoration(
                 labelText: 'Friendship Level',
-                labelStyle: TextStyle(
-                  color: Colors.black54,
-                ),
               ),
 
               onChanged: (FriendshipLevel? newValue) {

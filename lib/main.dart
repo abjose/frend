@@ -25,18 +25,24 @@ Future<void> main() async {
 
   await Settings.init();
 
-  runApp(FrendApp());
+  // Without this MaterialApp, get errors when navigating from dropdown menu.
+  // TODO: Figure out how to consolidate to a single MaterialApp.
+  runApp(MaterialApp(
+    theme: ThemeData(
+      brightness: Brightness.light,
+    ),
+    darkTheme: ThemeData(
+      brightness: Brightness.dark,
+    ),
+    themeMode: ThemeMode.system,
+
+    debugShowCheckedModeBanner: false,
+    home: FrendApp()),
+  );
 }
 
 class FrendApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(home: FrendHome());
-  }
-}
-
-class FrendHome extends StatelessWidget {
-  const FrendHome({Key? key}) : super(key: key);
+  const FrendApp({Key? key}) : super(key: key);
 
   void _goToTagList(context) {
     Navigator.of(context).push(
@@ -68,10 +74,11 @@ class FrendHome extends StatelessWidget {
     );
   }
 
-  void _goToSettingsPage(context) {
+  void _goToSettingsPage(BuildContext context) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
         builder: (context) {
+          print("in settings page cb");
           return SettingsPage();
         },
       ),
@@ -91,6 +98,14 @@ class FrendHome extends StatelessWidget {
     });
 
     return MaterialApp(
+      theme: ThemeData(
+        brightness: Brightness.light,
+      ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+      ),
+      themeMode: ThemeMode.system,
+
       debugShowCheckedModeBanner: false,
       home: DefaultTabController(
         length: 2,
@@ -115,9 +130,7 @@ class FrendHome extends StatelessWidget {
               ),
               actions: [
                 DropdownButton<String>(
-                  icon: const Icon(Icons.settings, color: Colors.white),
-                  // elevation: 16,
-                  style: const TextStyle(color: Colors.black),
+                  icon: const Icon(Icons.settings),
                   underline: Container(height: 0),
                   onChanged: (String? newValue) {},
                   items: [

@@ -29,8 +29,7 @@ class _FriendListState extends State<FriendList> {
             Expanded(
               child: Container(
                 decoration: const BoxDecoration(
-                    border:
-                    Border(bottom: BorderSide(color: Colors.black12))),
+                    border: Border(bottom: BorderSide(color: Colors.black54))),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical: 14.0, horizontal: 10.0),

@@ -160,7 +160,6 @@ class _SearchableSelectionListState extends State<SearchableSelectionList> {
                 itemCount: _foundElements.length,
                 itemBuilder: (context, index) => Card(
                   // key: ValueKey(_foundUsers[index]["id"]),
-                  color: Colors.amberAccent,
                   elevation: 4,
                   margin: const EdgeInsets.symmetric(vertical: 10),
                   child: ListTile(
