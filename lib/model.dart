@@ -245,7 +245,9 @@ class Event {
 
     // Cancel existing notification just in case.
     deleteNotification().then((value) {
-      if (date.isBefore(DateTime.now()) || frequency == RepeatFrequency.unknown) {
+      if (date.isBefore(DateTime.now()) ||
+          frequency == RepeatFrequency.unknown ||
+          frequency == RepeatFrequency.never) {
         return;
       }
 

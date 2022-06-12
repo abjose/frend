@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:frend/event_suggestions.dart';
 import 'package:frend/filter_list.dart';
 import 'package:frend/objectbox.g.dart';
 
@@ -108,6 +109,16 @@ class _EventIdeaListState extends State<EventIdeaList> {
     );
   }
 
+  void _goToSuggestEvents() {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) {
+          return EventSuggestions(date: widget.date);
+        },
+      ),
+    );
+  }
+
   GestureDetector Function(BuildContext, int) _itemBuilder(List<Event> events) =>
           (BuildContext context, int index) => GestureDetector(
         child: Card(
@@ -158,6 +169,11 @@ class _EventIdeaListState extends State<EventIdeaList> {
           child: const Icon(Icons.event),
           label: 'Create One-off Event',
           onTap: () => _goToEventDetail(Event("", date: widget.date), false),
+        ),
+        SpeedDialChild(
+          child: const Icon(Icons.groups),
+          label: 'Suggest Events',
+          onTap: () => _goToSuggestEvents(),
         ),
       ],
     ),
